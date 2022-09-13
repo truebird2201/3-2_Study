@@ -1,0 +1,7 @@
+﻿  InitSocket.cpp
+  Server.cpp
+Server.obj : error LNK2005: main이(가) InitSocket.obj에 이미 정의되어 있습니다.
+Server.obj : error LNK2005: "void __cdecl err_display(int)" (?err_display@@YAXH@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
+Server.obj : error LNK2005: "void __cdecl err_display(char const *)" (?err_display@@YAXPEBD@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
+Server.obj : error LNK2005: "void __cdecl err_quit(char const *)" (?err_quit@@YAXPEBD@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Server\x64\Release\Server.exe : fatal error LNK1169: 여러 번 정의된 기호가 있습니다.
