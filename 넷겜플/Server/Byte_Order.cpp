@@ -1,13 +1,11 @@
 #include "..\..\Common.h"
-
+// ³×Æ®¿öÅ© = ºò
 bool IsBigEndian() {
-	u_short x1 = 0x1234;
-	u_short x2;
-	x1 = ntohs(x1);
-	x2 = htons(x1);
-	if (x2 == x1)
-		return true;
-	return false;
+	unsigned int num = 0x00000001;
+	u_short n2 = htons(num);
+	u_short n1 = ntohs(n2);
+
+	return(n2==n1);
 }
 
 int main(int argc, char* argv[])
