@@ -1,7 +1,1 @@
-﻿  InitSocket.cpp
-  Server.cpp
-Server.obj : error LNK2005: main이(가) InitSocket.obj에 이미 정의되어 있습니다.
-Server.obj : error LNK2005: "void __cdecl err_display(int)" (?err_display@@YAXH@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
-Server.obj : error LNK2005: "void __cdecl err_display(char const *)" (?err_display@@YAXPEBD@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
-Server.obj : error LNK2005: "void __cdecl err_quit(char const *)" (?err_quit@@YAXPEBD@Z)이(가) InitSocket.obj에 이미 정의되어 있습니다.
-C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Server\x64\Release\Server.exe : fatal error LNK1169: 여러 번 정의된 기호가 있습니다.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(439,5): error MSB8020: v143에 대한 빌드 도구(플랫폼 도구 집합 = 'v143')를 찾을 수 없습니다. v143 빌드 도구를 사용하여 빌드하려면 v143 빌드 도구를 설치하십시오.  [프로젝트] 메뉴를 선택하거나 솔루션을 마우스 오른쪽 단추로 클릭한 다음 "솔루션 대상 변경"을 선택하여 현재 Visual Studio 도구로 업그레이드할 수도 있습니다.
