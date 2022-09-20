@@ -3,6 +3,7 @@ game_board = [' ', ' ', ' ',
               ' ', ' ', ' ',
               ' ', ' ', ' ']
 
+
 # 비어있는 칸을 찾아서 리스트로 반환한다.
 def empty_cells(board):
     cells = []
@@ -61,7 +62,7 @@ def game_over(board):
 
 # 미니맥스 알고리즘을 구현한다.
 # 이 함수는 순환적으로 호출된다.
-def minimax(board, depth, maxPlayer):
+def minimax(board, depth,a,b, maxPlayer):
     pos = -1
     # 단말 노드이면 보드를 평가하여 위치와 평가값을 반환한다.
     if depth == 0 or len(empty_cells(board)) == 0 or game_over(board):
@@ -73,11 +74,16 @@ def minimax(board, depth, maxPlayer):
         for p in empty_cells(board):
             board[p] = 'X' # 보드의 p 위치에 'X'를 놓는다.
             # 경기자를 교체하여서 imnimax()를 순환호출한다.
-            x, score = minimax(board, depth-1, False)
+            x, score = minimax(board, depth-1,a,b, False)
+
             board[p] = ' ' # 보드는 원 상태로 돌린다.
             if score > value:
                 value = score # 최대값을 취한다.
                 pos = p # 최대값의 위치를 기억한다.
+                a=max(a,value)
+            if a>=b:
+                break
+            
     else:
         value = +10000 # 양의 무한대
         # 자식 노드를 하나씩 평가하여 최선의 수를 찾는다.
@@ -85,11 +91,15 @@ def minimax(board, depth, maxPlayer):
             board[p] = 'O' # 보드의 p 위치에 'O'를 놓는다.
             
             # 경기자를 교체하여서 imnimax()를 순환호출한다.
-            x, score = minimax(board, depth-1, True)
+            x, score = minimax(board, depth-1,a,b, True)
+            
             board[p] = ' ' # 보드는 원 상태로 돌린다.
             if score < value:
                 value = score # 최소값을 취한다.
                 pos = p # 최소값의 위치를 기억한다.
+                b=min(b,value)
+            if a>=b:
+                break
     return pos, value # 위치와 값을 반환한다.
 
 player='X'
@@ -98,7 +108,10 @@ while True:
     draw(game_board)
     if len(empty_cells(game_board)) == 0 or game_over(game_board):
         break
-    i, v = minimax(game_board, 9, player=='X')
+    if(player=='X'):
+        i, v = minimax(game_board, 9,-10000,10000, player=='X')
+    else:
+        i=int(input())
     move(i, player)
     if player=='X':
         player='O'
