@@ -17,12 +17,12 @@ struct Telegram;
 
 // 잡아야하는 해파리 수
 const int MaxJellyFish = 5;
-// 최대 비눗방울 수
-const int MaxBubble = 3;
+
 // 만들어야 하는 버거 수
-const int Bugger_Goal = 5;
-// 최대 지루함
-const int MaxBored = 4;
+const int Burger_Goal = 5;
+
+// 최대 피곤함
+const int MaxTired = 4;
 
 
 
@@ -41,26 +41,23 @@ private:
     // 잡은 해파리 수
     int                   m_iJellyFish;
 
-    // 현재 지루함
-    int                   m_iBored;
+    // 피곤함 정도
+    int                   m_iTired;
 
-    // 사용한 비눗방울
-    int                   m_iBubble;
 
 public:
 
     SpongeBob(int id) :m_Location(KrabShop),
         m_iBurger(0),
         m_iJellyFish(0),
-        m_iBored(0),
-        m_iBubble(0),
+        m_iTired(0),
         BaseGameEntity(id)
 
     {
         //set up state machine
         m_pStateMachine = new StateMachine<SpongeBob>(this);
 
-        m_pStateMachine->SetCurrentState(GoHomeAndSleepTilRested::Instance());
+        m_pStateMachine->SetCurrentState(MakeBurger::Instance());
 
         /* NOTE, A GLOBAL STATE HAS NOT BEEN IMPLEMENTED FOR THE MINER */
     }
@@ -82,21 +79,12 @@ public:
     location_type Location()const { return m_Location; }
     void          ChangeLocation(location_type loc) { m_Location = loc; }
 
-    int           GoldCarried()const { return m_iGoldCarried; }
-    void          SetGoldCarried(int val) { m_iGoldCarried = val; }
-    void          AddToGoldCarried(int val);
-    bool          PocketsFull()const { return m_iGoldCarried >= MaxNuggets; }
+    int           MakedBurger()const { return m_iBurger; }
+    void          AddBurger() { m_iBurger += 1; }
+    bool          FinishWork()const { return m_iBurger >= Burger_Goal; }
 
-    bool          Fatigued()const;
-    void          DecreaseFatigue() { m_iFatigue -= 1; }
-    void          IncreaseFatigue() { m_iFatigue += 1; }
-
-    int           Wealth()const { return m_iMoneyInBank; }
-    void          SetWealth(int val) { m_iMoneyInBank = val; }
-    void          AddToWealth(int val);
-
-    bool          Thirsty()const;
-    void          BuyAndDrinkAWhiskey() { m_iThirst = 0; m_iMoneyInBank -= 2; }
+    void          IncreaseTired() { m_iTired += 1; }
+    bool          Tired() { m_iTired >= MaxTired; }
 
 };
 

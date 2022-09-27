@@ -18,6 +18,51 @@ extern std::ofstream os;
 #define cout os
 #endif
 
+// 글로벌 state 
+
+SpongeBobGlobalState* SpongeBobGlobalState::Instance()
+{
+    static SpongeBobGlobalState instance;
+
+    return &instance;
+}
+
+
+void SpongeBobGlobalState::Execute(SpongeBob* sponge)
+{
+    // 
+    if ((RandFloat() < 0.1) &&
+        !sponge->GetFSM()->isInState(*Poop::Instance()))
+    {
+        sponge->GetFSM()->ChangeState(Poop::Instance());
+    }
+}
+
+bool SpongeBobGlobalState::OnMessage(SpongeBob* sponge, const Telegram& msg)
+{
+    SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+    switch (msg.Msg)
+    {
+    case Msg_HiHoneyImHome:
+    {
+        cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: "
+            << Clock->GetCurrentTime();
+
+        SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+
+        cout << "\n" << GetNameOfEntity(wife->ID()) <<
+            ": Hi honey. Let me make you some of mah fine country stew";
+
+        wife->GetFSM()->ChangeState(CookStew::Instance());
+    }
+
+    return true;
+
+    }//end switch
+
+    return false;
+}
 
 //------------------------------------------------------------------------methods for EnterMineAndDigForNugget
 MakeBurger* MakeBurger::Instance()
@@ -32,7 +77,7 @@ void MakeBurger::Enter(SpongeBob* sponge)
 {
     if (sponge->Location() != KrabShop)
     {
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "일을 하기 위하여 집게리아로 갑니다.";
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "일을 하기 위하여 집게리아로 출근합니다.";
         sponge->ChangeLocation(KrabShop);
     }
 }
@@ -40,32 +85,29 @@ void MakeBurger::Enter(SpongeBob* sponge)
 
 void MakeBurger::Execute(SpongeBob* sponge)
 {
-    //Now the miner is at the goldmine he digs for gold until he
-    //is carrying in excess of MaxNuggets. If he gets thirsty during
-    //his digging he packs up work for a while and changes state to
-    //gp to the saloon for a whiskey.
-    sponge->AddToGoldCarried(1);
-    sponge->IncreaseFatigue();
+    // 햄버거를 만든다
+    sponge->AddBurger();
+    sponge->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "Pickin' up a nugget";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다.";
 
     //if enough gold mined, go and put it in the bank
-    if (pMiner->PocketsFull())
+    if (sponge->FinishWork())
     {
-        pMiner->GetFSM()->ChangeState(VisitBankAndDepositGold::Instance());
+        sponge->GetFSM()->ChangeState(CatchJellyFish::Instance());
     }
 
-    if (pMiner->Thirsty())
+    if (sponge->Tired())
     {
-        pMiner->GetFSM()->ChangeState(QuenchThirst::Instance());
+        sponge->GetFSM()->ChangeState(QuenchThirst::Instance());
     }
 }
 
 
-void EnterMineAndDigForNugget::Exit(Miner* pMiner)
+void MakeBurger::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
-        << "Ah'm leavin' the goldmine with mah pockets full o' sweet gold";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": "
+        << "집게리아에서 퇴근합니다.";
 }
 
 

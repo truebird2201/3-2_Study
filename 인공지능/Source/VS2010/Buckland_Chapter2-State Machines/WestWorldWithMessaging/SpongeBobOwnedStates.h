@@ -16,8 +16,31 @@
 class SpongeBob;
 struct Telegram;
 
+// ±Û·Î¹ú state
 
+class SpongeBobGlobalState : public State<SpongeBob>
+{
+private:
 
+	SpongeBobGlobalState() {}
+
+	//copy ctor and assignment should be private
+	SpongeBobGlobalState(const SpongeBobGlobalState&);
+	SpongeBobGlobalState& operator=(const SpongeBobGlobalState&);
+
+public:
+
+	//this is a singleton
+	static SpongeBobGlobalState* Instance();
+
+	virtual void Enter(SpongeBob* sponge) {}
+
+	virtual void Execute(SpongeBob* sponge);
+
+	virtual void Exit(SpongeBob* sponge) {}
+
+	virtual bool OnMessage(SpongeBob* sponge, const Telegram& msg);
+};
 
 // ÇÜ¹ö°Å ¸¸µé±â
 
@@ -67,19 +90,42 @@ public:
 };
 
 
-// ºñ´°¹æ¿ï ºÒ±â
+// È­Àå½Ç¿¡¼­ ¶Ë ½Î±â
 
-class PlayBubble : public State<SpongeBob>
+class PoopToilet : public State<SpongeBob>
 {
 private:
 
-	PlayBubble() {}
-	PlayBubble(const PlayBubble&);
-	PlayBubble& operator=(const PlayBubble&);
+	PoopToilet() {}
+	PoopToilet(const PoopToilet&);
+	PoopToilet& operator=(const PoopToilet&);
 
 public:
 
-	static PlayBubble* Instance();
+	static PoopToilet* Instance();
+
+	virtual void Enter(SpongeBob* sponge);
+
+	virtual void Execute(SpongeBob* sponge);
+
+	virtual void Exit(SpongeBob* sponge);
+
+	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
+};
+
+// ¾ð´ö¿¡¼­ ¶Ë ½Î±â
+
+class PoopHill : public State<SpongeBob>
+{
+private:
+
+	PoopHill() {}
+	PoopHill(const PoopHill&);
+	PoopHill& operator=(const PoopHill&);
+
+public:
+
+	static PoopHill* Instance();
 
 	virtual void Enter(SpongeBob* sponge);
 
