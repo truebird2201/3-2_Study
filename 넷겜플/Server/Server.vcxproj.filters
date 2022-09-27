@@ -30,7 +30,16 @@
     <ClCompile Include="NameResolution.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="과제.cpp">
+    <ClCompile Include="과제3.1.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TCPServer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TCPClient.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="과제4.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
