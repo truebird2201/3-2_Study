@@ -1,7 +1,11 @@
 #include "..\..\Common.h"
+#include <chrono>
+#include <iostream>
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
+
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -35,6 +39,8 @@ int main(int argc, char *argv[])
 	int addrlen;
 	int len; // 고정 길이 데이터
 	char buf[BUFSIZE + 1]; // 가변 길이 데이터
+	double total = 0;
+	
 
 	while (1) {
 		// accept()
@@ -54,6 +60,7 @@ int main(int argc, char *argv[])
 		// 클라이언트와 데이터 통신
 		while (1) {
 			// 데이터 받기(고정 길이)
+			std::chrono::system_clock::time_point start = std::chrono::system_clock::now();	// 시작
 			retval = recv(client_sock, (char *)&len, sizeof(int), MSG_WAITALL);
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
@@ -70,11 +77,15 @@ int main(int argc, char *argv[])
 			}
 			else if (retval == 0)
 				break;
-
+			std::chrono::system_clock::time_point end = std::chrono::system_clock::now(); // 끝
+			std::chrono::nanoseconds nano = end - start;
 			// 받은 데이터 출력
 			buf[retval] = '\0';
 			printf("[TCP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
+			cout << "-----------------------------경과 시간 = "<< nano.count() << endl <<endl;
+			total += nano.count();
 		}
+		cout << endl<< "-----------------------------총 경과 시간 = " << total << endl << endl;
 
 		// 소켓 닫기
 		closesocket(client_sock);
