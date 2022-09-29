@@ -1,5 +1,4 @@
-#include "..\..\Common.h"
-#define BUFSIZE    512
+#include "Common.h"
 
 int main(int argc, char* argv[])
 {
@@ -30,12 +29,13 @@ int main(int argc, char* argv[])
 		serveraddr.sin_port = htons(Pnum);
 		retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 		if (retval == SOCKET_ERROR) {
-			printf("실패");
+			printf("포트번호 %d - LISTENING 상태 아님\n", Pnum);
 		}
 		else {
-			printf("성공");
+			printf("포트번호 %d - LISTENING 상태\n", Pnum);
 		}
 		closesocket(sock);
+
 	}
 
 	// 윈속 종료
