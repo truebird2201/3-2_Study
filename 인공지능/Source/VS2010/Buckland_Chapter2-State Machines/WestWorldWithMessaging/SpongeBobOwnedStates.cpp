@@ -32,9 +32,14 @@ void SpongeBobGlobalState::Execute(SpongeBob* sponge)
 {
     // 
     if ((RandFloat() < 0.1) &&
-        !sponge->GetFSM()->isInState(*Poop::Instance()))
+        !sponge->GetFSM()->isInState(*PoopHill::Instance())&& !sponge->GetFSM()->isInState(*PoopToilet::Instance()))
     {
-        sponge->GetFSM()->ChangeState(Poop::Instance());
+        if (sponge->Location() != Hill) {
+            sponge->GetFSM()->ChangeState(PoopToilet::Instance());
+        }
+        else {
+            sponge->GetFSM()->ChangeState(PoopHill::Instance());
+        }
     }
 }
 
