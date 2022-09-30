@@ -46,7 +46,7 @@
     <OutDir>.\Debug\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\82107\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common;C:\Users\82107\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>.\Release\</OutDir>

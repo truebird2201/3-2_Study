@@ -80,10 +80,20 @@ public:
     void          ChangeLocation(location_type loc) { m_Location = loc; }
 
     int           MakedBurger()const { return m_iBurger; }
-    void          AddBurger() { m_iBurger += 1; }
-    bool          FinishWork()const { return m_iBurger >= Burger_Goal; }
+    int           CatchedJellyFish()const { return m_iJellyFish; }
 
+    int           MaxBurger() const { return Burger_Goal; }
+    int           MaxJF() const { return MaxJellyFish; }
+
+    void          AddBurger() { m_iBurger += 1; }
+    void          AddJellyFish() { m_iJellyFish += 1; }
+
+    bool          FinishWork()const { return m_iBurger >= Burger_Goal; }
+    bool          FinishCatch()const { return m_iJellyFish >= MaxJellyFish; }
+
+    void          SetTiredZero() { m_iTired = 0; }
     void          IncreaseTired() { m_iTired += 1; }
+
     bool          Tired() { m_iTired >= MaxTired; }
 
 };

@@ -31,14 +31,9 @@ void SpongeBobGlobalState::Execute(SpongeBob* sponge)
 {
     // 
     if ((RandFloat() < 0.1) &&
-        !sponge->GetFSM()->isInState(*PoopHill::Instance())&& !sponge->GetFSM()->isInState(*PoopToilet::Instance()))
+        !sponge->GetFSM()->isInState(*Poop::Instance()))
     {
-        if (sponge->Location() != Hill) {
-            sponge->GetFSM()->ChangeState(PoopToilet::Instance());
-        }
-        else {
-            sponge->GetFSM()->ChangeState(PoopHill::Instance());
-        }
+        sponge->GetFSM()->ChangeState(Poop::Instance());
     }
 }
 
@@ -72,9 +67,8 @@ void MakeBurger::Execute(SpongeBob* sponge)
     sponge->AddBurger();
     sponge->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다.";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다. ( 현재 버거 = " << sponge->MakedBurger() << " / " << sponge->MaxBurger();
 
-    //if enough gold mined, go and put it in the bank
     if (sponge->FinishWork())
     {
         sponge->GetFSM()->ChangeState(CatchJellyFish::Instance());
@@ -89,11 +83,12 @@ void MakeBurger::Execute(SpongeBob* sponge)
 
 void MakeBurger::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": "
-        << "집게리아에서 퇴근합니다.";
+    if (sponge->Location() == KrabShop)
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "집게리아에서 퇴근합니다.";
+
 }
 
-//------------------------------------------------------------------------methods for EnterMineAndDigForNugget
+//------------------------------------------------------------------------쉬기
 Rest* Rest::Instance()
 {
     static Rest instance;
@@ -104,62 +99,42 @@ Rest* Rest::Instance()
 
 void Rest::Enter(SpongeBob* sponge)
 {
-    if (sponge->Location() != KrabShop)
-    {
+    Dispatch->DispatchMessage(1.5,                  //time delay
+        sponge->ID(),           //sender ID
+        sponge->ID(),           //receiver ID
+        Msg_TakeRest,        //msg
+        NO_ADDITIONAL_INFO);
+
         cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "쉬어야 겠어요 ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
-        sponge->ChangeLocation(KrabShop);
-    }
 }
 
 
 void Rest::Execute(SpongeBob* sponge)
 {
-    // 햄버거를 만든다
-    sponge->AddBurger();
-    sponge->IncreaseTired();
-
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다.";
-
-    //if enough gold mined, go and put it in the bank
-    if (sponge->FinishWork())
-    {
-        sponge->GetFSM()->ChangeState(CatchJellyFish::Instance());
-    }
-
-    if (sponge->Tired())
-    {
-        Dispatch->DispatchMessage(1.5,                  //time delay
-            sponge->ID(),           //sender ID
-            sponge->ID(),           //receiver ID
-            Msg_StewReady,        //msg
-            NO_ADDITIONAL_INFO);
-    }
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": Zzzz .... ";
 }
 
 
 void Rest::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": "
-        << "집게리아에서 퇴근합니다.";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "이제 일어나볼까?";
+    sponge->SetTiredZero();
 }
 
-bool Rest::OnMessage(SpongeBob* pMiner, const Telegram& msg)
+bool Rest::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
     SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
 
     switch (msg.Msg)
     {
-    case Msg_HiHoneyImHome:
+    case Msg_TakeRest:
     {
-        cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: "
-            << Clock->GetCurrentTime();
 
         SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 
-        cout << "\n" << GetNameOfEntity(wife->ID()) <<
-            ": Hi honey. Let me make you some of mah fine country stew";
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 깼다!" << " ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
 
-        wife->GetFSM()->ChangeState(CookStew::Instance());
+        sponge->GetFSM()->RevertToPreviousState();
     }
 
     return true;
@@ -169,138 +144,91 @@ bool Rest::OnMessage(SpongeBob* pMiner, const Telegram& msg)
     return false;
 }
 
-//------------------------------------------------------------------------methods for VisitBankAndDepositGold
+//------------------------------------------------------------------------해파리 잡기
 
-VisitBankAndDepositGold* VisitBankAndDepositGold::Instance()
+CatchJellyFish* CatchJellyFish::Instance()
 {
-    static VisitBankAndDepositGold instance;
+    static CatchJellyFish instance;
 
     return &instance;
 }
 
-void VisitBankAndDepositGold::Enter(Miner* pMiner)
+void CatchJellyFish::Enter(SpongeBob* sponge)
 {
-    //on entry the miner makes sure he is located at the bank
-    if (pMiner->Location() != bank)
+    if (sponge->Location() != Hill)
     {
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Goin' to the bank. Yes siree";
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "해파리 동산으로 갑니다";
 
-        pMiner->ChangeLocation(bank);
+        sponge->ChangeLocation(Hill);
     }
 }
 
 
-void VisitBankAndDepositGold::Execute(Miner* pMiner)
+void CatchJellyFish::Execute(SpongeBob* sponge)
 {
     //deposit the gold
-    pMiner->AddToWealth(pMiner->GoldCarried());
+    sponge->AddJellyFish();
+    sponge->IncreaseTired();
 
-    pMiner->SetGoldCarried(0);
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "신난다! 해파리를 잡았다! ( 해파리 =  " << sponge->CatchedJellyFish() << " / " << sponge->MaxJF();
 
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
-        << "Depositing gold. Total savings now: " << pMiner->Wealth();
-
-    //wealthy enough to have a well earned rest?
-    if (pMiner->Wealth() >= ComfortLevel)
+    if (sponge->FinishCatch())
     {
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
-            << "WooHoo! Rich enough for now. Back home to mah li'lle lady";
-
-        pMiner->GetFSM()->ChangeState(GoHomeAndSleepTilRested::Instance());
+        sponge->GetFSM()->ChangeState(GoHome::Instance());
     }
 
-    //otherwise get more gold
-    else
+    if (sponge->Tired())
     {
-        pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
+        sponge->GetFSM()->ChangeState(Rest::Instance());
     }
 }
 
 
-void VisitBankAndDepositGold::Exit(Miner* pMiner)
+void CatchJellyFish::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leavin' the bank";
+    if (sponge->Location() == Hill)
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "휴~ 해파리 동산을 떠납니다.";
 }
 
 
-bool VisitBankAndDepositGold::OnMessage(Miner* pMiner, const Telegram& msg)
+bool CatchJellyFish::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
     //send msg to global message handler
     return false;
 }
-//------------------------------------------------------------------------methods for GoHomeAndSleepTilRested
+//------------------------------------------------------------------------똥싸기
 
-GoHomeAndSleepTilRested* GoHomeAndSleepTilRested::Instance()
+Poop* Poop::Instance()
 {
-    static GoHomeAndSleepTilRested instance;
+    static Poop instance;
 
     return &instance;
 }
 
-void GoHomeAndSleepTilRested::Enter(Miner* pMiner)
+void Poop::Enter(SpongeBob* sponge)
 {
-    if (pMiner->Location() != shack)
+    if (sponge->Location() == Hill)
     {
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Walkin' home";
-
-        pMiner->ChangeLocation(shack);
-
-        //let the wife know I'm home
-        Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY, //time delay
-            pMiner->ID(),        //ID of sender
-            ent_Elsa,            //ID of recipient
-            Msg_HiHoneyImHome,   //the message
-            NO_ADDITIONAL_INFO);
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " 똥이 마려운데 근처에 화장실이 없으니 언덕 뒤쪽으로 갑니다..";
+    }
+    else {
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " 똥이 마려워서 화장실로 들어갑니다! ";
     }
 }
 
-void GoHomeAndSleepTilRested::Execute(Miner* pMiner)
+void Poop::Execute(SpongeBob* sponge)
 {
-    //if miner is not fatigued start to dig for nuggets again.
-    if (!pMiner->Fatigued())
-    {
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": "
-            << "All mah fatigue has drained away. Time to find more gold!";
-
-        pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
-    }
-
-    else
-    {
-        //sleep
-        pMiner->DecreaseFatigue();
-
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "ZZZZ... ";
-    }
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " 뿡 ";
 }
 
-void GoHomeAndSleepTilRested::Exit(Miner* pMiner)
+void Poop::Exit(SpongeBob* sponge)
 {
+    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "ZZZZ... ";
 }
 
 
-bool GoHomeAndSleepTilRested::OnMessage(Miner* pMiner, const Telegram& msg)
+bool Poop::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
-    SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-
-    switch (msg.Msg)
-    {
-    case Msg_StewReady:
-
-        cout << "\nMessage handled by " << GetNameOfEntity(pMiner->ID())
-            << " at time: " << Clock->GetCurrentTime();
-
-        SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
-
-        cout << "\n" << GetNameOfEntity(pMiner->ID())
-            << ": Okay Hun, ahm a comin'!";
-
-        pMiner->GetFSM()->ChangeState(EatStew::Instance());
-
-        return true;
-
-    }//end switch
-
     return false; //send message to global message handler
 }
 

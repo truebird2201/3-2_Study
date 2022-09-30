@@ -92,17 +92,17 @@ public:
 
 // È­Àå½Ç¿¡¼­ ¶Ë ½Î±â
 
-class PoopToilet : public State<SpongeBob>
+class Poop : public State<SpongeBob>
 {
 private:
 
-	PoopToilet() {}
-	PoopToilet(const PoopToilet&);
-	PoopToilet& operator=(const PoopToilet&);
+	Poop() {}
+	Poop(const Poop&);
+	Poop& operator=(const Poop&);
 
 public:
 
-	static PoopToilet* Instance();
+	static Poop* Instance();
 
 	virtual void Enter(SpongeBob* sponge);
 
@@ -113,28 +113,7 @@ public:
 	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
 };
 
-// ¾ð´ö¿¡¼­ ¶Ë ½Î±â
-
-class PoopHill : public State<SpongeBob>
-{
-private:
-
-	PoopHill() {}
-	PoopHill(const PoopHill&);
-	PoopHill& operator=(const PoopHill&);
-
-public:
-
-	static PoopHill* Instance();
-
-	virtual void Enter(SpongeBob* sponge);
-
-	virtual void Execute(SpongeBob* sponge);
-
-	virtual void Exit(SpongeBob* sponge);
-
-	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
-};
+// ½¬±â
 
 class Rest : public State<SpongeBob>
 {
@@ -156,5 +135,29 @@ public:
 
 	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
 };
+
+// Áý¿¡ °¡±â
+
+class GoHome : public State<SpongeBob>
+{
+private:
+
+	GoHome() {}
+	GoHome(const GoHome&);
+	GoHome& operator=(const GoHome&);
+
+public:
+
+	static  GoHome* Instance();
+
+	virtual void Enter(SpongeBob* sponge);
+
+	virtual void Execute(SpongeBob* sponge);
+
+	virtual void Exit(SpongeBob* sponge);
+
+	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
+};
+
 
 #endif
