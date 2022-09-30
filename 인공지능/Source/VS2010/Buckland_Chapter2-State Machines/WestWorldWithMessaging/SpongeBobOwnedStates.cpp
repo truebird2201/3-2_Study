@@ -1,12 +1,11 @@
 #include "SpongeBobOwnedStates.h"
-#include "fsm/State.h"
 #include "SpongeBob.h"
 #include "Locations.h"
-#include "messaging/Telegram.h"
+#include "Time/CrudeTimer.h"
 #include "MessageDispatcher.h"
 #include "MessageTypes.h"
-#include "Time/CrudeTimer.h"
 #include "EntityNames.h"
+#include "misc/ConsoleUtils.h"
 
 #include <iostream>
 using std::cout;
@@ -45,27 +44,6 @@ void SpongeBobGlobalState::Execute(SpongeBob* sponge)
 
 bool SpongeBobGlobalState::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
-    SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-
-    switch (msg.Msg)
-    {
-    case Msg_HiHoneyImHome:
-    {
-        cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: "
-            << Clock->GetCurrentTime();
-
-        SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-
-        cout << "\n" << GetNameOfEntity(wife->ID()) <<
-            ": Hi honey. Let me make you some of mah fine country stew";
-
-        wife->GetFSM()->ChangeState(CookStew::Instance());
-    }
-
-    return true;
-
-    }//end switch
-
     return false;
 }
 
@@ -104,7 +82,7 @@ void MakeBurger::Execute(SpongeBob* sponge)
 
     if (sponge->Tired())
     {
-        sponge->GetFSM()->ChangeState(QuenchThirst::Instance());
+        sponge->GetFSM()->ChangeState(Rest::Instance());
     }
 }
 
@@ -115,10 +93,79 @@ void MakeBurger::Exit(SpongeBob* sponge)
         << "집게리아에서 퇴근합니다.";
 }
 
-
-bool EnterMineAndDigForNugget::OnMessage(Miner* pMiner, const Telegram& msg)
+//------------------------------------------------------------------------methods for EnterMineAndDigForNugget
+Rest* Rest::Instance()
 {
-    //send msg to global message handler
+    static Rest instance;
+
+    return &instance;
+}
+
+
+void Rest::Enter(SpongeBob* sponge)
+{
+    if (sponge->Location() != KrabShop)
+    {
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "쉬어야 겠어요 ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
+        sponge->ChangeLocation(KrabShop);
+    }
+}
+
+
+void Rest::Execute(SpongeBob* sponge)
+{
+    // 햄버거를 만든다
+    sponge->AddBurger();
+    sponge->IncreaseTired();
+
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다.";
+
+    //if enough gold mined, go and put it in the bank
+    if (sponge->FinishWork())
+    {
+        sponge->GetFSM()->ChangeState(CatchJellyFish::Instance());
+    }
+
+    if (sponge->Tired())
+    {
+        Dispatch->DispatchMessage(1.5,                  //time delay
+            sponge->ID(),           //sender ID
+            sponge->ID(),           //receiver ID
+            Msg_StewReady,        //msg
+            NO_ADDITIONAL_INFO);
+    }
+}
+
+
+void Rest::Exit(SpongeBob* sponge)
+{
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": "
+        << "집게리아에서 퇴근합니다.";
+}
+
+bool Rest::OnMessage(SpongeBob* pMiner, const Telegram& msg)
+{
+    SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+
+    switch (msg.Msg)
+    {
+    case Msg_HiHoneyImHome:
+    {
+        cout << "\nMessage handled by " << GetNameOfEntity(wife->ID()) << " at time: "
+            << Clock->GetCurrentTime();
+
+        SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+
+        cout << "\n" << GetNameOfEntity(wife->ID()) <<
+            ": Hi honey. Let me make you some of mah fine country stew";
+
+        wife->GetFSM()->ChangeState(CookStew::Instance());
+    }
+
+    return true;
+
+    }//end switch
+
     return false;
 }
 

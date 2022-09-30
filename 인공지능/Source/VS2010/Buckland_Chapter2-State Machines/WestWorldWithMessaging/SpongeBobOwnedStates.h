@@ -136,4 +136,25 @@ public:
 	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
 };
 
+class Rest : public State<SpongeBob>
+{
+private:
+
+	Rest() {}
+	Rest(const Rest&);
+	Rest& operator=(const Rest&);
+
+public:
+
+	static Rest* Instance();
+
+	virtual void Enter(SpongeBob* sponge);
+
+	virtual void Execute(SpongeBob* sponge);
+
+	virtual void Exit(SpongeBob* sponge);
+
+	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
+};
+
 #endif

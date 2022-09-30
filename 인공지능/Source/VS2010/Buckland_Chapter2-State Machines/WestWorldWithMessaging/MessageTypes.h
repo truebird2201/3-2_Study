@@ -5,8 +5,7 @@
 
 enum message_type
 {
-  Msg_HiHoneyImHome,
-  Msg_StewReady,
+  Msg_TakeRest,
 };
 
 
@@ -14,13 +13,9 @@ inline std::string MsgToStr(int msg)
 {
   switch (msg)
   {
-  case Msg_HiHoneyImHome:
+  case Msg_TakeRest:
     
-    return "HiHoneyImHome"; 
-
-  case Msg_StewReady:
-    
-    return "StewReady";
+    return "TakeRest"; 
 
   default:
 
