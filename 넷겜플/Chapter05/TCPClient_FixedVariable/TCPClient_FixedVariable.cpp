@@ -1,19 +1,23 @@
 #include "..\..\Common.h"
 #include <chrono>
 #include <iostream>
+#include <fstream>
+#include <array>
 
 using namespace std;
 
-char *SERVERIP = (char *)"127.0.0.1";
 #define SERVERPORT 9000
 #define BUFSIZE    50
-
+char* SERVERIP = (char*)"127.0.0.1";
 int main(int argc, char *argv[])
 {
 	int retval;
+	
+	char* filename = (char*)"SeoYeon.mp4";
 
-	// 명령행 인수가 있으면 IP 주소로 사용
-	if (argc > 1) SERVERIP = argv[1];
+	if (argc>1) SERVERIP = (char*)argv[1];
+	if (argc>2) filename = (char*)argv[2];
+
 
 	// 윈속 초기화
 	WSADATA wsa;
@@ -35,36 +39,50 @@ int main(int argc, char *argv[])
 
 	// 데이터 통신에 사용할 변수
 	char buf[BUFSIZE];
-	const char *testdata[] = {
-		"안녕하세요",
-		"반가워요",
-		"오늘따라 할 이야기가 많을 것 같네요",
-		"저도 그렇네요",
-	};
-	int len;
 
 	// 서버와 데이터 통신
-	for (int i = 0; i < 4; i++) {
-		// 데이터 입력(시뮬레이션)
-		len = (int)strlen(testdata[i]);
-		strncpy(buf, testdata[i], len);
+	// 
+	// 데이터 입력(시뮬레이션)
+	ifstream in{ filename,ios::binary};
 
-		// 데이터 보내기(고정 길이)
-		retval = send(sock, (char *)&len, sizeof(int), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
+	int fsize = 0; // 파일 사이즈
+	int nsize = 0;
 
-		// 데이터 보내기(가변 길이)
-		retval = send(sock, buf, len, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
-		printf("[TCP 클라이언트] %d+%d바이트를 "
-			"보냈습니다.\n", (int)sizeof(int), retval);
+	in.seekg(0, ios::end); // 파일의 끝으로간다
+	fsize = in.tellg(); // 파일의 끝을 읽어온다
+	in.seekg(0, ios::beg); // 파일의 앞으로 다시 간다.
+
+	nsize = strlen(filename);
+	char* dt = new char[fsize];
+
+	in.read(dt, fsize);
+	cout << fsize << endl;
+
+	// 데이터 보내기(고정 길이)
+	retval = send(sock, (char*)&nsize, sizeof(int), 0);		// 파일이름의 크기 보내기
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
 	}
+
+	retval = send(sock, (char*)&fsize, sizeof(int), 0);		// 파일의 크기 보내기
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+
+	// 데이터 보내기(가변 길이)
+
+	retval = send(sock, filename, nsize, 0);		// 파일의 이름 보내기
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+
+	retval = send(sock, dt, fsize, 0);						// 파일 보내기
+	if (retval == SOCKET_ERROR) {
+		err_display("send()");
+	}
+	printf("[TCP 클라이언트] 파일 크기 ( %d )+ 파일 이름 ( %d ) + 파일 ( %d ) 바이트를 "
+		"보냈습니다.\n", (int)sizeof(int),nsize, fsize);
+
 
 	// 소켓 닫기
 	closesocket(sock);

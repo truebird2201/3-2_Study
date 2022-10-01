@@ -223,7 +223,7 @@ void Poop::Execute(SpongeBob* sponge)
 
 void Poop::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "ZZZZ... ";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ZZZZ... ";
 }
 
 

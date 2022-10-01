@@ -1,6 +1,7 @@
 #include "..\..\Common.h"
 #include <chrono>
 #include <iostream>
+#include <fstream>
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -37,9 +38,8 @@ int main(int argc, char *argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-	int len; // 고정 길이 데이터
-	char buf[BUFSIZE + 1]; // 가변 길이 데이터
-	double total = 0;
+	int fsize=0; // 파일 크기
+	int nsize=0; // 파일 크기
 	
 
 	while (1) {
@@ -58,10 +58,20 @@ int main(int argc, char *argv[])
 			addr, ntohs(clientaddr.sin_port));
 
 		// 클라이언트와 데이터 통신
-		while (1) {
 			// 데이터 받기(고정 길이)
 			std::chrono::system_clock::time_point start = std::chrono::system_clock::now();	// 시작
-			retval = recv(client_sock, (char *)&len, sizeof(int), MSG_WAITALL);
+
+			retval = recv(client_sock, (char*)&nsize, sizeof(int), MSG_WAITALL);	// 파일 이름 크기 받기
+			cout << " 파일 이름 크기 = " << nsize << endl;
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0)
+				break;
+
+			retval = recv(client_sock, (char *)&fsize, sizeof(int), MSG_WAITALL);	// 파일 크기 받기
+			cout << " 파일 크기 = " << fsize << endl;
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
@@ -70,22 +80,40 @@ int main(int argc, char *argv[])
 				break;
 
 			// 데이터 받기(가변 길이)
-			retval = recv(client_sock, buf, len, MSG_WAITALL);
+			char* buf = new char[fsize]; // 가변 길이 데이터
+			char* filename = new char [nsize+1]; // 파일 이름
+
+			retval = recv(client_sock, filename, nsize, MSG_WAITALL);	// 파일 이름
+			filename[nsize] = '\0';
+			cout << " 파일 이름 = " << filename << endl;
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
 			}
 			else if (retval == 0)
 				break;
+
+			while (1) {
+				retval = recv(client_sock, buf, fsize, MSG_WAITALL);	// 파일
+				if (retval == SOCKET_ERROR) {
+					err_display("recv()");
+					break;
+				}
+				else if (retval == 0)
+					break;
+			}
+
 			std::chrono::system_clock::time_point end = std::chrono::system_clock::now(); // 끝
 			std::chrono::nanoseconds nano = end - start;
-			// 받은 데이터 출력
-			buf[retval] = '\0';
-			printf("[TCP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
+			
+			cout << " 파일을 받아왔습니다. " << endl;
+
 			cout << "-----------------------------경과 시간 = "<< nano.count() << endl <<endl;
-			total += nano.count();
-		}
-		cout << endl<< "-----------------------------총 경과 시간 = " << total << endl << endl;
+
+			ofstream out{ filename, ios::binary };
+			out.write(buf, fsize);
+
+		//}
 
 		// 소켓 닫기
 		closesocket(client_sock);
