@@ -6,7 +6,8 @@
 enum message_type
 {
   Msg_TakeRest,
-  Msg_Money
+  Msg_Money,
+  Msg_Angry
 };
 
 
@@ -22,6 +23,9 @@ inline std::string MsgToStr(int msg)
 
       return "Money";
 
+  case Msg_Angry:
+
+      return "Angry";
   default:
 
     return "Not recognized!";

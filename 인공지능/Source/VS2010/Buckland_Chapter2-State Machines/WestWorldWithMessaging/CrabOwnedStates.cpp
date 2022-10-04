@@ -85,6 +85,7 @@ void GiveMoney::Execute(Crab* crab)
 
     break;
   }
+  crab->GetFSM()->RevertToPreviousState();
 }
 
 void GiveMoney::Exit(Crab* crab)

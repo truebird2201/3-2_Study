@@ -47,6 +47,16 @@ bool SpongeBobGlobalState::OnMessage(SpongeBob* sponge, const Telegram& msg)
             ": 보너스 감사합니다 집게사장님~";
     }
 
+    case Msg_Angry:
+    {
+        if(sponge->Location() == KrabShop)
+            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 징징아! 일이나해! ";
+        if (sponge->Location() == Hill)
+            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 으악 징징아 그렇다구 해파리 동산까지 오니";
+        if (sponge->Location() == SpongeBobHouse)
+            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 집에 있을 땐 쉬게해줘 징징아...";
+    }
+
     return true;
 
     }//end switch
@@ -80,7 +90,7 @@ void MakeBurger::Execute(SpongeBob* sponge)
     sponge->AddBurger();
     sponge->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다. ( 현재 버거 = " << sponge->MakedBurger() << " / " << sponge->MaxBurger();
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "햄버거를 하나 만들었습니다. ( 현재 버거 = " << sponge->MakedBurger() << " / " << sponge->MaxBurger() << " )";
 
     if (sponge->FinishWork())
     {
@@ -125,6 +135,7 @@ void Rest::Enter(SpongeBob* sponge)
 void Rest::Execute(SpongeBob* sponge)
 {
     cout << "\n" << GetNameOfEntity(sponge->ID()) << ": Zzzz .... ";
+    sponge->GetFSM()->RevertToPreviousState();
 }
 
 
@@ -146,7 +157,7 @@ bool Rest::OnMessage(SpongeBob* sponge, const Telegram& msg)
         SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
 
         cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 깼다!" << " ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
-
+        sponge->SetTiredZero();
         sponge->GetFSM()->RevertToPreviousState();
     }
 
@@ -183,7 +194,7 @@ void CatchJellyFish::Execute(SpongeBob* sponge)
     sponge->AddJellyFish();
     sponge->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "신난다! 해파리를 잡았다! ( 해파리 =  " << sponge->CatchedJellyFish() << " / " << sponge->MaxJF();
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "신난다! 해파리를 잡았다! ( 해파리 =  " << sponge->CatchedJellyFish() << " / " << sponge->MaxJF() << " )";
 
     if (sponge->FinishCatch())
     {
