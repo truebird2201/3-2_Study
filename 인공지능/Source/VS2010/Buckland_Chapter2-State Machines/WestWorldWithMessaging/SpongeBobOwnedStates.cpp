@@ -39,6 +39,19 @@ void SpongeBobGlobalState::Execute(SpongeBob* sponge)
 
 bool SpongeBobGlobalState::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
+    switch (msg.Msg)
+    {
+    case Msg_Money:
+    {
+        cout << "\n" << GetNameOfEntity(sponge->ID()) <<
+            ": 보너스 감사합니다 집게사장님~";
+    }
+
+    return true;
+
+    }//end switch
+
+
     return false;
 }
 
@@ -219,11 +232,12 @@ void Poop::Enter(SpongeBob* sponge)
 void Poop::Execute(SpongeBob* sponge)
 {
     cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " 뿡 ";
+    sponge->GetFSM()->RevertToPreviousState();
 }
 
 void Poop::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ZZZZ... ";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "아 시원행~";
 }
 
 
@@ -232,79 +246,40 @@ bool Poop::OnMessage(SpongeBob* sponge, const Telegram& msg)
     return false; //send message to global message handler
 }
 
-//------------------------------------------------------------------------QuenchThirst
+//------------------------------------------------------------------------집가기
 
-QuenchThirst* QuenchThirst::Instance()
+GoHome* GoHome::Instance()
 {
-    static QuenchThirst instance;
+    static GoHome instance;
 
     return &instance;
 }
 
-void QuenchThirst::Enter(Miner* pMiner)
+void GoHome::Enter(SpongeBob* sponge)
 {
-    if (pMiner->Location() != saloon)
+    if (sponge->Location() != SpongeBobHouse)
     {
-        pMiner->ChangeLocation(saloon);
+        sponge->ChangeLocation(SpongeBobHouse);
 
-        cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Boy, ah sure is thusty! Walking to the saloon";
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "이제 집으로 가서 쉬어야겠어요";
     }
 }
 
-void QuenchThirst::Execute(Miner* pMiner)
+void GoHome::Execute(SpongeBob* sponge)
 {
-    pMiner->BuyAndDrinkAWhiskey();
+    sponge->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "That's mighty fine sippin' liquer";
-
-    pMiner->GetFSM()->ChangeState(EnterMineAndDigForNugget::Instance());
 }
 
 
-void QuenchThirst::Exit(Miner* pMiner)
+void GoHome::Exit(SpongeBob* sponge)
 {
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Leaving the saloon, feelin' good";
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "집에서 나가야지";
 }
 
 
-bool QuenchThirst::OnMessage(Miner* pMiner, const Telegram& msg)
+bool GoHome::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
-    //send msg to global message handler
     return false;
 }
-
-//------------------------------------------------------------------------EatStew
-
-EatStew* EatStew::Instance()
-{
-    static EatStew instance;
-
-    return &instance;
-}
-
-
-void EatStew::Enter(Miner* pMiner)
-{
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Smells Reaaal goood Elsa!";
-}
-
-void EatStew::Execute(Miner* pMiner)
-{
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Tastes real good too!";
-
-    pMiner->GetFSM()->RevertToPreviousState();
-}
-
-void EatStew::Exit(Miner* pMiner)
-{
-    cout << "\n" << GetNameOfEntity(pMiner->ID()) << ": " << "Thankya li'lle lady. Ah better get back to whatever ah wuz doin'";
-}
-
-
-bool EatStew::OnMessage(Miner* pMiner, const Telegram& msg)
-{
-    //send msg to global message handler
-    return false;
-}
-
 

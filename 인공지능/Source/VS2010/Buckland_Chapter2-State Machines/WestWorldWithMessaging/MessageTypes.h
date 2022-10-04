@@ -6,6 +6,7 @@
 enum message_type
 {
   Msg_TakeRest,
+  Msg_Money
 };
 
 
@@ -16,6 +17,10 @@ inline std::string MsgToStr(int msg)
   case Msg_TakeRest:
     
     return "TakeRest"; 
+
+  case Msg_Money:
+
+      return "Money";
 
   default:
 

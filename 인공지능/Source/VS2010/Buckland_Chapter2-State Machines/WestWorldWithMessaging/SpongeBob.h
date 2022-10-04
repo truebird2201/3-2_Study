@@ -59,6 +59,8 @@ public:
 
         m_pStateMachine->SetCurrentState(MakeBurger::Instance());
 
+        m_pStateMachine->SetGlobalState(SpongeBobGlobalState::Instance());
+
         /* NOTE, A GLOBAL STATE HAS NOT BEEN IMPLEMENTED FOR THE MINER */
     }
 
@@ -94,7 +96,7 @@ public:
     void          SetTiredZero() { m_iTired = 0; }
     void          IncreaseTired() { m_iTired += 1; }
 
-    bool          Tired() { m_iTired >= MaxTired; }
+    bool          Tired() { return m_iTired >= MaxTired; }
 
 };
 

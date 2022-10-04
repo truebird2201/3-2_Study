@@ -38,8 +38,10 @@ int main(int argc, char *argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-	int fsize=0; // 파일 크기
-	int nsize=0; // 파일 크기
+	int fsize = 0; // 파일 크기
+	int nsize = 0; // 파일 크기
+	int sendsize = 0;
+	int nowsize = 0;
 	
 
 	while (1) {
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
 			std::chrono::system_clock::time_point start = std::chrono::system_clock::now();	// 시작
 
 			retval = recv(client_sock, (char*)&nsize, sizeof(int), MSG_WAITALL);	// 파일 이름 크기 받기
-			cout << " 파일 이름 크기 = " << nsize << endl;
+			
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
@@ -71,7 +73,15 @@ int main(int argc, char *argv[])
 				break;
 
 			retval = recv(client_sock, (char *)&fsize, sizeof(int), MSG_WAITALL);	// 파일 크기 받기
-			cout << " 파일 크기 = " << fsize << endl;
+			
+			if (retval == SOCKET_ERROR) {
+				err_display("recv()");
+				break;
+			}
+			else if (retval == 0)
+				break;
+
+			retval = recv(client_sock, (char*)&sendsize, sizeof(int), MSG_WAITALL);	// 파일 받아오는 크기 받기
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
@@ -85,7 +95,7 @@ int main(int argc, char *argv[])
 
 			retval = recv(client_sock, filename, nsize, MSG_WAITALL);	// 파일 이름
 			filename[nsize] = '\0';
-			cout << " 파일 이름 = " << filename << endl;
+
 			if (retval == SOCKET_ERROR) {
 				err_display("recv()");
 				break;
@@ -93,15 +103,30 @@ int main(int argc, char *argv[])
 			else if (retval == 0)
 				break;
 
-			while (1) {
-				retval = recv(client_sock, buf, fsize, MSG_WAITALL);	// 파일
-				if (retval == SOCKET_ERROR) {
-					err_display("recv()");
-					break;
+			while (nowsize < fsize) {
+				if (nowsize + sendsize <= fsize) {
+					retval = recv(client_sock, (char*)&buf[nowsize], sendsize, MSG_WAITALL);					// 파일 보내기
 				}
-				else if (retval == 0)
-					break;
+				else {
+					retval = recv(client_sock, (char*)&buf[nowsize], fsize% sendsize, MSG_WAITALL);
+				}
+				if (retval == SOCKET_ERROR) {
+					err_display("send()");
+				}
+				nowsize += sendsize;
+
+				if (nowsize > fsize) nowsize = fsize;
+
+				system("cls");
+
+				cout << " 파일 이름 크기 = " << nsize << endl;
+				cout << " 파일 전체 크기 = " << fsize << endl;
+				cout << " 파일 전송 크기 = " << sendsize << endl;
+				cout << " 파일 이름 = " << filename << endl<<endl;
+				printf("전송률 = %d%% [ %d / %d ] \n", (int)(((float)nowsize/(float)fsize)*100), nowsize, fsize);
+
 			}
+			nowsize = 0;
 
 			std::chrono::system_clock::time_point end = std::chrono::system_clock::now(); // 끝
 			std::chrono::nanoseconds nano = end - start;

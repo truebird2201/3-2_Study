@@ -30,16 +30,10 @@
     <ClCompile Include="MessageDispatcher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Miner.cpp">
+    <ClCompile Include="Crab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MinerOwnedStates.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MinersWife.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MinersWifeOwnedStates.cpp">
+    <ClCompile Include="CrabOwnedStates.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Common\Time\CrudeTimer.cpp">
@@ -71,16 +65,10 @@
     <ClInclude Include="MessageTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Miner.h">
+    <ClInclude Include="Crab.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MinerOwnedStates.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MinersWife.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MinersWifeOwnedStates.h">
+    <ClInclude Include="CrabOwnedStates.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Common\FSM\State.h">

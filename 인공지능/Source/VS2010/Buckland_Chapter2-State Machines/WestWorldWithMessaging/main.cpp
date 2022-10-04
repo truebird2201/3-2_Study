@@ -2,8 +2,8 @@
 #include <time.h>
 
 #include "Locations.h"
-#include "Miner.h"
-#include "MinersWife.h"
+#include "SpongeBob.h"
+#include "Crab.h"
 #include "EntityManager.h"
 #include "MessageDispatcher.h"
 #include "misc/ConsoleUtils.h"
@@ -23,20 +23,20 @@ int main()
   srand((unsigned) time(NULL));
 
   //create a miner
-  Miner* Bob = new Miner(ent_Miner_Bob);
+  SpongeBob* Bob = new SpongeBob(ent_SpongeBob);
 
   //create his wife
-  MinersWife* Elsa = new MinersWife(ent_Elsa);
+  Crab* Boss = new Crab(ent_Crab);
 
   //register them with the entity manager
   EntityMgr->RegisterEntity(Bob);
-  EntityMgr->RegisterEntity(Elsa);
+  EntityMgr->RegisterEntity(Boss);
 
-  //run Bob and Elsa through a few Update calls
+  //run Bob and Boss through a few Update calls
   for (int i=0; i<30; ++i)
   { 
     Bob->Update();
-    Elsa->Update();
+    Boss->Update();
 
     //dispatch any delayed messages
     Dispatch->DispatchDelayedMessages();
@@ -46,7 +46,7 @@ int main()
 
   //tidy up
   delete Bob;
-  delete Elsa;
+  delete Boss;
 
   //wait for a keypress before exiting
   PressAnyKeyToContinue();

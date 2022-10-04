@@ -62,7 +62,7 @@ public:
 
 	virtual void Exit(SpongeBob* sponge);
 
-	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg);
+	virtual bool OnMessage(SpongeBob* agent, const Telegram& msg) { return false; };
 
 };
 

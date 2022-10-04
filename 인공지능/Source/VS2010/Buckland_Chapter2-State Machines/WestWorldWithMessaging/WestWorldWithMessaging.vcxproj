@@ -134,10 +134,8 @@
     <ClCompile Include="EntityManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MessageDispatcher.cpp" />
-    <ClCompile Include="Miner.cpp" />
-    <ClCompile Include="MinerOwnedStates.cpp" />
-    <ClCompile Include="MinersWife.cpp" />
-    <ClCompile Include="MinersWifeOwnedStates.cpp" />
+    <ClCompile Include="Crab.cpp" />
+    <ClCompile Include="CrabOwnedStates.cpp" />
     <ClCompile Include="SpongeBob.cpp" />
     <ClCompile Include="SpongeBobOwnedStates.cpp" />
   </ItemGroup>
@@ -157,10 +155,8 @@
     <ClInclude Include="Locations.h" />
     <ClInclude Include="MessageDispatcher.h" />
     <ClInclude Include="MessageTypes.h" />
-    <ClInclude Include="Miner.h" />
-    <ClInclude Include="MinerOwnedStates.h" />
-    <ClInclude Include="MinersWife.h" />
-    <ClInclude Include="MinersWifeOwnedStates.h" />
+    <ClInclude Include="Crab.h" />
+    <ClInclude Include="CrabOwnedStates.h" />
     <ClInclude Include="SpongeBob.h" />
     <ClInclude Include="SpongeBobOwnedStates.h" />
   </ItemGroup>
