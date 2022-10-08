@@ -1,4 +1,4 @@
-#include "JingJingOwnedStates.h"
+ï»¿#include "JingJingOwnedStates.h"
 #include "JingJing.h"
 #include "Locations.h"
 #include "Time/CrudeTimer.h"
@@ -17,7 +17,7 @@ extern std::ofstream os;
 #define cout os
 #endif
 
-// ±Û·Î¹ú state 
+// ê¸€ë¡œë²Œ state 
 
 JingJingGlobalState* JingJingGlobalState::Instance()
 {
@@ -30,7 +30,7 @@ JingJingGlobalState* JingJingGlobalState::Instance()
 void JingJingGlobalState::Execute(JingJing* jing)
 {
     // 
-    if ((RandFloat() < 0.1) &&
+    if ((RandFloat() < 0.2) &&
         !jing->GetFSM()->isInState(*AngryToSponge::Instance()))
     {
         jing->GetFSM()->ChangeState(AngryToSponge::Instance());
@@ -42,9 +42,9 @@ bool JingJingGlobalState::OnMessage(JingJing* jing, const Telegram& msg)
     switch (msg.Msg)
     {
     case Msg_Money:
-    {
+    {   SetTextColor(BACKGROUND_BLUE | BACKGROUND_INTENSITY);
         cout << "\n" << GetNameOfEntity(jing->ID()) <<
-            ": ®Z.... ´©±¸ÄÚ¿¡ ºÙÀÌ¶ó±¸..";
+            ": ì·¡.... ëˆ„êµ¬ì½”ì— ë¶™ì´ë¼êµ¬..";
     }
 
     return true;
@@ -71,28 +71,36 @@ void AngryToSponge::Enter(JingJing* jing)
 
 void AngryToSponge::Execute(JingJing* jing)
 {
-    // ÇÜ¹ö°Å¸¦ ¸¸µç´Ù
+    // í–„ë²„ê±°ë¥¼ ë§Œë“ ë‹¤
     jing->MinusTired();
+    SetTextColor(BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": ìŠ¤í°ì§€ë°¥! ë„Œ ìµœì•…ì´ì•¼!";
     Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY,
         jing->ID(),
         ent_SpongeBob,
         Msg_Angry,
         NO_ADDITIONAL_INFO);
-    cout << "\n" << GetNameOfEntity(jing->ID()) << ": ½ºÆùÁö¹ä! ³Í ÃÖ¾ÇÀÌ¾ß!";
-    jing->GetFSM()->RevertToPreviousState();
+    
+    jing->GetFSM()->ChangeState(TakeOrder::Instance());
 
 }
 
 
-void Angry::Exit(JingJing* jing)
+void AngryToSponge::Exit(JingJing* jing)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "È÷È÷.. ÇÇ°ïÇÑ°Ô Á» »ç¶óÁ³´Ù..";
+    SetTextColor(BACKGROUND_BLUE | BACKGROUND_INTENSITY);
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": " << "ížˆížˆ.. í”¼ê³¤í•œê²Œ ì¢€ ì‚¬ë¼ì¡Œë‹¤..";
 }
 
-//------------------------------------------------------------------------½¬±â
+bool AngryToSponge::OnMessage(JingJing* jing, const Telegram& msg)
+{
+    return false;
+}
+
+//------------------------------------------------------------------------ì‰¬ê¸°
 Angry* Angry::Instance()
 {
-    static Rest instance;
+    static Angry instance;
 
     return &instance;
 }
@@ -100,27 +108,19 @@ Angry* Angry::Instance()
 
 void Angry::Enter(JingJing* jing)
 {
-    Dispatch->DispatchMessage(1.5,                  //time delay
-        sponge->ID(),           //sender ID
-        sponge->ID(),           //receiver ID
-        Msg_TakeRest,        //msg
-        NO_ADDITIONAL_INFO);
-
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "½¬¾î¾ß °Ú¾î¿ä ( Áö±Ý ½Ã°¢ : " << Clock->GetCurrentTime() << " )";
 }
 
 
 void Angry::Execute(JingJing* jing)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": Zzzz .... ";
-    sponge->GetFSM()->RevertToPreviousState();
+    jing->IncreaseTired();
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": ì†ë‹˜!!! ì£¼ë¬¸ì¢€ ë˜‘ë°”ë¡œ í•˜ì„¸ìš”!!!! ";
+    jing->GetFSM()->ChangeState(TakeOrder::Instance());
 }
 
 
 void Angry::Exit(JingJing* jing)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ÀÌÁ¦ ÀÏ¾î³ªº¼±î?";
-    sponge->SetTiredZero();
 }
 
 bool Angry::OnMessage(JingJing* jing, const Telegram& msg)
@@ -128,129 +128,91 @@ bool Angry::OnMessage(JingJing* jing, const Telegram& msg)
     return false;
 }
 
-//------------------------------------------------------------------------ÇØÆÄ¸® Àâ±â
+//------------------------------------------------------------------------ì£¼ë¬¸ ë°›ê¸°
 
-CatchJellyFish* CatchJellyFish::Instance()
+TakeOrder* TakeOrder::Instance()
 {
-    static CatchJellyFish instance;
+    static TakeOrder instance;
 
     return &instance;
 }
 
-void CatchJellyFish::Enter(SpongeBob* sponge)
+void TakeOrder::Enter(JingJing* jing)
 {
-    if (sponge->Location() != Hill)
-    {
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ÇØÆÄ¸® µ¿»êÀ¸·Î °©´Ï´Ù";
-
-        sponge->ChangeLocation(Hill);
-    }
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": " << "ì£¼ë¬¸ì´ë‚˜ ë°›ì•„ì•¼ì§€..";
 }
 
 
-void CatchJellyFish::Execute(SpongeBob* sponge)
+void TakeOrder::Execute(JingJing* jing)
 {
     //deposit the gold
-    sponge->AddJellyFish();
-    sponge->IncreaseTired();
+    jing->IncreaseTired();
 
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "½Å³­´Ù! ÇØÆÄ¸®¸¦ Àâ¾Ò´Ù! ( ÇØÆÄ¸® =  " << sponge->CatchedJellyFish() << " / " << sponge->MaxJF() << " )";
-
-    if (sponge->FinishCatch())
+    switch (RandInt(0, 2))
     {
-        sponge->GetFSM()->ChangeState(GoHome::Instance());
+    case 0:
+        cout << "\n" << GetNameOfEntity(jing->ID()) << ": ê²Œì‚´ë²„ê±° í•˜ë‚˜ìš”~!";
+
+        break;
+
+    case 1:
+        cout << "\n" << GetNameOfEntity(jing->ID()) << ": ë¶ˆê³ ê¸°ë²„ê±° í•˜ë‚˜ìš”~!";
+
+        break;
+
+    case 2:
+        cout << "\n" << GetNameOfEntity(jing->ID()) << ": ì¹˜í‚¨ë²„ê±° í•˜ë‚˜ìš”~!";
+
+        break;
     }
-
-    if (sponge->Tired())
+    if (RandFloat() < 0.1)
+        jing->GetFSM()->ChangeState(Angry::Instance());
+    if (jing->Tired())
     {
-        sponge->GetFSM()->ChangeState(Rest::Instance());
+        jing->GetFSM()->ChangeState(Play::Instance());
     }
 }
 
 
-void CatchJellyFish::Exit(SpongeBob* sponge)
+void TakeOrder::Exit(JingJing* jing)
 {
-    if (sponge->Location() == Hill)
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ÈÞ~ ÇØÆÄ¸® µ¿»êÀ» ¶°³³´Ï´Ù.";
+
 }
 
 
-bool CatchJellyFish::OnMessage(SpongeBob* sponge, const Telegram& msg)
+bool TakeOrder::OnMessage(JingJing* jing, const Telegram& msg)
 {
     //send msg to global message handler
     return false;
 }
-//------------------------------------------------------------------------¶Ë½Î±â
+//------------------------------------------------------------------------ë˜¥ì‹¸ê¸°
 
-Poop* Poop::Instance()
+Play* Play::Instance()
 {
-    static Poop instance;
+    static Play instance;
 
     return &instance;
 }
 
-void Poop::Enter(SpongeBob* sponge)
+void Play::Enter(JingJing* jing)
 {
-    if (sponge->Location() == Hill)
-    {
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " ¶ËÀÌ ¸¶·Á¿îµ¥ ±ÙÃ³¿¡ È­Àå½ÇÀÌ ¾øÀ¸´Ï ¾ð´ö µÚÂÊÀ¸·Î °©´Ï´Ù..";
-    }
-    else {
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " ¶ËÀÌ ¸¶·Á¿ö¼­ È­Àå½Ç·Î µé¾î°©´Ï´Ù! ";
-    }
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": " << " í´ë¼ë¦¬ë„·ì´ë‚˜ ë¶ˆì–´ì•¼ê² ë‹¤.. ";
 }
 
-void Poop::Execute(SpongeBob* sponge)
+void Play::Execute(JingJing* jing)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << " »× ";
-    sponge->GetFSM()->RevertToPreviousState();
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": " << " --ì‚˜ë¦´ë¦¬ ë½€ë¡œë¡œë¡±ë¿Œë¿Œ ì‚ì‚¥-- ";
+    jing->SetTiredZero();
+    jing->GetFSM()->ChangeState(TakeOrder::Instance());
 }
 
-void Poop::Exit(SpongeBob* sponge)
+void Play::Exit(JingJing* jing)
 {
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "¾Æ ½Ã¿øÇà~";
+    cout << "\n" << GetNameOfEntity(jing->ID()) << ": " << "ì¦ê±°ì› ë‹¤..";
 }
 
 
-bool Poop::OnMessage(SpongeBob* sponge, const Telegram& msg)
+bool Play::OnMessage(JingJing* jing, const Telegram& msg)
 {
     return false; //send message to global message handler
 }
-
-//------------------------------------------------------------------------Áý°¡±â
-
-GoHome* GoHome::Instance()
-{
-    static GoHome instance;
-
-    return &instance;
-}
-
-void GoHome::Enter(SpongeBob* sponge)
-{
-    if (sponge->Location() != SpongeBobHouse)
-    {
-        sponge->ChangeLocation(SpongeBobHouse);
-
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "ÀÌÁ¦ ÁýÀ¸·Î °¡¼­ ½¬¾î¾ß°Ú¾î¿ä";
-    }
-}
-
-void GoHome::Execute(SpongeBob* sponge)
-{
-    sponge->IncreaseTired();
-
-}
-
-
-void GoHome::Exit(SpongeBob* sponge)
-{
-    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "Áý¿¡¼­ ³ª°¡¾ßÁö";
-}
-
-
-bool GoHome::OnMessage(SpongeBob* sponge, const Telegram& msg)
-{
-    return false;
-}
-

@@ -1,17 +1,8 @@
-#ifndef MINERSWIFE_H
-#define MINERSWIFE_H
-//------------------------------------------------------------------------
-//
-//  Name: MinersWife.h
-//
-//  Desc: class to implement Miner Bob's wife.
-//
-//  Author: Mat Buckland 2003 (fup@ai-junkie.com)
-//
-//------------------------------------------------------------------------
+#ifndef CRAB_H
+#define CRAB_H
+
 
 #include <string>
-
 #include "fsm/State.h"
 #include "BaseGameEntity.h"
 #include "Locations.h"

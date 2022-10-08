@@ -1,5 +1,5 @@
-#ifndef MINERSWIFE_OWNED_STATES_H
-#define MINERSWIFE_OWNED_STATES_H
+#ifndef CRAB_OWNED_STATES_H
+#define CRAB_OWNED_STATES_H
 //------------------------------------------------------------------------
 //
 //  Name:   MinersWifeOwnedStates.h
@@ -102,34 +102,6 @@ public:
 
   virtual bool OnMessage(Crab* crab, const Telegram& msg);
 
-};
-
-
-//------------------------------------------------------------------------
-//
-
-//------------------------------------------------------------------------
-class CookStew : public State<Crab>
-{
-private:
-  
-  CookStew(){}
-
-  CookStew(const CookStew&);
-  CookStew& operator=(const CookStew&);
- 
-public:
-
-  //this is a singleton
-  static CookStew* Instance();
-  
-  virtual void Enter(Crab* crab);
-
-  virtual void Execute(Crab* crab);
-
-  virtual void Exit(Crab* crab);
-
-  virtual bool OnMessage(Crab* crab, const Telegram& msg);
 };
 
 

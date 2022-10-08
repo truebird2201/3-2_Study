@@ -8,7 +8,7 @@ bool JingJing::HandleMessage(const Telegram& msg)
 void JingJing::Update()
 {
 	//set text color to green
-	SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	SetTextColor(FOREGROUND_BLUE | FOREGROUND_INTENSITY);
 
 	m_pStateMachine->Update();
 }

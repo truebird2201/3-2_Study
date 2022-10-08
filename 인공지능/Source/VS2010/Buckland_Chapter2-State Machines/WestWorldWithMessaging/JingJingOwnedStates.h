@@ -1,5 +1,5 @@
-#ifndef MINER_OWNED_STATES_H
-#define MINER_OWNED_STATES_H
+#ifndef JING_OWNED_STATES_H
+#define JING_OWNED_STATES_H
 //------------------------------------------------------------------------
 //
 //  Name:   MinerOwnedStates.h
@@ -62,7 +62,7 @@ public:
 
 	virtual void Exit(JingJing* jing);
 
-	virtual bool OnMessage(JingJing* jing, const Telegram& msg) { return false; };
+	virtual bool OnMessage(JingJing* jing, const Telegram& msg);
 
 };
 

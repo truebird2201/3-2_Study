@@ -13,18 +13,13 @@ but WITHOUT ANY WARRANTY.
 #include "Dependencies\glew.h"
 #include "Dependencies\freeglut.h"
 
-#include "Renderer.h"
+#include "GSEGame.h"
 
-Renderer *g_Renderer = NULL;
+GSEGame* g_game = NULL;
 
 void RenderScene(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.0f, 0.3f, 0.3f, 1.0f);
-
-	// Renderer Test
-	g_Renderer->DrawSolidRect(0, 0, 0, 4, 1, 0, 1, 1);
-
+	g_game->RenderScene();
 	glutSwapBuffers();
 }
 
@@ -67,12 +62,8 @@ int main(int argc, char **argv)
 		std::cout << "GLEW 3.0 not supported\n ";
 	}
 
-	// Initialize Renderer
-	g_Renderer = new Renderer(500, 500);
-	if (!g_Renderer->IsInitialized())
-	{
-		std::cout << "Renderer could not be initialized.. \n";
-	}
+	GSEVec2 temp = { 500.f, 500.f };
+	g_game = new GSEGame{ temp };
 
 	glutDisplayFunc(RenderScene);
 	glutIdleFunc(Idle);
@@ -81,8 +72,6 @@ int main(int argc, char **argv)
 	glutSpecialFunc(SpecialKeyInput);
 
 	glutMainLoop();
-
-	delete g_Renderer;
 
     return 0;
 }
