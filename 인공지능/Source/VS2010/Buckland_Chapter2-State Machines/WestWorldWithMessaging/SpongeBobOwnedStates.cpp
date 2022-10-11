@@ -31,7 +31,8 @@ void SpongeBobGlobalState::Execute(SpongeBob* sponge)
 {
     // 
     if ((RandFloat() < 0.1) &&
-        !sponge->GetFSM()->isInState(*Poop::Instance()))
+        !sponge->GetFSM()->isInState(*Poop::Instance()) && !sponge->GetFSM()->isInState(*Rest::Instance())
+        )
     {
         sponge->GetFSM()->ChangeState(Poop::Instance());
     }
@@ -43,18 +44,24 @@ bool SpongeBobGlobalState::OnMessage(SpongeBob* sponge, const Telegram& msg)
     {
     case Msg_Money:
     {
+        SetTextColor(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
         cout << "\n" << GetNameOfEntity(sponge->ID()) <<
             ": 보너스 감사합니다 집게사장님~";
     }
+    return true;
 
     case Msg_Angry:
     {
-        if(sponge->Location() == KrabShop)
-            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 징징아! 일이나해! ";
-        if (sponge->Location() == Hill)
-            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 으악 징징아 그렇다구 해파리 동산까지 오니";
-        if (sponge->Location() == SpongeBobHouse)
-            cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 집에 있을 땐 쉬게해줘 징징아...";
+        if (!sponge->GetFSM()->isInState(*Poop::Instance()) && !sponge->GetFSM()->isInState(*Rest::Instance()))
+        {
+            SetTextColor(BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY);
+            if (sponge->Location() == KrabShop)
+                cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 징징아! 일이나해! ";
+            if (sponge->Location() == Hill)
+                cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 으악 징징아 그렇다구 해파리 동산까지 오니";
+            if (sponge->Location() == SpongeBobHouse)
+                cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 집에 있을 땐 쉬게해줘 징징아...";
+        }
     }
 
     return true;
@@ -122,13 +129,13 @@ Rest* Rest::Instance()
 
 void Rest::Enter(SpongeBob* sponge)
 {
+    cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "쉬어야 겠어요 ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
     Dispatch->DispatchMessage(1.5,                  //time delay
         sponge->ID(),           //sender ID
         sponge->ID(),           //receiver ID
         Msg_TakeRest,        //msg
         NO_ADDITIONAL_INFO);
-
-        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": " << "쉬어야 겠어요 ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
+        
 }
 
 
@@ -147,15 +154,10 @@ void Rest::Exit(SpongeBob* sponge)
 
 bool Rest::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
-    SetTextColor(BACKGROUND_RED | FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
-
     switch (msg.Msg)
     {
     case Msg_TakeRest:
     {
-
-        SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
-
         cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 깼다!" << " ( 지금 시각 : " << Clock->GetCurrentTime() << " )";
         sponge->SetTiredZero();
         sponge->GetFSM()->RevertToPreviousState();
@@ -166,6 +168,7 @@ bool Rest::OnMessage(SpongeBob* sponge, const Telegram& msg)
     }//end switch
 
     return false;
+    
 }
 
 //------------------------------------------------------------------------해파리 잡기
@@ -278,7 +281,28 @@ void GoHome::Enter(SpongeBob* sponge)
 
 void GoHome::Execute(SpongeBob* sponge)
 {
-    sponge->IncreaseTired();
+    if (RandFloat() < 0.1)
+        sponge->IncreaseTired();
+    switch (RandInt(0, 2))
+    {
+    case 0:
+
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 핑핑아 놀자~!";
+
+        break;
+
+    case 1:
+
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": 핑핑아 밥먹어~!";
+
+        break;
+
+    case 2:
+
+        cout << "\n" << GetNameOfEntity(sponge->ID()) << ": TV 재미있다~!";
+
+        break;
+    }
 
 }
 
@@ -293,4 +317,3 @@ bool GoHome::OnMessage(SpongeBob* sponge, const Telegram& msg)
 {
     return false;
 }
-

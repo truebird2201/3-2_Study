@@ -1,6 +1,5 @@
-#pragma once
-#ifndef MINER_H
-#define MINER_H
+#ifndef JING_H
+#define JING_H
 
 #include <string>
 
@@ -17,7 +16,7 @@ template <class entity_type> class State; //pre-fixed with "template <class enti
 struct Telegram;
 
 // 최대 피곤함
-const int MaxTired = 5;
+const int MaxTired2 = 5;
 
 // 최대 밀린 손님 수
 const int MaxPeople = 5;
@@ -32,9 +31,6 @@ private:
 
     location_type         m_Location;
 
-    // 밀린 손님 수
-    int                   m_iPeople;
-
     // 피곤함 정도
     int                   m_iTired;
 
@@ -42,7 +38,6 @@ private:
 public:
 
     JingJing(int id) :m_Location(KrabShop),
-        m_iPeople(2),
         m_iTired(0),
         BaseGameEntity(id)
 
@@ -50,7 +45,7 @@ public:
         //set up state machine
         m_pStateMachine = new StateMachine<JingJing>(this);
 
-        m_pStateMachine->SetCurrentState(MakeBurger::Instance());
+        m_pStateMachine->SetCurrentState(TakeOrder::Instance());
 
         m_pStateMachine->SetGlobalState(JingJingGlobalState::Instance());
 
@@ -74,14 +69,11 @@ public:
     location_type Location()const { return m_Location; }
     void          ChangeLocation(location_type loc) { m_Location = loc; }
 
-    int           People()const { return m_iPeople; }
-    void           MinusPeopel() { m_iPeople-=1; }
-
     void          SetTiredZero() { m_iTired = 0; }
     void          IncreaseTired() { m_iTired += 1; }
     void          MinusTired() { m_iTired += 1; }
 
-    bool          Tired() { return m_iTired >= MaxTired; }
+    bool          Tired() { return m_iTired >= MaxTired2; }
 
 };
 

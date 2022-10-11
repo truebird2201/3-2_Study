@@ -1,5 +1,5 @@
-#ifndef MINER_OWNED_STATES_H
-#define MINER_OWNED_STATES_H
+#ifndef SPONGE_OWNED_STATES_H
+#define SPONGE_OWNED_STATES_H
 //------------------------------------------------------------------------
 //
 //  Name:   MinerOwnedStates.h

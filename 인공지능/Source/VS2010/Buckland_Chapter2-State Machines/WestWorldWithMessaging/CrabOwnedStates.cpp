@@ -38,7 +38,6 @@ void CrabGlobalState::Execute(Crab* crab)
 
 bool CrabGlobalState::OnMessage(Crab* crab, const Telegram& msg)
 {
-  SetTextColor(BACKGROUND_RED|FOREGROUND_RED|FOREGROUND_GREEN|FOREGROUND_BLUE);
 
   return false;
 }
@@ -55,33 +54,33 @@ GiveMoney* GiveMoney::Instance()
 
 void GiveMoney::Enter(Crab* crab)
 {
+  SetTextColor(BACKGROUND_RED | BACKGROUND_INTENSITY);
   cout << "\n" << GetNameOfEntity(crab->ID()) << ": 보너스를 주마!";
 }
 
 
 void GiveMoney::Execute(Crab* crab)
 {
+  SetTextColor(BACKGROUND_RED | BACKGROUND_INTENSITY);
   switch(RandInt(0,1))
   {
   case 0:
-
+      cout << "\n" << GetNameOfEntity(crab->ID()) << ": 여기있다 징징아~!";
       Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY,
           crab->ID(),
           ent_JingJing,
           Msg_Money,
           NO_ADDITIONAL_INFO);
-    cout << "\n" << GetNameOfEntity(crab->ID()) << ": 여기있다 징징아~!";
 
     break;
 
   case 1:
-
+      cout << "\n" << GetNameOfEntity(crab->ID()) << ": 여기있다 스폰지밥~!";
       Dispatch->DispatchMessage(SEND_MSG_IMMEDIATELY,
           crab->ID(),
           ent_SpongeBob,
           Msg_Money,
           NO_ADDITIONAL_INFO);
-    cout << "\n" << GetNameOfEntity(crab->ID()) << ": 여기있다 스폰지밥~!";
 
     break;
   }
@@ -108,7 +107,8 @@ WatchTV* WatchTV::Instance()
 
 
 void WatchTV::Enter(Crab* crab)
-{  
+{
+    SetTextColor(FOREGROUND_RED | FOREGROUND_INTENSITY);
   cout << "\n" << GetNameOfEntity(crab->ID()) << ": 일안하고 TV나 봐야지~";
 }
 

@@ -8,7 +8,7 @@ bool SpongeBob::HandleMessage(const Telegram& msg)
 void SpongeBob::Update()
 {
 	//set text color to green
-	SetTextColor(FOREGROUND_GREEN | FOREGROUND_INTENSITY);
+	SetTextColor(FOREGROUND_RED | FOREGROUND_GREEN);
 
 	m_pStateMachine->Update();
 }

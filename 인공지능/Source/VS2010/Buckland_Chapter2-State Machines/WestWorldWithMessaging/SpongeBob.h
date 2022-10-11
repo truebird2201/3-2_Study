@@ -1,5 +1,5 @@
-#ifndef MINER_H
-#define MINER_H
+#ifndef SPONGE_H
+#define SPONGE_H
 
 #include <string>
 
