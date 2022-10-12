@@ -8,9 +8,9 @@
 
 using namespace std;
 int fsize = 0; // 파일 크기
-int nsize = 0; // 파일 크기
-int sendsize = 0;
-int nowsize = 0;
+int nsize = 0; // 파일 이름 크기
+int nowsize = 0; // 현재까지 받은 크기
+int receiveSize = 10; // 한번에 받아오는 크기
 
 // 클라이언트와 데이터 통신
 DWORD WINAPI ProcessClient(LPVOID arg)
@@ -29,7 +29,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	while (1) {
 		// 클라이언트와 데이터 통신
-			// 데이터 받기(고정 길이)
+		// 데이터 받기(고정 길이)
 		std::chrono::system_clock::time_point start = std::chrono::system_clock::now();	// 시작
 
 		retval = recv(client_sock, (char*)&nsize, sizeof(int), MSG_WAITALL);	// 파일 이름 크기 받기
@@ -43,14 +43,6 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 		retval = recv(client_sock, (char*)&fsize, sizeof(int), MSG_WAITALL);	// 파일 크기 받기
 
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-			break;
-		}
-		else if (retval == 0)
-			break;
-
-		retval = recv(client_sock, (char*)&sendsize, sizeof(int), MSG_WAITALL);	// 파일 받아오는 크기 받기
 		if (retval == SOCKET_ERROR) {
 			err_display("recv()");
 			break;
@@ -73,25 +65,20 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			break;
 
 		while (nowsize < fsize) {
-			if (nowsize + sendsize <= fsize) {
-				retval = recv(client_sock, (char*)&buf[nowsize], sendsize, MSG_WAITALL);					// 파일 보내기
+			if (nowsize + receiveSize <= fsize) {
+				retval = recv(client_sock, (char*)&buf[nowsize], receiveSize, MSG_WAITALL);					// 파일 보내기
 			}
 			else {
-				retval = recv(client_sock, (char*)&buf[nowsize], fsize % sendsize, MSG_WAITALL);
+				retval = recv(client_sock, (char*)&buf[nowsize], fsize % receiveSize, MSG_WAITALL);
 			}
 			if (retval == SOCKET_ERROR) {
 				err_display("send()");
 			}
-			nowsize += sendsize;
+			nowsize += receiveSize;
 
 			if (nowsize > fsize) nowsize = fsize;
 
 			system("cls");
-
-			cout << " 파일 이름 크기 = " << nsize << endl;
-			cout << " 파일 전체 크기 = " << fsize << endl;
-			cout << " 파일 전송 크기 = " << sendsize << endl;
-			cout << " 파일 이름 = " << filename << endl << endl;
 			printf("전송률 = %d%% [ %d / %d ] \n", (int)(((float)nowsize / (float)fsize) * 100), nowsize, fsize);
 
 		}
