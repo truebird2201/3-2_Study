@@ -73,11 +73,6 @@ int main(int argc, char *argv[])
 		err_display("send()");
 	}
 
-	retval = send(sock, (char*)&sendsize, sizeof(int), 0);		// 파일보내는 크기 보내기
-	if (retval == SOCKET_ERROR) {
-		err_display("send()");
-	}
-
 	// 데이터 보내기(가변 길이)
 
 	retval = send(sock, filename, nsize, 0);		// 파일의 이름 보내기
@@ -100,8 +95,7 @@ int main(int argc, char *argv[])
 		if (nowsize > fsize) nowsize = fsize;
 
 		system("cls");
-		printf("[TCP 클라이언트] 파일 크기 ( %d )+ 파일 이름 ( %d ) + 전송 속도 ( %d ) + 파일 ( %d ) 바이트를 "
-			"보냈습니다.\n", (int)sizeof(int), nsize, (int)sizeof(int), nowsize);
+		printf("[TCP 클라이언트] 전송률 = %d%% [ %d / %d ]\n", (int)(((float)nowsize / (float)fsize) * 100),nowsize,fsize);
 		
 	}
 	nowsize = 0;

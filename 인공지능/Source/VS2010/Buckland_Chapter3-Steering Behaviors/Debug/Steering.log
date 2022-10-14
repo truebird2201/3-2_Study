@@ -1,0 +1,2 @@
+﻿GameWorld.obj : warning LNK4075: '/EDITANDCONTINUE'이(가) '/SAFESEH' 사양으로 인해 무시됩니다.
+  Steering.vcxproj -> C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Buckland_Chapter3-Steering Behaviors\Debug\Steering.exe
