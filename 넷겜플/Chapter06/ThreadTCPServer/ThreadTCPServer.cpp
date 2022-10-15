@@ -10,8 +10,7 @@
 
 CRITICAL_SECTION cs;
 using namespace std;
-HANDLE hWriteEvent;
-HANDLE hReadEvent;
+int caretY = 0;
 
 
 // 클라이언트와 데이터 통신
@@ -28,8 +27,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	int nsize = 0; // 파일 이름 크기
 	int nowsize = 0; // 현재까지 받은 크기
 	int receiveSize = 3000; // 한번에 받아오는 크기
-
-	DWORD retval;
+	int Y = caretY;
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -87,23 +85,14 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 			if (nowsize > fsize) nowsize = fsize;
 
-			retval = WaitForSingleObject(hReadEvent, INFINITE);
-			if (retval != WAIT_OBJECT_0) break;
-			CONSOLE_SCREEN_BUFFER_INFO cur;
-			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
-			COORD pos = { cur.dwCursorPosition.X, cur.dwCursorPosition.Y };
+			EnterCriticalSection(&cs);
+			COORD pos = { 0, Y };
 			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 			cout << "\n전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "[ " << nowsize << "/" << fsize << " ]\n";
-			SetEvent(hWriteEvent);
+			LeaveCriticalSection(&cs);
+
 		}
 		nowsize = 0;
-
-		std::chrono::system_clock::time_point end = std::chrono::system_clock::now(); // 끝
-		std::chrono::nanoseconds nano = end - start;
-
-		cout << " 파일을 받아왔습니다. " << endl;
-
-		cout << "-----------------------------경과 시간 = " << nano.count() << endl << endl;
 
 		ofstream out{ filename, ios::binary };
 		out.write(buf, fsize);
@@ -145,13 +134,12 @@ int main(int argc, char *argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-
 	InitializeCriticalSection(&cs);
-
 	while (1) {
 		// accept()
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (struct sockaddr *)&clientaddr, &addrlen);
+		caretY += 4;
 		if (client_sock == INVALID_SOCKET) {
 			err_display("accept()");
 			break;
@@ -161,7 +149,7 @@ int main(int argc, char *argv[])
 		char addr[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 		cout << "[TCP 서버] 클라이언트  접속: IP 주소 = " << addr << "포트 번호 = " << ntohs(clientaddr.sin_port)<<endl;
-
+		
 		// 스레드 생성
 		HANDLE hThread;
 		hThread = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);

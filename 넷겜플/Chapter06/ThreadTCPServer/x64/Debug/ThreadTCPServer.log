@@ -1,3 +1,4 @@
 ﻿  ThreadTCPServer.cpp
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter06\ThreadTCPServer\ThreadTCPServer.cpp(26,7): warning C4101: 'buf' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter06\ThreadTCPServer\ThreadTCPServer.cpp(89,21): warning C4838: 'int'에서 'SHORT'(으)로의 변환에는 축소 변환이 필요합니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter06\ThreadTCPServer\ThreadTCPServer.cpp(24,7): warning C4101: 'buf' :참조되지 않은 지역 변수입니다.
   ThreadTCPServer.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter06\ThreadTCPServer\x64\Debug\ThreadTCPServer.exe
