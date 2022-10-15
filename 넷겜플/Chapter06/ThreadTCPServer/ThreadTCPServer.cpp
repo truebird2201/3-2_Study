@@ -2,15 +2,17 @@
 #include <chrono>
 #include <iostream>
 #include <fstream>
+#include <windows.h>
+#include <format>
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
+CRITICAL_SECTION cs;
 using namespace std;
-int fsize = 0; // 파일 크기
-int nsize = 0; // 파일 이름 크기
-int nowsize = 0; // 현재까지 받은 크기
-int receiveSize = 10; // 한번에 받아오는 크기
+HANDLE hWriteEvent;
+HANDLE hReadEvent;
+
 
 // 클라이언트와 데이터 통신
 DWORD WINAPI ProcessClient(LPVOID arg)
@@ -21,6 +23,13 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
 	char buf[BUFSIZE + 1];
+
+	int fsize = 0; // 파일 크기
+	int nsize = 0; // 파일 이름 크기
+	int nowsize = 0; // 현재까지 받은 크기
+	int receiveSize = 3000; // 한번에 받아오는 크기
+
+	DWORD retval;
 
 	// 클라이언트 정보 얻기
 	addrlen = sizeof(clientaddr);
@@ -78,9 +87,14 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 			if (nowsize > fsize) nowsize = fsize;
 
-			system("cls");
-			printf("전송률 = %d%% [ %d / %d ] \n", (int)(((float)nowsize / (float)fsize) * 100), nowsize, fsize);
-
+			retval = WaitForSingleObject(hReadEvent, INFINITE);
+			if (retval != WAIT_OBJECT_0) break;
+			CONSOLE_SCREEN_BUFFER_INFO cur;
+			GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+			COORD pos = { cur.dwCursorPosition.X, cur.dwCursorPosition.Y };
+			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+			cout << "\n전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "[ " << nowsize << "/" << fsize << " ]\n";
+			SetEvent(hWriteEvent);
 		}
 		nowsize = 0;
 
@@ -97,8 +111,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 
 	// 소켓 닫기
 	closesocket(client_sock);
-	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n",
-		addr, ntohs(clientaddr.sin_port));
+	cout << "[TCP 서버] 클라이언트 종료: IP 주소 = "<< addr<<"포트 번호 = " << ntohs(clientaddr.sin_port)<<endl;
 	return 0;
 }
 
@@ -132,8 +145,8 @@ int main(int argc, char *argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-	HANDLE hThread;
 
+	InitializeCriticalSection(&cs);
 
 	while (1) {
 		// accept()
@@ -147,16 +160,15 @@ int main(int argc, char *argv[])
 		// 접속한 클라이언트 정보 출력
 		char addr[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
-		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
-			addr, ntohs(clientaddr.sin_port));
+		cout << "[TCP 서버] 클라이언트  접속: IP 주소 = " << addr << "포트 번호 = " << ntohs(clientaddr.sin_port)<<endl;
 
 		// 스레드 생성
-		hThread = CreateThread(NULL, 0, ProcessClient,
-			(LPVOID)client_sock, 0, NULL);
+		HANDLE hThread;
+		hThread = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);
 		if (hThread == NULL) { closesocket(client_sock); }
 		else { CloseHandle(hThread); }
 	}
-
+	DeleteCriticalSection(&cs);
 	// 소켓 닫기
 	closesocket(listen_sock);
 
