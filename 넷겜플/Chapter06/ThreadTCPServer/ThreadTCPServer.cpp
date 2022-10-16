@@ -10,7 +10,7 @@
 
 CRITICAL_SECTION cs;
 using namespace std;
-int caretY = 0;
+int caretY = -7;
 
 
 // 클라이언트와 데이터 통신
@@ -26,7 +26,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	int fsize = 0; // 파일 크기
 	int nsize = 0; // 파일 이름 크기
 	int nowsize = 0; // 현재까지 받은 크기
-	int receiveSize = 3000; // 한번에 받아오는 크기
+	int receiveSize = 5000; // 한번에 받아오는 크기
 	int Y = caretY;
 
 	// 클라이언트 정보 얻기
@@ -86,21 +86,23 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			if (nowsize > fsize) nowsize = fsize;
 
 			EnterCriticalSection(&cs);
-			COORD pos = { 0, Y };
+			COORD pos = { 0, Y+2 };
 			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-			cout << "\n전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "[ " << nowsize << "/" << fsize << " ]\n";
+			cout << "전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "[ " << nowsize << "/" << fsize << " ]\n";
 			LeaveCriticalSection(&cs);
-
 		}
 		nowsize = 0;
-
 		ofstream out{ filename, ios::binary };
 		out.write(buf, fsize);
 	}
 
 	// 소켓 닫기
 	closesocket(client_sock);
+	EnterCriticalSection(&cs);
+	COORD pos = { 0, Y+4 };
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 	cout << "[TCP 서버] 클라이언트 종료: IP 주소 = "<< addr<<"포트 번호 = " << ntohs(clientaddr.sin_port)<<endl;
+	LeaveCriticalSection(&cs);
 	return 0;
 }
 
@@ -130,6 +132,10 @@ int main(int argc, char *argv[])
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
+	CONSOLE_SCREEN_BUFFER_INFO cur;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cur);
+	caretY = cur.dwCursorPosition.Y - 7;
+
 	// 데이터 통신에 사용할 변수
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
@@ -139,17 +145,22 @@ int main(int argc, char *argv[])
 		// accept()
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (struct sockaddr *)&clientaddr, &addrlen);
-		caretY += 4;
+
 		if (client_sock == INVALID_SOCKET) {
 			err_display("accept()");
 			break;
 		}
-
+		caretY += 7;
 		// 접속한 클라이언트 정보 출력
 		char addr[INET_ADDRSTRLEN];
 		inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
+		EnterCriticalSection(&cs);
+		COORD pos = { 0, caretY};
+		SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 		cout << "[TCP 서버] 클라이언트  접속: IP 주소 = " << addr << "포트 번호 = " << ntohs(clientaddr.sin_port)<<endl;
+		LeaveCriticalSection(&cs);
 		
+	
 		// 스레드 생성
 		HANDLE hThread;
 		hThread = CreateThread(NULL, 0, ProcessClient, (LPVOID)client_sock, 0, NULL);

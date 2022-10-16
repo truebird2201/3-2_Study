@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 {
 	int retval;
 	
-	char* filename = (char*)"SeoYeon.mp4";
+	char* filename = (char*)"Rolling.mp4";
 
 	if (argc>1) SERVERIP = (char*)argv[1];
 	if (argc>2) filename = (char*)argv[2];
@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	int fsize = 0; // 파일 사이즈
 	int nsize = 0; // 파일 이름 길이
 	int nowsize = 0; // 현재 보낸 사이즈
-	int sendsize = 4000; // 한번에 보낼 사이즈
+	int sendsize = 8000; // 한번에 보낼 사이즈
 
 	in.seekg(0, ios::end); // 파일의 끝으로간다
 	fsize = in.tellg(); // 파일의 끝을 읽어온다

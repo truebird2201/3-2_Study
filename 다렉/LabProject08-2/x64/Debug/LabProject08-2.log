@@ -1,0 +1,15 @@
+﻿  compilation object save succeeded; see C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-2\x64\Debug\Shaders.cso
+  stdafx.cpp
+  Camera.cpp
+  DDSTextureLoader12.cpp
+  GameFramework.cpp
+  LabProject08-2.cpp
+  Mesh.cpp
+  Object.cpp
+  Player.cpp
+  Scene.cpp
+  Shader.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-2\Shader.cpp(429,19): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Timer.cpp
+  코드를 생성하고 있습니다...
+  LabProject08-2.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-2\x64\Debug\LabProject08-2(Detail Texture).exe

@@ -21,12 +21,11 @@ C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D�
   Scene.cpp
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(427,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(54,48): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(116,127): error C2660: 'CGameObject::LoadGeometryFromFile': 함수는 4개의 인수를 사용하지 않습니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(122,127): error C2660: 'CGameObject::LoadGeometryFromFile': 함수는 4개의 인수를 사용하지 않습니다.
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(310,22): message : 'CGameObject::LoadGeometryFromFile' 선언을 참조하십시오.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(126,68): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(309,71): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(132,68): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(315,71): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
   Shader.cpp
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(427,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-  Timer.cpp
   WICTextureLoader12.cpp
   코드를 생성하고 있습니다...
