@@ -67,7 +67,7 @@ public:
 
 public:
 	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;
-
+	CHeightMapTerrain* m_pTerrain = NULL;
 	int									m_nGameObjects = 0;
 	CGameObject							**m_ppGameObjects = NULL;
 

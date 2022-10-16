@@ -1,15 +1,9 @@
-﻿  compilation object save succeeded; see C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1\x64\Debug\Shaders.cso
-  stdafx.cpp
-  Camera.cpp
-  DDSTextureLoader12.cpp
-  GameFramework.cpp
+﻿  GameFramework.cpp
   LabProject08-0-1.cpp
-  Mesh.cpp
   Object.cpp
   Player.cpp
   Scene.cpp
   Shader.cpp
-  Timer.cpp
-  WICTextureLoader12.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1\Shader.cpp(510,19): error C2352: 'CShader::ReleaseShaderVariables': 비정적 멤버 함수를 호출하려면 개체가 필요합니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1\Shader.h(57): message : 'CShader::ReleaseShaderVariables' 선언을 참조하십시오.
   코드를 생성하고 있습니다...
-  LabProject08-0-1.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1\x64\Debug\LabProject08-0-1.exe
