@@ -1,5 +1,4 @@
 ﻿  TCPClient_FixedVariable.cpp
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(56,18): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(59,26): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(43,7): warning C4101: 'buf' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(51,18): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(54,26): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
   TCPClient_FixedVariable.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\x64\Debug\TCPClient_FixedVariable.exe

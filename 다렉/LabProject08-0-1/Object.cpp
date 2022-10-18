@@ -287,6 +287,7 @@ void CMaterial::ReleaseShaderVariables()
 {
 	if (m_pShader) m_pShader->ReleaseShaderVariables();
 	if (m_pTexture) m_pTexture->ReleaseShaderVariables();
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -295,9 +296,15 @@ CGameObject::CGameObject()
 {
 	m_xmf4x4Transform = Matrix4x4::Identity();
 	m_xmf4x4World = Matrix4x4::Identity();
+
+	m_nMeshes = 1;
+	m_ppMeshes = NULL;
+
+	m_ppMeshes = new CMesh * [m_nMeshes];
+	m_ppMeshes[0] = NULL;
 }
 
-CGameObject::CGameObject(int nMaterials)
+CGameObject::CGameObject(int nMaterials) : CGameObject()
 {
 	m_nMaterials = nMaterials;
 	if (m_nMaterials > 0)
@@ -309,7 +316,15 @@ CGameObject::CGameObject(int nMaterials)
 
 CGameObject::~CGameObject()
 {
-	if (m_pMesh) m_pMesh->Release();
+	if (m_ppMeshes)
+	{
+		for (int i = 0; i < m_nMeshes; i++)
+		{
+			if (m_ppMeshes[i]) m_ppMeshes[i]->Release();
+			m_ppMeshes[i] = NULL;
+		}
+		delete[] m_ppMeshes;
+	}
 
 	if (m_nMaterials > 0)
 	{
@@ -354,7 +369,8 @@ void CGameObject::SetChild(CGameObject *pChild)
 	}
 }
 
-void CGameObject::SetMesh(int nIndex, CMesh *pMesh)
+
+void CGameObject::SetMesh(CMesh* pMesh, int nIndex = 0)
 {
 	if (m_ppMeshes)
 	{
@@ -387,6 +403,14 @@ void CGameObject::SetMaterial(int nMaterial, CMaterial *pMaterial)
 	if (m_ppMaterials[nMaterial]) m_ppMaterials[nMaterial]->AddRef();
 }
 
+void CGameObject::SetMaterial(CMaterial* pMaterial)
+{
+	if (m_pMaterial) m_pMaterial->Release();
+	m_pMaterial = pMaterial;
+	if (m_pMaterial) m_pMaterial->AddRef();
+}
+
+
 void CGameObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed, pxmf4x4Parent);
@@ -410,6 +434,21 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 
 	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
 
+	if (m_pMaterial)
+	{
+		if (m_pMaterial->m_pShader)
+		{
+			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
+			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
+
+			UpdateShaderVariables(pd3dCommandList);
+		}
+		if (m_pMaterial->m_pTexture)
+		{
+			m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+		}
+	}
+
 	if (m_nMaterials > 0)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
@@ -420,7 +459,10 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 				m_ppMaterials[i]->UpdateShaderVariables(pd3dCommandList);
 			}
 
-			if (m_pMesh) m_pMesh->Render(pd3dCommandList, i);
+			for (int j = 0; j < m_nMeshes; ++j)
+			{
+				if (m_ppMeshes[j]) m_ppMeshes[j]->Render(pd3dCommandList, j);
+			}
 		}
 	}
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
@@ -429,10 +471,15 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 
 void CGameObject::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
+	m_pd3dcbGameObject = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	m_pd3dcbGameObject->Map(0, NULL, (void**)&m_pcbMappedGameObject);
 }
 
 void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
 {
+	XMStoreFloat4x4(&m_pcbMappedGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
 }
 
 void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World)
@@ -444,15 +491,25 @@ void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandLis
 
 void CGameObject::UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, CMaterial *pMaterial)
 {
+
 }
 
 void CGameObject::ReleaseShaderVariables()
 {
+	if (m_pd3dcbGameObject)
+	{
+		m_pd3dcbGameObject->Unmap(0, NULL);
+		m_pd3dcbGameObject->Release();
+	}
+	if (m_pMaterial) m_pMaterial->ReleaseShaderVariables();
 }
 
 void CGameObject::ReleaseUploadBuffers()
 {
-	if (m_pMesh) m_pMesh->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nMeshes; i++)
+	{
+		if (m_ppMeshes[i]) m_ppMeshes[i]->ReleaseUploadBuffers();
+	}
 
 	for (int i = 0; i < m_nMaterials; i++)
 	{
@@ -461,6 +518,7 @@ void CGameObject::ReleaseUploadBuffers()
 
 	if (m_pSibling) m_pSibling->ReleaseUploadBuffers();
 	if (m_pChild) m_pChild->ReleaseUploadBuffers();
+	if (m_pMaterial) m_pMaterial->ReleaseUploadBuffers();
 }
 
 void CGameObject::UpdateTransform(XMFLOAT4X4 *pxmf4x4Parent)
@@ -740,7 +798,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 		{
 			CStandardMesh *pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-			pGameObject->SetMesh(1, pMesh);
+			pGameObject->SetMesh(pMesh);
 		}
 		else if (!strcmp(pstrToken, "<Materials>:"))
 		{
@@ -807,7 +865,7 @@ CGameObject *CGameObject::LoadGeometryFromFile(ID3D12Device *pd3dDevice, ID3D12G
 CSkyBox::CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature) : CGameObject(1)
 {
 	CSkyBoxMesh *pSkyBoxMesh = new CSkyBoxMesh(pd3dDevice, pd3dCommandList, 20.0f, 20.0f, 20.0f);
-	SetMesh(1, pSkyBoxMesh);
+	SetMesh(pSkyBoxMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -937,45 +995,6 @@ void CMi24Object::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-CRotatingObject::CRotatingObject(int nMeshes)
-{
-	m_xmf3RotationAxis = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	m_fRotationSpeed = 15.0f;
-}
-
-CRotatingObject::~CRotatingObject()
-{
-}
-
-void CRotatingObject::Animate(float fTimeElapsed)
-{
-	CGameObject::Rotate(&m_xmf3RotationAxis, m_fRotationSpeed * fTimeElapsed);
-}
-
-void CRotatingObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
-{
-	CGameObject::Render(pd3dCommandList, pCamera);
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-CRevolvingObject::CRevolvingObject(int nMeshes)
-{
-	m_xmf3RevolutionAxis = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	m_fRevolutionSpeed = 0.0f;
-}
-
-CRevolvingObject::~CRevolvingObject()
-{
-}
-
-void CRevolvingObject::Animate(float fTimeElapsed)
-{
-	XMMATRIX mtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3RevolutionAxis), XMConvertToRadians(m_fRevolutionSpeed * fTimeElapsed));
-	m_xmf4x4World = Matrix4x4::Multiply(m_xmf4x4World, mtxRotate);
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1006,7 +1025,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 			xStart = x * (nBlockWidth - 1);
 			zStart = z * (nBlockLength - 1);
 			pHeightMapGridMesh = new CHeightMapGridMesh(pd3dDevice, pd3dCommandList, xStart, zStart, nBlockWidth, nBlockLength, xmf3Scale, xmf4Color, m_pHeightMapImage);
-			SetMesh(x + (z * cxBlocks), pHeightMapGridMesh);
+			SetMesh(pHeightMapGridMesh, x + (z * cxBlocks));
 		}
 	}
 
@@ -1020,7 +1039,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
 
 	CTerrainShader* pTerrainShader = new CTerrainShader();
-	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	pTerrainShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	pTerrainShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 2);
 	pTerrainShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
@@ -1029,7 +1048,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CMaterial* pTerrainMaterial = new CMaterial();
 	pTerrainMaterial->SetTexture(pTerrainTexture);
 
-	SetMaterial(1,pTerrainMaterial);
+	SetMaterial(pTerrainMaterial);
 
 	SetCbvGPUDescriptorHandle(pTerrainShader->GetGPUCbvDescriptorStartHandle());
 
@@ -1041,3 +1060,45 @@ CHeightMapTerrain::~CHeightMapTerrain(void)
 	if (m_pHeightMapImage) delete m_pHeightMapImage;
 }
 
+void CHeightMapTerrain::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+
+	if (m_pMaterial)
+	{
+		if (m_pMaterial->m_pShader)
+		{
+			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
+			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
+
+			UpdateShaderVariables(pd3dCommandList);
+		}
+		if (m_pMaterial->m_pTexture)
+		{
+			m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+		}
+	}
+
+	pd3dCommandList->SetGraphicsRootDescriptorTable(11, m_d3dCbvGPUDescriptorHandle);
+	pd3dCommandList->SetGraphicsRootDescriptorTable(12, m_d3dCbvGPUDescriptorHandle);
+
+	if (m_ppMeshes)
+	{
+		for (int i = 0; i < m_nMeshes; i++)
+		{
+			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+		}
+	}
+}
+
+void CHeightMapTerrain::SetShader(CShader* pShader)
+{
+	if (!m_pMaterial)
+	{
+		CMaterial* pMaterial = new CMaterial();
+		SetMaterial(pMaterial);
+	}
+	if (m_pMaterial) m_pMaterial->SetShader(pShader);
+}

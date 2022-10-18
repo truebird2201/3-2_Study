@@ -5,20 +5,17 @@
 #include <array>
 #include <Windows.h>
 
-using namespace std;
-
 #define SERVERPORT 9000
 #define BUFSIZE    50
 
 char* SERVERIP = (char*)"127.0.0.1";
+char* filename = (char*)"Rolling.mp4";
 int main(int argc, char *argv[])
 {
 	int retval;
-	
-	char* filename = (char*)"Rolling.mp4";
 
-	if (argc>1) SERVERIP = (char*)argv[1];
-	if (argc>2) filename = (char*)argv[2];
+	if (argc>1) SERVERIP = argv[1];
+	if (argc>2) filename = argv[2];
 
 
 	// 윈속 초기화
@@ -40,27 +37,24 @@ int main(int argc, char *argv[])
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
 	// 데이터 통신에 사용할 변수
-	char buf[BUFSIZE];
-
-	// 서버와 데이터 통신
-	// 
-	// 데이터 입력(시뮬레이션)
-	ifstream in{ filename,ios::binary};
-
 	int fsize = 0; // 파일 사이즈
 	int nsize = 0; // 파일 이름 길이
 	int nowsize = 0; // 현재 보낸 사이즈
 	int sendsize = 8000; // 한번에 보낼 사이즈
 
-	in.seekg(0, ios::end); // 파일의 끝으로간다
+	// 서버와 데이터 통신
+	// 
+	// 데이터 입력(시뮬레이션)
+	std::ifstream in{ filename,std::ios::binary};
+
+	in.seekg(0, std::ios::end); // 파일의 끝으로간다
 	fsize = in.tellg(); // 파일의 끝을 읽어온다
-	in.seekg(0, ios::beg); // 파일의 앞으로 다시 간다.
+	in.seekg(0, std::ios::beg); // 파일의 앞으로 다시 간다.
 
 	nsize = strlen(filename);
 	char* dt = new char[fsize];
 
 	in.read(dt, fsize);
-	cout << fsize << endl;
 
 	// 데이터 보내기(고정 길이)
 	retval = send(sock, (char*)&nsize, sizeof(int), 0);		// 파일이름의 크기 보내기
