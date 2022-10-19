@@ -28,7 +28,7 @@ protected:
 	LPVOID						m_pPlayerUpdatedContext;
 	LPVOID						m_pCameraUpdatedContext;
 
-	CShader* m_pShader = NULL;
+
 
 public:
 	CPlayer();

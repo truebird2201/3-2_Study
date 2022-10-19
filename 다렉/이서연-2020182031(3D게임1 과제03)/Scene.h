@@ -81,15 +81,10 @@ public:
 	CHellicopterObject					**m_ppGameObjects = NULL;
 	int							m_nGameObjects = 0;
 
-	CBulletObject				**m_ppBullets = NULL;
+	CBulletObject					**m_ppBullets = NULL;
 	int							m_nBullets = 0;
 
-	int							m_nShaders = 0;
-	CShader**					m_ppShaders = NULL;
-
-	CSkyBox*					m_pSkyBox = NULL;
-
-	CDangerObject*				m_ppDangers = NULL;
+	CDangerObject* m_ppDangers = NULL;
 
 	CGameObject					*m_map = NULL;
 
@@ -100,7 +95,7 @@ public:
 
 	ID3D12Resource				*m_pd3dcbLights = NULL;
 	LIGHTS						*m_pcbMappedLights = NULL;
-	CHeightMapTerrain			*m_pTerrain = NULL;
+	CHeightMapTerrain* m_pTerrain = NULL;
 
 	float						m_fElapsedTime = 0.0f;
 };
