@@ -20,6 +20,8 @@
 #include <wrl.h>
 #include <shellapi.h>
 
+#include <assert.h>
+#include <algorithm>
 #include <fstream>
 #include <vector>
 

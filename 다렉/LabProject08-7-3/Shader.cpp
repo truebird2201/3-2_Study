@@ -503,6 +503,7 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12Graph
 	ppTreeMaterials[0] = new CMaterial();
 	ppTreeMaterials[0]->SetTexture(ppTreeTextures[0]);
 	ppTreeMaterials[1] = new CMaterial();
+
 	ppTreeMaterials[1]->SetTexture(ppTreeTextures[1]);
 	ppTreeMaterials[2] = new CMaterial();
 	ppTreeMaterials[2]->SetTexture(ppTreeTextures[2]);
