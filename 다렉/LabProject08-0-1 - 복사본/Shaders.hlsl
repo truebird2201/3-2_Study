@@ -37,6 +37,7 @@ cbuffer cbGameObjectInfo : register(b2)
 #define _WITH_STANDARD_TEXTURE_MULTIPLE_DESCRIPTORS
 
 #ifdef _WITH_STANDARD_TEXTURE_MULTIPLE_DESCRIPTORS
+Texture2D gtxtTexture : register(t0);
 Texture2D gtxtAlbedoTexture : register(t6);
 Texture2D gtxtSpecularTexture : register(t7);
 Texture2D gtxtNormalTexture : register(t8);
@@ -44,15 +45,17 @@ Texture2D gtxtMetallicTexture : register(t9);
 Texture2D gtxtEmissionTexture : register(t10);
 Texture2D gtxtDetailAlbedoTexture : register(t11);
 Texture2D gtxtDetailNormalTexture : register(t12);
+TextureCube gtxtSkyCubeTexture : register(t13);
+Texture2D gtxtTerrainBaseTexture : register(t14);
+Texture2D gtxtTerrainDetailTexture : register(t15);
 #else
 Texture2D gtxtStandardTextures[7] : register(t6);
 #endif
 
 SamplerState gssWrap : register(s0);
-Texture2D gtxtTexture : register(t0);
+SamplerState gssClamp : register(s1);
 
-Texture2D gtxtTerrainBaseTexture : register(t14);
-Texture2D gtxtTerrainDetailTexture : register(t15);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 struct VS_STANDARD_INPUT
 {
@@ -88,6 +91,31 @@ struct VS_TERRAIN_OUTPUT
 	float2 uv0 : TEXCOORD0;
 	float2 uv1 : TEXCOORD1;
 };
+
+struct VS_SPRITE_TEXTURED_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_SPRITE_TEXTURED_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_SKYBOX_CUBEMAP_INPUT
+{
+	float3 position : POSITION;
+};
+
+struct VS_SKYBOX_CUBEMAP_OUTPUT
+{
+	float3	positionL : POSITION;
+	float4	position : SV_POSITION;
+};
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 VS_STANDARD_OUTPUT VSStandard(VS_STANDARD_INPUT input)
 {
@@ -142,16 +170,7 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-struct VS_SKYBOX_CUBEMAP_INPUT
-{
-	float3 position : POSITION;
-};
 
-struct VS_SKYBOX_CUBEMAP_OUTPUT
-{
-	float3	positionL : POSITION;
-	float4	position : SV_POSITION;
-};
 
 VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
 {
@@ -163,8 +182,7 @@ VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
 	return(output);
 }
 
-TextureCube gtxtSkyCubeTexture : register(t13);
-SamplerState gssClamp : register(s1);
+
 
 float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
 {
@@ -175,17 +193,7 @@ float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-struct VS_SPRITE_TEXTURED_INPUT
-{
-	float3 position : POSITION;
-	float2 uv : TEXCOORD;
-};
 
-struct VS_SPRITE_TEXTURED_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float2 uv : TEXCOORD;
-};
 
 VS_SPRITE_TEXTURED_OUTPUT VSTextured(VS_SPRITE_TEXTURED_INPUT input)
 {

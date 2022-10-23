@@ -89,6 +89,7 @@ public:
 
 	void LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, wchar_t* pszFileName, UINT nResourceType, UINT nIndex);
 
+
 	void SetRootParameterIndex(int nIndex, UINT nRootParameterIndex);
 	int GetRootParameterIndex(int nIndex) { return(m_pnRootParameterIndices[nIndex]); }
 	void SetGpuDescriptorHandle(int nIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSrvGpuDescriptorHandle);
