@@ -482,6 +482,39 @@ XMFLOAT3 RandomPositionInSphere(XMFLOAT3 xmf3Center, float fRadius, int nColumn,
 	return(xmf3Position);
 }
 
+void CObjectsShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
+	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+
+	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);
+}
+
+void CObjectsShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+		if (m_ppObjects[j]->m_pMaterial && m_ppObjects[j]->m_pMaterial->m_pTexture)
+		{
+			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_ppObjects[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
+		}
+	}
+}
+
+void CObjectsShader::ReleaseShaderVariables()
+{
+	if (m_pd3dcbGameObjects)
+	{
+		m_pd3dcbGameObjects->Unmap(0, NULL);
+		m_pd3dcbGameObjects->Release();
+	}
+
+	CStandardShader::ReleaseShaderVariables();
+}
+
 void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext)
 {
 	m_nObjects = 120;

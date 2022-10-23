@@ -72,7 +72,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 #ifdef _WITH_TERRAIN_PARTITION
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 17, 17, xmf3Scale, xmf4Color);
 #else
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap2.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
 #endif
 
 	BuildDefaultLightsAndMaterials();
@@ -197,11 +197,11 @@ ID3D12RootSignature *CScene::CreateGraphicsRootSignature(ID3D12Device *pd3dDevic
 	pd3dDescriptorRanges[9].RegisterSpace = 0;
 	pd3dDescriptorRanges[9].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	pd3dDescriptorRanges[10].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[10].NumDescriptors = 1;
-	pd3dDescriptorRanges[10].BaseShaderRegister = 16; //t14 gtxtTerrainBaseTexture, t15 gtxtTerrainDetailTexture
-	pd3dDescriptorRanges[10].RegisterSpace = 0;
-	pd3dDescriptorRanges[10].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	//pd3dDescriptorRanges[10].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	//pd3dDescriptorRanges[10].NumDescriptors = 1;
+	//pd3dDescriptorRanges[10].BaseShaderRegister = 16; //t14 gtxtTerrainBaseTexture, t15 gtxtTerrainDetailTexture
+	//pd3dDescriptorRanges[10].RegisterSpace = 0;
+	//pd3dDescriptorRanges[10].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	D3D12_ROOT_PARAMETER pd3dRootParameters[13];
 

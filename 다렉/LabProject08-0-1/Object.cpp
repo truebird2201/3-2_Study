@@ -1080,7 +1080,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	pTerrainShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 2);
 	pTerrainShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
-	pTerrainShader->CreateShaderResourceViews(pd3dDevice, pTerrainTexture, 0, 4);
+	pTerrainShader->CreateShaderResourceViews(pd3dDevice, pTerrainTexture, 0, 11);
 
 	CMaterial* pTerrainMaterial = new CMaterial();
 	pTerrainMaterial->SetTexture(pTerrainTexture);
@@ -1119,7 +1119,6 @@ void CHeightMapTerrain::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 	}
 
 	pd3dCommandList->SetGraphicsRootDescriptorTable(11, m_d3dCbvGPUDescriptorHandle);
-	pd3dCommandList->SetGraphicsRootDescriptorTable(12, m_d3dCbvGPUDescriptorHandle);
 
 	if (m_ppMeshes)
 	{

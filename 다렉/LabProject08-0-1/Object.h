@@ -17,9 +17,22 @@
 class CShader;
 class CStandardShader;
 
+struct MATERIAL
+{
+	XMFLOAT4						m_xmf4Ambient;
+	XMFLOAT4						m_xmf4Diffuse;
+	XMFLOAT4						m_xmf4Specular; //(r,g,b,a=power)
+	XMFLOAT4						m_xmf4Emissive;
+};
+
 struct CB_GAMEOBJECT_INFO
 {
 	XMFLOAT4X4						m_xmf4x4World;
+	MATERIAL						m_material;
+
+	XMFLOAT4X4						m_xmf4x4Texture;
+	XMINT2							m_xmi2TextureTiling;
+	XMFLOAT2						m_xmf2TextureOffset;
 };
 
 

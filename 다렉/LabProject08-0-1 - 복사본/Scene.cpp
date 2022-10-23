@@ -67,7 +67,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	XMFLOAT3 xmf3Scale(1.0f, 0.4f, 1.0f);
+	XMFLOAT3 xmf3Scale(1.0f, 1.0f, 1.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.2f, 0.0f, 0.0f);
 #ifdef _WITH_TERRAIN_PARTITION
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 17, 17, xmf3Scale, xmf4Color);

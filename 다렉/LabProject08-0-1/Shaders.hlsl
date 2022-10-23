@@ -84,21 +84,7 @@ struct VS_STANDARD_OUTPUT
 	float2 uv : TEXCOORD;
 };
 
-struct VS_TERRAIN_INPUT
-{
-	float3 position : POSITION;
-	float4 color : COLOR;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-};
 
-struct VS_TERRAIN_OUTPUT
-{
-	float4 position : SV_POSITION;
-	float4 color : COLOR;
-	float2 uv0 : TEXCOORD0;
-	float2 uv1 : TEXCOORD1;
-};
 
 VS_STANDARD_OUTPUT VSStandard(VS_STANDARD_INPUT input)
 {
@@ -302,8 +288,23 @@ float4 PSTextured(VS_SPRITE_TEXTURED_OUTPUT input, uint nPrimitiveID : SV_Primit
 }
 */
 /////////////////////////////////
-//////////////////////
-///////////
+
+struct VS_TERRAIN_INPUT
+{
+	float3 position : POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
+
+struct VS_TERRAIN_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float4 color : COLOR;
+	float2 uv0 : TEXCOORD0;
+	float2 uv1 : TEXCOORD1;
+};
+
 VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 {
 	VS_TERRAIN_OUTPUT output;
@@ -320,10 +321,10 @@ float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gWrapSamplerState, input.uv0);
 	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gWrapSamplerState, input.uv1);
-	float fAlpha = gtxtTerrainAlphaTexture.Sample(gWrapSamplerState, input.uv0);
+	//float fAlpha = gtxtTerrainAlphaTexture.Sample(gWrapSamplerState, input.uv0);
 
-	float4 cColor = cBaseTexColor + cDetailTexColor;
+	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
 	//	float4 cColor = saturate(lerp(cBaseTexColor, cDetailTexColor, fAlpha));
 
-		return(cColor);
+	return(cBaseTexColor);
 }

@@ -1033,7 +1033,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CTexture* pTerrainTexture = new CTexture(2, RESOURCE_TEXTURE2D, 0, 1);
 
-	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/Base_Texture.dds", RESOURCE_TEXTURE2D, 0);
+	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/texture2.dds", RESOURCE_TEXTURE2D, 0);
 	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/Detail_Texture_7.dds", RESOURCE_TEXTURE2D, 1);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
@@ -1041,9 +1041,9 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CTerrainShader* pTerrainShader = new CTerrainShader();
 	pTerrainShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	pTerrainShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 2);
-	pTerrainShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
-	pTerrainShader->CreateShaderResourceViews(pd3dDevice, pTerrainTexture, 0, 4);
+	pTerrainShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 2);
+	//pTerrainShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ncbElementBytes);
+	pTerrainShader->CreateShaderResourceViews(pd3dDevice, pTerrainTexture, 0, 11);
 
 	CMaterial* pTerrainMaterial = new CMaterial();
 	pTerrainMaterial->SetTexture(pTerrainTexture);
@@ -1082,7 +1082,6 @@ void CHeightMapTerrain::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 	}
 
 	pd3dCommandList->SetGraphicsRootDescriptorTable(11, m_d3dCbvGPUDescriptorHandle);
-	pd3dCommandList->SetGraphicsRootDescriptorTable(12, m_d3dCbvGPUDescriptorHandle);
 
 	if (m_ppMeshes)
 	{

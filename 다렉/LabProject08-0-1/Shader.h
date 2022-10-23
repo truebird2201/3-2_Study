@@ -58,7 +58,7 @@ public:
 
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) { }
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList) { }
-	virtual void ReleaseShaderVariables() { }
+	virtual void ReleaseShaderVariables() {if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();};
 
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World) { }
 
@@ -144,6 +144,10 @@ public:
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext = NULL);
 	virtual void AnimateObjects(float fTimeElapsed);
 	virtual void ReleaseObjects();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
 
 	virtual void ReleaseUploadBuffers();
 
