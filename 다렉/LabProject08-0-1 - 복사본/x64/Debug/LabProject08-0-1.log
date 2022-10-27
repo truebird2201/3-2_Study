@@ -1,2 +1,18 @@
-﻿  Scene.cpp
+﻿  compilation object save succeeded; see C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\x64\Debug\Shaders.cso
+  stdafx.cpp
+  Camera.cpp
+  DDSTextureLoader12.cpp
+  GameFramework.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\GameFramework.cpp(410,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  LabProject08-0-1.cpp
+  Mesh.cpp
+  Object.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Object.cpp(948,49): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Player.cpp
+  Scene.cpp
+  Shader.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Shader.cpp(521,74): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Timer.cpp
+  WICTextureLoader12.cpp
+  코드를 생성하고 있습니다...
   LabProject08-0-1.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\x64\Debug\LabProject08-0-1.exe

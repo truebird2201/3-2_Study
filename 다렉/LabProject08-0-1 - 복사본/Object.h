@@ -352,6 +352,7 @@ public:
 
 	virtual void Animate(float fTimeElapsed);
 
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	float m_fRotationAngle = 0.0f;
 	float m_fRotationDelta = 1.0f;
 };

@@ -471,16 +471,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 			}
 		}
 	}
-	if (m_pMaterial) {
-		if (m_pMaterial->m_pShader) {
-			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
-		}
-		m_pMaterial->UpdateShaderVariables(pd3dCommandList);
-		for (int j = 0; j < m_nMeshes; ++j)
-		{
-			if (m_ppMeshes[j]) m_ppMeshes[j]->Render(pd3dCommandList, j);
-		}
-	}
+	
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
@@ -963,6 +954,7 @@ CBox::~CBox()
 
 void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
@@ -1079,6 +1071,31 @@ void CGrassObject::Animate(float fTimeElapsed)
 	m_fRotationAngle += m_fRotationDelta * fTimeElapsed;
 
 	Rotate(0.0f, 0.0f, m_fRotationAngle);
+}
+void CGrassObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+	if (m_pMaterial)
+	{
+		if (m_pMaterial->m_pTexture)
+		{
+			m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+			//m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+			//if (m_pcbMappedGameObject) XMStoreFloat4x4(&m_pcbMappedGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&m_pMaterial->m_pTexture->m_xmf4x4Texture)));
+		}
+	}
+
+	//pd3dCommandList->SetGraphicsRootDescriptorTable(12, m_d3dCbvGPUDescriptorHandle);
+
+	if (m_ppMeshes)
+	{
+		for (int i = 0; i < m_nMeshes; i++)
+		{
+			if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList);
+		}
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
