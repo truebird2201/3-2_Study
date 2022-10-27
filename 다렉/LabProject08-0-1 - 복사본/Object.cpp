@@ -920,6 +920,42 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
+{
+	CBoxMesh* pBoxMesh = new CBoxMesh(pd3dDevice, pd3dCommandList, 300.0f, 20.0f, 300.0f);
+	SetMesh(pBoxMesh);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pBlendTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	pBlendTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/Base_Texture.dds", RESOURCE_TEXTURE2D, 0);
+
+	CBlendShader* pBlendShader = new CBlendShader();
+	pBlendShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pBlendShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	pBlendShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 1);
+	pBlendShader->CreateShaderResourceViews(pd3dDevice, pBlendTexture, 0, 12);
+
+	CMaterial* pSkyBoxMaterial = new CMaterial();
+	pSkyBoxMaterial->SetTexture(pBlendTexture);
+	pSkyBoxMaterial->SetShader(pBlendShader);
+
+	SetMaterial(0, pSkyBoxMaterial);
+	SetPosition({ 160.062775,20.432579,130.924500 });
+}
+
+CBox::~CBox()
+{
+}
+
+void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CSuperCobraObject::CSuperCobraObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
@@ -1071,7 +1107,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CTexture* pTerrainTexture = new CTexture(2, RESOURCE_TEXTURE2D, 0, 1);
 
-	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/texture2.dds", RESOURCE_TEXTURE2D, 0);
+	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/texture.dds", RESOURCE_TEXTURE2D, 0);
 	pTerrainTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/Detail_Texture_7.dds", RESOURCE_TEXTURE2D, 1);
 
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö

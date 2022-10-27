@@ -77,6 +77,7 @@ public:
 	CShader								**m_ppShaders = NULL;
 
 	CSkyBox								*m_pSkyBox = NULL;
+	CBox								* m_pWater = NULL;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
 

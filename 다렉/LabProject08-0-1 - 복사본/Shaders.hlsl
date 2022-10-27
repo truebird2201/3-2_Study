@@ -92,13 +92,13 @@ struct VS_TERRAIN_OUTPUT
 	float2 uv1 : TEXCOORD1;
 };
 
-struct VS_SPRITE_TEXTURED_INPUT
+struct VS_TEXTURED_INPUT
 {
 	float3 position : POSITION;
 	float2 uv : TEXCOORD;
 };
 
-struct VS_SPRITE_TEXTURED_OUTPUT
+struct VS_TEXTURED_OUTPUT
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD;
@@ -195,9 +195,9 @@ float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
 //
 
 
-VS_SPRITE_TEXTURED_OUTPUT VSTextured(VS_SPRITE_TEXTURED_INPUT input)
+VS_TEXTURED_OUTPUT VSTextured(VS_TEXTURED_INPUT input)
 {
-	VS_SPRITE_TEXTURED_OUTPUT output;
+	VS_TEXTURED_OUTPUT output;
 
 	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
 	output.uv = input.uv;
@@ -205,30 +205,15 @@ VS_SPRITE_TEXTURED_OUTPUT VSTextured(VS_SPRITE_TEXTURED_INPUT input)
 	return(output);
 }
 
-/*
-float4 PSTextured(VS_SPRITE_TEXTURED_OUTPUT input, uint nPrimitiveID : SV_PrimitiveID) : SV_TARGET
-{
-	float4 cColor;
-	if (nPrimitiveID < 2)
-		cColor = gtxtTextures[0].Sample(gWrapSamplerState, input.uv);
-	else if (nPrimitiveID < 4)
-		cColor = gtxtTextures[1].Sample(gWrapSamplerState, input.uv);
-	else if (nPrimitiveID < 6)
-		cColor = gtxtTextures[2].Sample(gWrapSamplerState, input.uv);
-	else if (nPrimitiveID < 8)
-		cColor = gtxtTextures[3].Sample(gWrapSamplerState, input.uv);
-	else if (nPrimitiveID < 10)
-		cColor = gtxtTextures[4].Sample(gWrapSamplerState, input.uv);
-	else
-		cColor = gtxtTextures[5].Sample(gWrapSamplerState, input.uv);
-	float4 cColor = gtxtTextures[NonUniformResourceIndex(nPrimitiveID/2)].Sample(gWrapSamplerState, input.uv);
 
+float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
+{
+	float4 cColor = gtxtTexture.Sample(gssClamp, input.uv);
 	return(cColor);
 }
-*/
-/////////////////////////////////
-//////////////////////
-///////////
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 {
 	VS_TERRAIN_OUTPUT output;

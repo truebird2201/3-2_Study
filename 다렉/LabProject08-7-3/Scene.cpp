@@ -29,7 +29,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
-	m_nShaders = 1;
+	m_nShaders = 2;
 	m_ppShaders = new CShader*[m_nShaders];
 
 	CBillboardObjectsShader *pBillboardObjectShader = new CBillboardObjectsShader();
@@ -41,7 +41,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pMultiSpriteObjectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pMultiSpriteObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 	pMultiSpriteObjectShader->SetActive(false);
-	m_ppShaders[0] = pMultiSpriteObjectShader;
+	m_ppShaders[1] = pMultiSpriteObjectShader;
 }
 
 void CScene::ReleaseObjects()
