@@ -783,9 +783,9 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	CRawFormatImage* pRawFormatImage = new CRawFormatImage(L"Image/ObjectsMap.raw", 257, 257, true);
 
 	int nGrassObjects = 0, nFlowerObjects = 0, nBlacks = 0, nOthers = 0, nTreeObjects[3] = { 0, 0, 0 };
-	for (int z = 2; z <= 254; z++)
+	for (int z = 2; z <= 254; z+=8)
 	{
-		for (int x = 2; x <= 254; x++)
+		for (int x = 2; x <= 254; x+=8)
 		{
 			BYTE nPixel = pRawFormatImage->GetRawImagePixel(x, z);
 			switch (nPixel)
@@ -809,13 +809,13 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, m_nObjects, 7);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ncbElementBytes);
-	CreateShaderResourceViews(pd3dDevice, ppGrassTextures[0], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppGrassTextures[1], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppFlowerTextures[0], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppFlowerTextures[1], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[0], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[1], 0, 3);
-	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[2], 0, 3);
+	CreateShaderResourceViews(pd3dDevice, ppGrassTextures[0], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppGrassTextures[1], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppFlowerTextures[0], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppFlowerTextures[1], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[0], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[1], 0, 12);
+	CreateShaderResourceViews(pd3dDevice, ppTreeTextures[2], 0, 12);
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
@@ -827,9 +827,9 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGrassObject* pBillboardObject = NULL;
-	for (int nObjects = 0, z = 2; z <= 254; z++)
+	for (int nObjects = 0, z = 2; z <= 254; z+=8)
 	{
-		for (int x = 2; x <= 254; x++)
+		for (int x = 2; x <= 254; x+=8)
 		{
 			BYTE nPixel = pRawFormatImage->GetRawImagePixel(x, z);
 
@@ -886,8 +886,8 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 				pBillboardObject->SetMesh(pMesh,0);
 				pBillboardObject->SetMaterial(pMaterial);
 
-				float xPosition = -x * xmf3Scale.x;
-				float zPosition = -z * xmf3Scale.z;
+				float xPosition = x * xmf3Scale.x;
+				float zPosition = z * xmf3Scale.z;
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 				pBillboardObject->SetPosition(xPosition, fHeight + fyOffset, zPosition);
 				pBillboardObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nObjects));
@@ -908,7 +908,7 @@ void CBillboardObjectsShader::ReleaseObjects()
 	CObjectsShader::ReleaseObjects();
 }
 
-void CBillboardObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CBillboardObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
 {
 	XMFLOAT3 xmf3CameraPosition = pCamera->GetPosition();
 	for (int j = 0; j < m_nObjects; j++)

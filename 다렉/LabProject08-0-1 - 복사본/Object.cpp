@@ -471,6 +471,16 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 			}
 		}
 	}
+	if (m_pMaterial) {
+		if (m_pMaterial->m_pShader) {
+			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
+		}
+		m_pMaterial->UpdateShaderVariables(pd3dCommandList);
+		for (int j = 0; j < m_nMeshes; ++j)
+		{
+			if (m_ppMeshes[j]) m_ppMeshes[j]->Render(pd3dCommandList, j);
+		}
+	}
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
@@ -930,7 +940,7 @@ CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CTexture* pBlendTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	pBlendTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/Base_Texture.dds", RESOURCE_TEXTURE2D, 0);
+	pBlendTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Image/water1.dds", RESOURCE_TEXTURE2D, 0);
 
 	CBlendShader* pBlendShader = new CBlendShader();
 	pBlendShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
