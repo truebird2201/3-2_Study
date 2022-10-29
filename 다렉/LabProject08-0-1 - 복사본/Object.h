@@ -187,6 +187,8 @@ public:
 	CGameObject();
 	CGameObject(int nMaterials);
     virtual ~CGameObject();
+	bool							check = false;
+	float							speed = 0;
 
 public:
 	char							m_pstrFrameName[64];
@@ -287,39 +289,49 @@ private:
 	CGameObject					*m_pTailRotorFrame = NULL;
 
 public:
+	XMFLOAT3 target[30] = { { 9993.642578,1781.7,1898.392334 },
+		{10664.567383,1731.708008,1896.088867},
+{10387.879883,1731.708008,3039.410889},
+{10053.763672,1731.708008,4122.112305},
+{9489.864258,1731.708008,5031.618652},
+{8749.383789,1731.708008,5616.764648},
+{7879.607910,1731.708008,5825.460449},
+{7108.064453,1731.708008,5577.484863},
+{6557.710449,1731.708008,4960.970215},
+{6223.214844,1731.708008,4124.794434},
+{5843.142578,1731.708008,3178.603760},
+{5274.423340,1731.708008,2459.263672},
+{4490.493652,1731.708008,2115.061523},
+{3635.420166,1731.708008,2302.247070},
+{3002.269531,1731.708008,2877.288086},
+{2616.467285,1731.708008,3693.192139},
+{2463.145264,1731.708008,4516.299316},
+{2441.480713,1731.708008,5432.000977},
+{2528.486084,1731.708008,6316.228027},
+{2770.440674,1731.708008,7203.001465},
+{3096.812500,1731.708008,7874.625488},
+{3587.687012,1731.708008,8510.458984},
+{4200.087891,1731.708008,9057.870117},
+{4882.723145,1731.708008,9488.553711},
+{5737.229980,1731.708008,9858.669922},
+{6534.335449,1731.708008,10050.710938},
+{7465.119141,1731.708008,10140.161133},
+{8425.211914,1731.708008,10155.407227},
+{9229.575195,1731.708008,10144.954102},
+{10218.685547,1731.708008,10232.862305}, };
+	int move = 0;
+	int state = 1;
+	XMFLOAT3 TargetPosition;
+
+	void FollowPlayer(float fTimeElapsed);
+	bool fly = false;
+	bool attack = false;
+	bool goal = false;
+
 	virtual void PrepareAnimate();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
 };
 
-class CGunshipObject : public CGameObject
-{
-public:
-	CGunshipObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
-	virtual ~CGunshipObject();
-
-private:
-	CGameObject					*m_pMainRotorFrame = NULL;
-	CGameObject					*m_pTailRotorFrame = NULL;
-
-public:
-	virtual void PrepareAnimate();
-	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
-};
-
-class CMi24Object : public CGameObject
-{
-public:
-	CMi24Object(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
-	virtual ~CMi24Object();
-
-private:
-	CGameObject					*m_pMainRotorFrame = NULL;
-	CGameObject					*m_pTailRotorFrame = NULL;
-
-public:
-	virtual void PrepareAnimate();
-	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

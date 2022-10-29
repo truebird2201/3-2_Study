@@ -48,6 +48,7 @@ Texture2D gtxtDetailNormalTexture : register(t12);
 TextureCube gtxtSkyCubeTexture : register(t13);
 Texture2D gtxtTerrainBaseTexture : register(t14);
 Texture2D gtxtTerrainDetailTexture : register(t15);
+Texture2D gtxtWaterTexture : register(t16);
 #else
 Texture2D gtxtStandardTextures[7] : register(t6);
 #endif
@@ -99,6 +100,18 @@ struct VS_TEXTURED_INPUT
 };
 
 struct VS_TEXTURED_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_Water_INPUT
+{
+	float3 position : POSITION;
+	float2 uv : TEXCOORD;
+};
+
+struct VS_Water_OUTPUT
 {
 	float4 position : SV_POSITION;
 	float2 uv : TEXCOORD;
@@ -212,6 +225,27 @@ float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
 	return(cColor);
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+
+VS_Water_OUTPUT VSWater(VS_TEXTURED_INPUT input)
+{
+	VS_Water_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.uv = input.uv;
+
+	return(output);
+}
+
+
+float4 PSWater(VS_Water_OUTPUT input) : SV_TARGET
+{
+	float4 cColor = gtxtWaterTexture.Sample(gssWrap, input.uv*8);
+	return(cColor);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
@@ -229,8 +263,8 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gssWrap, input.uv0);
-	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gssWrap, input.uv1);
-	float4 cColor = input.color * saturate((cBaseTexColor * 0.5f) + (cDetailTexColor * 0.5f));
+	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gssWrap, float2(input.uv1.x/6, input.uv1.y/2));
+	float4 cColor = (cBaseTexColor * 1.0f) + (float4(cDetailTexColor.rrr,1.f) * 0.3f);
 
-	return(cBaseTexColor);
+	return(cColor);
 }

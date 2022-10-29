@@ -398,12 +398,12 @@ D3D12_BLEND_DESC CBlendShader::CreateBlendState()
 
 D3D12_SHADER_BYTECODE CBlendShader::CreateVertexShader()
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSTextured", "vs_5_1", &m_pd3dVertexShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSWater", "vs_5_1", &m_pd3dVertexShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CBlendShader::CreatePixelShader()
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSTextured", "ps_5_1", &m_pd3dPixelShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSWater", "ps_5_1", &m_pd3dPixelShaderBlob));
 }
 
 void CBlendShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -515,7 +515,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Gunship.bin", this);
 
 
-	m_ppObjects[0] = new CGunshipObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_ppObjects[0] = new CSuperCobraObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	m_ppObjects[0]->SetChild(pGunshipModel);
 	pGunshipModel->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3({ 220.604691,50.471531,213.221252 }));
@@ -785,9 +785,9 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 
 	CTexture* ppTreeTextures[3];
 	ppTreeTextures[0] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTreeTextures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Tree01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTreeTextures[0]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Tree02.dds", RESOURCE_TEXTURE2D, 0);
 	ppTreeTextures[1] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTreeTextures[1]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Tree02.dds", RESOURCE_TEXTURE2D, 0);
+	ppTreeTextures[1]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Tree01.dds", RESOURCE_TEXTURE2D, 0);
 	ppTreeTextures[2] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
 	ppTreeTextures[2]->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/Tree03.dds", RESOURCE_TEXTURE2D, 0);
 
@@ -812,17 +812,17 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	ppTreeMaterials[2] = new CMaterial();
 	ppTreeMaterials[2]->SetTexture(ppTreeTextures[2]);
 
-	CTexturedRectMesh* pGrassMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 8.0f, 8.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	CTexturedRectMesh* pGrassMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 4.0f, 8.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 	CTexturedRectMesh* pFlowerMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 8.0f, 16.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	CTexturedRectMesh* pTreeMesh01 = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 24.0f, 36.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-	CTexturedRectMesh* pTreeMesh02 = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 16.0f, 46.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	CTexturedRectMesh* pTreeMesh01 = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 8.0f, 8.0f, 0.0f, 0.0f, 0.0f, 0.0f);
+	CTexturedRectMesh* pTreeMesh02 = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 8.0f, 8.0f, 0.0f, 0.0f, 0.0f, 0.0f);
 
 	CRawFormatImage* pRawFormatImage = new CRawFormatImage(L"Image/ObjectsMap.raw", 257, 257, true);
 
 	int nGrassObjects = 0, nFlowerObjects = 0, nBlacks = 0, nOthers = 0, nTreeObjects[3] = { 0, 0, 0 };
-	for (int z = 2; z <= 254; z+=8)
+	for (int z = 2; z <= 254; z+=10)
 	{
-		for (int x = 2; x <= 254; x+=8)
+		for (int x = 2; x <= 254; x+=10)
 		{
 			BYTE nPixel = pRawFormatImage->GetRawImagePixel(x, z);
 			switch (nPixel)
@@ -864,9 +864,9 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGrassObject* pBillboardObject = NULL;
-	for (int nObjects = 0, z = 2; z <= 254; z+=8)
+	for (int nObjects = 0, z = 2; z <= 254; z+=10)
 	{
-		for (int x = 2; x <= 254; x+=8)
+		for (int x = 2; x <= 254; x+=10)
 		{
 			BYTE nPixel = pRawFormatImage->GetRawImagePixel(x, z);
 
