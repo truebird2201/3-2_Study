@@ -242,7 +242,7 @@ VS_Water_OUTPUT VSWater(VS_TEXTURED_INPUT input)
 
 float4 PSWater(VS_Water_OUTPUT input) : SV_TARGET
 {
-	float4 cColor = gtxtWaterTexture.Sample(gssWrap, input.uv*8);
+	float4 cColor = gtxtWaterTexture.Sample(gssWrap, input.uv*5);
 	return(cColor);
 }
 
@@ -263,8 +263,8 @@ VS_TERRAIN_OUTPUT VSTerrain(VS_TERRAIN_INPUT input)
 float4 PSTerrain(VS_TERRAIN_OUTPUT input) : SV_TARGET
 {
 	float4 cBaseTexColor = gtxtTerrainBaseTexture.Sample(gssWrap, input.uv0);
-	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gssWrap, float2(input.uv1.x/6, input.uv1.y/2));
-	float4 cColor = (cBaseTexColor * 1.0f) + (float4(cDetailTexColor.rrr,1.f) * 0.3f);
+	float4 cDetailTexColor = gtxtTerrainDetailTexture.Sample(gssWrap, float2(input.uv1.x/6, input.uv1.y/3));
+	float4 cColor = (cBaseTexColor * 1.0f) + (float4(cDetailTexColor.rrr,1.f) * 0.2f);
 
 	return(cColor);
 }
