@@ -5,9 +5,8 @@
 
 enum message_type
 {
-  Msg_TakeRest,
-  Msg_Money,
-  Msg_Angry
+  Msg_HiHoneyImHome,
+  Msg_StewReady,
 };
 
 
@@ -15,17 +14,14 @@ inline std::string MsgToStr(int msg)
 {
   switch (msg)
   {
-  case Msg_TakeRest:
+  case Msg_HiHoneyImHome:
     
-    return "TakeRest"; 
+    return "HiHoneyImHome"; 
 
-  case Msg_Money:
+  case Msg_StewReady:
+    
+    return "StewReady";
 
-      return "Money";
-
-  case Msg_Angry:
-
-      return "Angry";
   default:
 
     return "Not recognized!";

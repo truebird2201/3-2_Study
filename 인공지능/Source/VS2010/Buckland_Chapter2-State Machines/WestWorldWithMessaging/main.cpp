@@ -2,11 +2,8 @@
 #include <time.h>
 
 #include "Locations.h"
-
-#include "SpongeBob.h"
-#include "Crab.h"
-#include "JingJing.h"
-
+#include "Miner.h"
+#include "MinersWife.h"
 #include "EntityManager.h"
 #include "MessageDispatcher.h"
 #include "misc/ConsoleUtils.h"
@@ -17,7 +14,6 @@ std::ofstream os;
 
 int main()
 {
-    printf("2020182031 ÀÌ¼­¿¬\n\n");
 //define this to send output to a text file (see locations.h)
 #ifdef TEXTOUTPUT
   os.open("output.txt");
@@ -26,26 +22,21 @@ int main()
   //seed random number generator
   srand((unsigned) time(NULL));
 
-  //create a Sponge
-  SpongeBob* Bob = new SpongeBob(ent_SpongeBob);
+  //create a miner
+  Miner* Bob = new Miner(ent_Miner_Bob);
 
-  //create Crab
-  Crab* Boss = new Crab(ent_Crab);
-
-  //create JingJing
-  JingJing* Jing = new JingJing(ent_JingJing);
+  //create his wife
+  MinersWife* Elsa = new MinersWife(ent_Elsa);
 
   //register them with the entity manager
   EntityMgr->RegisterEntity(Bob);
-  EntityMgr->RegisterEntity(Boss);
-  EntityMgr->RegisterEntity(Jing);
+  EntityMgr->RegisterEntity(Elsa);
 
-  //run Bob and Boss through a few Update calls
+  //run Bob and Elsa through a few Update calls
   for (int i=0; i<30; ++i)
   { 
     Bob->Update();
-    Boss->Update();
-    Jing->Update();
+    Elsa->Update();
 
     //dispatch any delayed messages
     Dispatch->DispatchDelayedMessages();
@@ -55,8 +46,7 @@ int main()
 
   //tidy up
   delete Bob;
-  delete Boss;
-  delete Jing;
+  delete Elsa;
 
   //wait for a keypress before exiting
   PressAnyKeyToContinue();

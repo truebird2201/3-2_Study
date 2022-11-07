@@ -4,9 +4,10 @@
 
 enum location_type
 {
-  KrabShop,
-  Hill,
-  SpongeBobHouse,
+  shack,
+  goldmine,
+  bank,
+  saloon
 };
 
 
