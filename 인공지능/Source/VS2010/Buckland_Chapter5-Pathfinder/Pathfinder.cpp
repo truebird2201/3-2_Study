@@ -423,7 +423,9 @@ std::string Pathfinder::GetNameOfCurrentSearchAlgorithm()const
 void Pathfinder::Render()
 {
   gdi->TransparentText();
-  
+  if (m_pGraph == NULL) {
+      return;
+  }
   //render all the cells
   for (int nd=0; nd<m_pGraph->NumNodes(); ++nd)
   {
