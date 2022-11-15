@@ -193,8 +193,6 @@ std::list<int> Graph_SearchDFS<graph_type>::GetPathToTarget()const
   return path;
 }
 
-
-
 //----------------------------- Graph_SearchBFS -------------------------------
 //
 //-----------------------------------------------------------------------------
@@ -353,8 +351,6 @@ std::list<int> Graph_SearchBFS<graph_type>::GetPathToTarget()const
 
   return path;
 }
-
-
 
 //----------------------- Graph_SearchDijkstra --------------------------------
 //
