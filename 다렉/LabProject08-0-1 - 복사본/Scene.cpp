@@ -81,19 +81,18 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_pWater = new CBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	m_nShaders = 2;
-	m_ppShaders = new CShader*[m_nShaders];
+	m_ppShaders = new CObjectsShader*[m_nShaders];
+
 
 	CBillboardObjectsShader* pBillboardObjectShader = new CBillboardObjectsShader();
 	pBillboardObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBillboardObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pTerrain);
 	m_ppShaders[0] = pBillboardObjectShader;
 
-	CObjectsShader *pObjectsShader = new CObjectsShader();
-	pObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
-
-	m_ppShaders[1] = pObjectsShader;
-
+	CObjectsShader* pObjectShader = new CObjectsShader();
+	pObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
+	m_ppShaders[1] = pObjectShader;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -111,6 +110,15 @@ void CScene::ReleaseObjects()
 			m_ppShaders[i]->Release();
 		}
 		delete[] m_ppShaders;
+	}
+	if (m_ppGameObjects)
+	{
+		for (int i = 0; i < m_nGameObjects; i++)
+		{
+			m_ppGameObjects[i]->ReleaseShaderVariables();
+			m_ppGameObjects[i]->Release();
+		}
+		delete[] m_ppGameObjects;
 	}
 
 	if (m_pSkyBox) delete m_pSkyBox;
@@ -388,6 +396,7 @@ void CScene::ReleaseUploadBuffers()
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
 	if (m_pWater) m_pWater->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 }
 
@@ -423,12 +432,24 @@ bool CScene::ProcessInput(UCHAR *pKeysBuffer)
 void CScene::AnimateObjects(float fTimeElapsed)
 {
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(fTimeElapsed);
 	
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = m_pPlayer->GetPosition();
 		m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
 	}
+	for (int i = 0; i < m_ppShaders[1]->m_nEnemys; i++) {
+		m_ppShaders[1]->m_Enemy[0]->TargetPosition = m_pPlayer->GetPosition();
+		m_ppShaders[1]->m_Enemy[0]->FollowPlayer(fTimeElapsed);
+		if (m_ppShaders[1]->m_Enemy[0]->attack && m_ppShaders[1]->m_Bullets[0]->ready == true && m_ppShaders[1]->m_Enemy[0]->fly == false) {
+			m_ppShaders[1]->m_Dangers[0]->ready = false;
+			m_ppShaders[1]->m_Dangers[0]->SetPosition(m_ppShaders[1]->m_Enemy[0]->GetPosition());
+			m_ppShaders[1]->m_Dangers[0]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_Dangers[0]->GetPosition()));
+
+		}
+	}
+
 }
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
@@ -442,7 +463,14 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
-
+	for (int i = 0; i < m_nGameObjects; i++)
+	{
+		if (m_ppGameObjects[i])
+		{
+			m_ppGameObjects[i]->UpdateTransform(NULL);
+			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	if (m_pWater) m_pWater->Render(pd3dCommandList, pCamera);

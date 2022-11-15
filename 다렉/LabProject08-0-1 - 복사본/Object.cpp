@@ -421,6 +421,7 @@ void CGameObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed, pxmf4x4Parent);
 	if (m_pChild) m_pChild->Animate(fTimeElapsed, &m_xmf4x4World);
+
 }
 
 CGameObject *CGameObject::FindFrame(char *pstrFrameName)
@@ -997,21 +998,20 @@ void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CSuperCobraObject::CSuperCobraObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
+CEnemyObject::CEnemyObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
+{
+}
+CEnemyObject::~CEnemyObject()
 {
 }
 
-CSuperCobraObject::~CSuperCobraObject()
-{
-}
-
-void CSuperCobraObject::PrepareAnimate()
+void CEnemyObject::PrepareAnimate()
 {
 	m_pMainRotorFrame = FindFrame("MainRotor");
 	m_pTailRotorFrame = FindFrame("TailRotor");
 }
 
-void CSuperCobraObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
+void CEnemyObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 {
 	if (m_pMainRotorFrame)
 	{
@@ -1026,7 +1026,7 @@ void CSuperCobraObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 
 	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
-void CSuperCobraObject::FollowPlayer(float fTimeElapsed) {
+void CEnemyObject::FollowPlayer(float fTimeElapsed) {
 	if (fly == false) {
 
 
@@ -1079,6 +1079,92 @@ void CSuperCobraObject::FollowPlayer(float fTimeElapsed) {
 
 
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CBulletObject::CBulletObject()
+{
+}
+
+CBulletObject::~CBulletObject()
+{
+}
+
+void CBulletObject::OnInitialize()
+{
+}
+
+void CBulletObject::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
+{
+	if (ready == false) {
+		Rotate(0.3f, 0.3f, 0.3f);
+		m_xmf4x4Transform._41 += m_xmDirect.x / 5;
+		//m_xmf4x4Transform._42 += m_xmDirect.y/5;
+		m_xmf4x4Transform._43 += m_xmDirect.z / 5;
+	}
+	m_AABB.Center = GetPosition();
+	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
+	check = true;
+}
+
+void CBulletObject::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
+{
+	if (bUpdateVelocity)
+	{
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+	}
+	else
+	{
+		m_AABB.Center = Vector3::Add(m_AABB.Center, xmf3Shift);
+	}
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CDangerObject::CDangerObject()
+{
+}
+
+CDangerObject::~CDangerObject()
+{
+}
+
+void CDangerObject::OnInitialize()
+{
+}
+
+void CDangerObject::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
+{
+	if (ready == false) {
+		Rotate(0.3f, 0.3f, 0.3f);
+		m_xmf4x4Transform._41 += m_xmDirect.x / 2;
+		m_xmf4x4Transform._42 += m_xmDirect.y / 2;
+		m_xmf4x4Transform._43 += m_xmDirect.z / 2;
+		cnt++;
+		if (cnt == 10000)
+		{
+			cnt = 0;
+			ready = true;
+		}
+	}
+	m_AABB.Center = GetPosition();
+	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
+	check = true;
+}
+
+void CDangerObject::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
+{
+	if (bUpdateVelocity)
+	{
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+	}
+	else
+	{
+		m_AABB.Center = Vector3::Add(m_AABB.Center, xmf3Shift);
+	}
+
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 CGrassObject::CGrassObject()

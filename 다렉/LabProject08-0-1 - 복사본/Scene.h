@@ -74,7 +74,7 @@ public:
 	CGameObject							**m_ppGameObjects = NULL;
 
 	int									m_nShaders = 0;
-	CShader								**m_ppShaders = NULL;
+	CObjectsShader						**m_ppShaders = NULL;
 
 	CSkyBox								*m_pSkyBox = NULL;
 	CBox								* m_pWater = NULL;

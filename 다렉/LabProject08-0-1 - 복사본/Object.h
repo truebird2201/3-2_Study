@@ -189,6 +189,7 @@ public:
     virtual ~CGameObject();
 	bool							check = false;
 	float							speed = 0;
+	BoundingBox						m_AABB;
 
 public:
 	char							m_pstrFrameName[64];
@@ -278,11 +279,11 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-class CSuperCobraObject : public CGameObject
+class CEnemyObject : public CGameObject
 {
 public:
-	CSuperCobraObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
-	virtual ~CSuperCobraObject();
+	CEnemyObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
+	virtual ~CEnemyObject();
 
 private:
 	CGameObject					*m_pMainRotorFrame = NULL;
@@ -332,6 +333,45 @@ public:
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
 };
 
+///////////////////////////////////////////////
+
+class CBulletObject : public CGameObject
+{
+public:
+	CBulletObject();
+	virtual ~CBulletObject();
+	XMFLOAT3 m_xmf3Position;
+	XMFLOAT3 m_xmDirect;
+	XMFLOAT3 m_xmf3Velocity;
+	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity);
+	void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
+protected:
+
+public:
+	bool							ready = true;
+	virtual void OnInitialize();
+	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
+};
+////////////////////////////////////////////////////////////////////////////////////
+
+class CDangerObject : public CGameObject
+{
+public:
+	CDangerObject();
+	virtual ~CDangerObject();
+	XMFLOAT3 m_xmf3Position;
+	XMFLOAT3 m_xmDirect;
+	XMFLOAT3 m_xmf3Velocity;
+	int cnt = 0;
+	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity);
+	void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
+protected:
+
+public:
+	bool							ready = true;
+	virtual void OnInitialize();
+	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
