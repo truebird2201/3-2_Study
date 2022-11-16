@@ -9,13 +9,25 @@
 #define SERVERPORT 9000
 #define BUFSIZE    50
 
+char* SERVERIP = (char*)"127.0.0.1";
+char* filename = (char*)"Rolling.mp4";
+
+INT_PTR CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
+DWORD WINAPI ClientMain(LPVOID arg);
+
 SOCKET sock;
+
+HANDLE hReadEvent, hWriteEvent; // 이벤트
 
 HWND hFolderButton; // 파일 찾기 버튼
 HWND hSendButton; // 보내기 버튼
+HWND hProgress; // 진행 상황
 
-char* SERVERIP = (char*)"127.0.0.1";
-char* filename = (char*)"Rolling.mp4";
+// 데이터 통신에 사용할 변수
+int fsize = 0; // 파일 사이즈
+int nsize = 0; // 파일 이름 길이
+int nowsize = 0; // 현재 보낸 사이즈
+int sendsize = 8000; // 한번에 보낼 사이즈
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -24,6 +36,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
+
+	// 이벤트 생성
+	hReadEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	hWriteEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	// 소켓 통신 스레드 생성
+	CreateThread(NULL, 0, ClientMain, NULL, 0, NULL);
+
+	// 대화상자 생성
+	DialogBox(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc);
+
+	// 이벤트 제거
+	CloseHandle(hReadEvent);
+	CloseHandle(hWriteEvent);
 
 	// 윈속 종료
 	WSACleanup();
@@ -37,21 +63,16 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		hFolderButton = GetDlgItem(hDlg, IDC_BUTTON1);
 		hSendButton = GetDlgItem(hDlg, IDC_BUTTON2);
-		SendMessage(hEdit1, EM_SETLIMITTEXT, BUFSIZE, 0);
+		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
 		return TRUE;
+
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 
-		case IDC_BUTTON1:	// 파일 선택 버튼
-			EnableWindow(hSendButton, FALSE); // 보내기 버튼 비활성화
-			WaitForSingleObject(hReadEvent, INFINITE); // 읽기 완료 대기
-			GetDlgItemTextA(hDlg, IDC_EDIT1, buf, BUFSIZE + 1);
-			SetEvent(hWriteEvent); // 쓰기 완료 알림
-			SetFocus(hEdit1); // 키보드 포커스 전환
-			SendMessage(hEdit1, EM_SETSEL, 0, -1); // 텍스트 전체 선택
+		case IDOK:	// 파일 선택 버튼
 			return TRUE;
 
-		case IDC_BUTTON2:	// 파일 보내기 버튼
+		case IDCANCEL:	// 파일 보내기 버튼
 			EndDialog(hDlg, IDCANCEL); // 대화상자 닫기
 			closesocket(sock); // 소켓 닫기
 			return TRUE;
@@ -79,12 +100,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
-
-	// 데이터 통신에 사용할 변수
-	int fsize = 0; // 파일 사이즈
-	int nsize = 0; // 파일 이름 길이
-	int nowsize = 0; // 현재 보낸 사이즈
-	int sendsize = 8000; // 한번에 보낼 사이즈
 
 	// 서버와 데이터 통신
 	// 

@@ -1,4 +1,5 @@
 ﻿  TCPClient_FixedVariable.cpp
-C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(51,18): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(54,26): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  TCPClient_FixedVariable.vcxproj -> C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\x64\Debug\TCPClient_FixedVariable.exe
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(110,18): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\TCPClient_FixedVariable.cpp(113,26): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+MSVCRTD.lib(exe_main.obj) : error LNK2019: main"int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ) 함수에서 참조되는 확인할 수 없는 외부 기호
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter05\TCPClient_FixedVariable\x64\Debug\TCPClient_FixedVariable.exe : fatal error LNK1120: 1개의 확인할 수 없는 외부 참조입니다.
