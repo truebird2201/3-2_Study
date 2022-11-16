@@ -1000,6 +1000,7 @@ void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 //
 CEnemyObject::CEnemyObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
 {
+	PrepareAnimate();
 }
 CEnemyObject::~CEnemyObject()
 {
@@ -1030,12 +1031,14 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 	if (fly == false) {
 
 		printf("%f %f %f\nstate = %d\n\n", GetPosition().x, GetPosition().y, GetPosition().z,state);
+
 		XMFLOAT3 Position = GetPosition();
 		XMFLOAT3 Target = TargetPosition;
 		XMFLOAT3 ToTarget;
 		ToTarget = Vector3::Subtract(TargetPosition, Position);
 
 		if (Vector3::Length(ToTarget) > 50.0f) {
+			printf("¹Û\n");
 			attack = false;
 			Target = target[state];
 			ToTarget = Vector3::Subtract(Target, Position);
@@ -1048,6 +1051,7 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 			speed = 0.3f;
 		}
 		else {
+			printf("¾È\n");
 			int num = 0;
 			float len = 50;
 			for (int i = 0; i < 30; ++i) {

@@ -521,9 +521,6 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 
 	///
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
-	pGunshipModel->AddRef();
-
 	m_ppObjects[1] = new CBulletObject();
 	m_ppObjects[1]->SetChild(pGunshipModel);
 	m_ppObjects[1]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
@@ -531,9 +528,6 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	m_ppObjects[1]->PrepareAnimate();
 
 	///
-
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
-	pGunshipModel->AddRef();
 
 	m_ppObjects[2] = new CDangerObject();
 	m_ppObjects[2]->SetChild(pGunshipModel);
@@ -581,6 +575,15 @@ void CObjectsShader::ReleaseObjects()
 }
 void CObjectsShader::AnimateObjects(float fTimeElapsed)
 {
+	if (m_ppObjects)
+	{
+		for (int j = 0; j < m_nObjects; j++) {
+			if (m_ppObjects[j]) {
+				m_ppObjects[j]->PrepareAnimate();
+				m_ppObjects[j]->Animate(fTimeElapsed);
+			}
+		}
+	}
 }
 void CObjectsShader::ReleaseUploadBuffers()
 {

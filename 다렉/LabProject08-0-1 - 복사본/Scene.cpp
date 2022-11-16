@@ -443,6 +443,16 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
 	}
 	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
+		if (m_ppShaders[1]->m_ppObjects[0]->fly == true) {
+			m_ppShaders[1]->m_ppObjects[0]->MoveUp(-0.7f);
+			m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, -1.0f, -0.5f);
+			if (m_ppShaders[1]->m_ppObjects[0]->GetPosition().y < 500) {
+				m_ppShaders[1]->m_ppObjects[0]->fly = false;
+				m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
+				m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+				m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
+			}
+		}
 		m_ppShaders[1]->m_ppObjects[0]->TargetPosition = m_pPlayer->GetPosition();
 		m_ppShaders[1]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
 		if (m_ppShaders[1]->m_ppObjects[0]->attack && m_ppShaders[1]->m_ppObjects[1]->ready == true && m_ppShaders[1]->m_ppObjects[0]->fly == false) {
