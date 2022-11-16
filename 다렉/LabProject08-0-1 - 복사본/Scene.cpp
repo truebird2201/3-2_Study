@@ -434,6 +434,8 @@ bool CScene::ProcessInput(UCHAR *pKeysBuffer)
 
 void CScene::AnimateObjects(float fTimeElapsed)
 {
+	BoundingCheck();
+
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
 	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(fTimeElapsed);
 	
@@ -497,3 +499,25 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 }
 
+void CScene::BoundingCheck() {
+	for (int i = 0; i < m_nGameObjects; ++i)
+	{
+		m_ppGameObjects[i]->UpdateAABB();
+	}
+	for (int j = 0; j < m_nBullets; ++j) {
+		m_ppBullets[j]->UpdateAABB();
+	}
+
+	for (int i = 0; i < m_nGameObjects; ++i)
+	{
+		for (int j = 0; j < m_nBullets; ++j) {
+			if (m_ppGameObjects[i]->m_AABB.Intersects(m_ppBullets[j]->m_AABB) && m_ppBullets[j]->ready == false)
+			{
+				m_ppGameObjects[i]->fly = true;
+				m_ppBullets[j]->ready = true;
+				m_pPlayer->point++;
+			}
+		}
+	}
+	if (m_pPlayer->m_AABB.Intersects(m_ppDangers->m_AABB) && m_ppDangers->ready == false)end = true;
+}
