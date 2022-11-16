@@ -506,86 +506,62 @@ XMFLOAT3 RandomPositionInSphere(XMFLOAT3 xmf3Center, float fRadius, int nColumn,
 
 void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext)
 {
-	m_Enemy = new CEnemyObject *[m_nEnemys];
+	m_nObjects = 3;
+	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
-	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Gunship.bin", this);
+	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/SuperCobra.bin", this);
 	pGunshipModel->AddRef();
 
-	m_Enemy[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-	m_Enemy[0]->SetChild(pGunshipModel);
-	m_Enemy[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
-	m_Enemy[0]->Rotate(0.0f, 0.0f, 0.0f);
-	m_Enemy[0]->PrepareAnimate();
+	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_ppObjects[0]->SetChild(pGunshipModel);
+	m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
+	m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppObjects[0]->PrepareAnimate();
 
 	///
 
-	m_Bullets = new CBulletObject * [m_nBullets];
-
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
 	pGunshipModel->AddRef();
 
-	m_Bullets[0] = new CBulletObject();
-	m_Bullets[0]->SetChild(pGunshipModel);
-	m_Bullets[0]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
-	m_Bullets[0]->Rotate(0.0f, 90.0f, 0.0f);
-	m_Bullets[0]->PrepareAnimate();
+	m_ppObjects[1] = new CBulletObject();
+	m_ppObjects[1]->SetChild(pGunshipModel);
+	m_ppObjects[1]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
+	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
+	m_ppObjects[1]->PrepareAnimate();
 
 	///
 
-	m_Dangers = new CDangerObject * [m_nDangers];
-
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
 	pGunshipModel->AddRef();
 
-	m_Dangers[0] = new CDangerObject();
-	m_Dangers[0]->SetChild(pGunshipModel);
-	m_Dangers[0]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
-	m_Dangers[0]->Rotate(0.0f, 90.0f, 0.0f);
-	m_Dangers[0]->PrepareAnimate();
+	m_ppObjects[2] = new CDangerObject();
+	m_ppObjects[2]->SetChild(pGunshipModel);
+	m_ppObjects[2]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
+	m_ppObjects[2]->Rotate(0.0f, 90.0f, 0.0f);
+	m_ppObjects[2]->PrepareAnimate();
 
 }
 
 void CObjectsShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * 1, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);                                                                                                                                                                                                                                                                                                                                                                                                    
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256?? ¹?¼?
+	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);
 }
-
 void CObjectsShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
-	for (int j = 0; j < m_nEnemys; j++)
+	for (int j = 0; j < m_nObjects; j++)
 	{
 		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Enemy[j]->m_xmf4x4World)));
-		if (m_Enemy[j]->m_pMaterial && m_Enemy[j]->m_pMaterial->m_pTexture)
+		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+		if (m_ppObjects[j]->m_pMaterial && m_ppObjects[j]->m_pMaterial->m_pTexture)
 		{
-			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_Enemy[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
+			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_ppObjects[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
 		}
 	}
-	for (int j = 0; j < m_nDangers; j++)
-	{
-		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Enemy[j]->m_xmf4x4World)));
-		if (m_Dangers[j]->m_pMaterial && m_Dangers[j]->m_pMaterial->m_pTexture)
-		{
-			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_Enemy[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
-		}
-	}
-	for (int j = 0; j < m_nBullets; j++)
-	{
-		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
-		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_Enemy[j]->m_xmf4x4World)));
-		if (m_Bullets[j]->m_pMaterial && m_Bullets[j]->m_pMaterial->m_pTexture)
-		{
-			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_Enemy[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
-		}
-	}
-
 }
-
 void CObjectsShader::ReleaseShaderVariables()
 {
 	if (m_pd3dcbGameObjects)
@@ -593,78 +569,31 @@ void CObjectsShader::ReleaseShaderVariables()
 		m_pd3dcbGameObjects->Unmap(0, NULL);
 		m_pd3dcbGameObjects->Release();
 	}
-
 	CStandardShader::ReleaseShaderVariables();
 }
-
 void CObjectsShader::ReleaseObjects()
 {
-	if (m_Enemy)
+	if (m_ppObjects)
 	{
-		for (int j = 0; j < m_nEnemys; j++) if (m_Enemy[j]) m_Enemy[j]->Release();
-		delete[] m_Enemy;
-	}
-
-	if (m_Bullets)
-	{
-		for (int j = 0; j < m_nBullets; j++) if (m_Bullets[j]) m_Bullets[j]->Release();
-		delete[] m_Bullets;
-	}
-	if (m_Dangers)
-	{
-		for (int j = 0; j < m_nDangers; j++) if (m_Dangers[j]) m_Dangers[j]->Release();
-		delete[] m_Dangers;
+		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->Release();
+		delete[] m_ppObjects;
 	}
 }
-
 void CObjectsShader::AnimateObjects(float fTimeElapsed)
 {
-	if (m_Enemy)
-	{
-		for (int j = 0; j < m_nEnemys; j++) if (m_Enemy[j]) m_Enemy[j]->Animate(fTimeElapsed);
-	}
-	if (m_Dangers)
-	{
-		for (int j = 0; j < m_nDangers; j++) if (m_Dangers[j]) m_Dangers[j]->Animate(fTimeElapsed);
-	}
-	if (m_Bullets)
-	{
-		for (int j = 0; j < m_nBullets; j++) if (m_Bullets[j]) m_Bullets[j]->Animate(fTimeElapsed);
-	}
-
 }
-
 void CObjectsShader::ReleaseUploadBuffers()
 {
-	for (int j = 0; j < m_nEnemys; j++) if (m_Enemy[j]) m_Enemy[j]->ReleaseUploadBuffers();
-	for (int j = 0; j < m_nBullets; j++) if (m_Bullets[j]) m_Bullets[j]->ReleaseUploadBuffers();
-	for (int j = 0; j < m_nDangers; j++) if (m_Dangers[j]) m_Dangers[j]->ReleaseUploadBuffers();
+	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
 }
-
-void CObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, int nPipelineState)
+void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
 {
 	CShader::Render(pd3dCommandList, pCamera, nPipelineState);
-
-	for (int j = 0; j < m_nEnemys; j++)
+	for (int j = 0; j < m_nObjects; j++)
 	{
-		if (m_Enemy[j])
+		if (m_ppObjects[j])
 		{
-			m_Enemy[j]->Render(pd3dCommandList, pCamera);
-		}
-	}
-
-	for (int j = 0; j < m_nBullets; j++)
-	{
-		if (m_Bullets[j])
-		{
-			m_Bullets[j]->Render(pd3dCommandList, pCamera);
-		}
-	}
-	for (int j = 0; j < m_nDangers; j++)
-	{
-		if (m_Dangers[j])
-		{
-			m_Dangers[j]->Render(pd3dCommandList, pCamera);
+			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 		}
 	}
 }
@@ -766,44 +695,34 @@ void CTexturedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 CBillboardObjectsShader::CBillboardObjectsShader()
 {
 }
-
 CBillboardObjectsShader::~CBillboardObjectsShader()
 {
 }
-
 D3D12_INPUT_LAYOUT_DESC CBillboardObjectsShader::CreateInputLayout()
 {
 	UINT nInputElementDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
-
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
 	d3dInputLayoutDesc.NumElements = nInputElementDescs;
-
 	return(d3dInputLayoutDesc);
 }
-
 D3D12_SHADER_BYTECODE CBillboardObjectsShader::CreateVertexShader()
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSTextured", "vs_5_1", &m_pd3dVertexShaderBlob));
 }
-
 D3D12_SHADER_BYTECODE CBillboardObjectsShader::CreatePixelShader()
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSTextured", "ps_5_1", &m_pd3dPixelShaderBlob));
 }
-
 void CBillboardObjectsShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_nPipelineStates = 1;
 	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
-
 	CShader::CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 }
-
 D3D12_RASTERIZER_DESC CBillboardObjectsShader::CreateRasterizerState()
 {
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
@@ -820,10 +739,8 @@ D3D12_RASTERIZER_DESC CBillboardObjectsShader::CreateRasterizerState()
 	d3dRasterizerDesc.AntialiasedLineEnable = FALSE;
 	d3dRasterizerDesc.ForcedSampleCount = 0;
 	d3dRasterizerDesc.ConservativeRaster = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-
 	return(d3dRasterizerDesc);
 }
-
 D3D12_BLEND_DESC CBillboardObjectsShader::CreateBlendState()
 {
 	D3D12_BLEND_DESC d3dBlendDesc;
@@ -840,14 +757,12 @@ D3D12_BLEND_DESC CBillboardObjectsShader::CreateBlendState()
 	d3dBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	d3dBlendDesc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
 	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
-
 	return(d3dBlendDesc);
 }
 void CBillboardObjectsShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256?? ¹?¼?
 	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
 	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);
 }
 void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
@@ -1009,7 +924,7 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 				float fHeight = pTerrain->GetHeight(xPosition, zPosition);
 				pBillboardObject->SetPosition(xPosition, fHeight + fyOffset, zPosition);
 				pBillboardObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescriptorIncrementSize * nObjects));
-				//pBillboardObject->SetCbvGPUDescriptorHandle(m_d3dCbvGPUDescriptorStartHandle);
+				pBillboardObject->SetCbvGPUDescriptorHandle(m_d3dCbvGPUDescriptorStartHandle);
 				m_ppObjects[nObjects++] = pBillboardObject;
 			}
 		}
@@ -1018,18 +933,12 @@ void CBillboardObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 
 void CBillboardObjectsShader::ReleaseUploadBuffers()
 {
-	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
+	CObjectsShader::ReleaseUploadBuffers();
 }
-
 void CBillboardObjectsShader::ReleaseObjects()
 {
-	if (m_ppObjects)
-	{
-		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->Release();
-		delete[] m_ppObjects;
-	}
+	CObjectsShader::ReleaseObjects();
 }
-
 void CBillboardObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
 {
 	XMFLOAT3 xmf3CameraPosition = pCamera->GetPosition();
@@ -1037,14 +946,7 @@ void CBillboardObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList,
 	{
 		if (m_ppObjects[j]) m_ppObjects[j]->SetLookAt(xmf3CameraPosition, XMFLOAT3(0.0f, 1.0f, 0.0f));
 	}
-
-	for (int j = 0; j < m_nObjects; j++)
-	{
-		if (m_ppObjects[j])
-		{
-			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
-		}
-	}
+	CObjectsShader::Render(pd3dCommandList, pCamera);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

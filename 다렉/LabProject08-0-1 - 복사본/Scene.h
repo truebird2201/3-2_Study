@@ -66,6 +66,7 @@ public:
 	CHeightMapTerrain* GetTerrain() { return(m_pTerrain); }
 
 	CPlayer								*m_pPlayer = NULL;
+	bool topview = false;
 
 public:
 	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;
@@ -75,6 +76,9 @@ public:
 
 	int									m_nShaders = 0;
 	CObjectsShader						**m_ppShaders = NULL;
+
+	int									m_nbShaders = 0;
+	CBillboardObjectsShader				** m_ppbShaders = NULL;
 
 	CSkyBox								*m_pSkyBox = NULL;
 	CBox								* m_pWater = NULL;

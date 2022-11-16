@@ -190,8 +190,50 @@ public:
 	bool							check = false;
 	float							speed = 0;
 	BoundingBox						m_AABB;
-
+	XMFLOAT3 m_xmf3Position;
+	XMFLOAT3 m_xmDirect;
+	XMFLOAT3 m_xmf3Velocity;
+	int cnt = 0;
+	bool							ready = true;
 public:
+	XMFLOAT3 target[30] = { {406.087494,138.316254,77.413948},
+							{408.831818,138.316254,100.660225},
+							{410.784637,138.316254,143.984344},
+							{404.277344,138.316254,199.238983},
+							{382.818268,138.316254,230.033340},
+							{342.121002,138.316254,242.820374},
+							{305.903870,138.316254,238.716675},
+							{281.990845,138.316254,221.153641},
+							{267.979187,138.316254,190.292908},
+							{253.113174,138.316254,155.122467},
+							{231.539246,138.316254,126.680130},
+							{199.364517,138.316254,105.169930},
+							{160.249924,138.316254,104.260590},
+							{129.752350,138.316254,123.802116},
+							{117.157990,138.316254,162.749817},
+							{116.513222,138.316254,204.728989},
+							{115.669952,138.316254,242.995941},
+							{115.443497,138.316254,286.458038},
+							{126.358902,138.316254,322.879120},
+							{158.639114,138.316254,344.878540},
+							{196.397568,138.316254,355.059113},
+							{234.926605,138.316254,364.011292},
+							{275.249420,138.316254,373.076782},
+							{313.383057,138.316254,381.647369},
+							{355.771118,138.316254,391.174011},
+							{392.787384,138.316254,398.883453},
+							{429.369232,138.316254,404.763885},
+							{448.662933,138.316254,407.820740},
+							{462.952148,138.316254,410.084015},
+							{471.375824,138.316254,411.418182}, };
+	int move = 0;
+	int state = 1;
+	XMFLOAT3 TargetPosition;
+
+	void FollowPlayer(float fTimeElapsed);
+	bool fly = false;
+	bool attack = false;
+	bool goal = false;
 	char							m_pstrFrameName[64];
 
 	CMesh** m_ppMeshes = NULL;
@@ -290,44 +332,7 @@ private:
 	CGameObject					*m_pTailRotorFrame = NULL;
 
 public:
-	XMFLOAT3 target[30] = { {406.087494,138.316254,77.413948},
-{408.831818,138.316254,100.660225},
-{410.784637,138.316254,143.984344},
-{404.277344,138.316254,199.238983},
-{382.818268,138.316254,230.033340},
-{342.121002,138.316254,242.820374},
-{305.903870,138.316254,238.716675},
-{281.990845,138.316254,221.153641},
-{267.979187,138.316254,190.292908},
-{253.113174,138.316254,155.122467},
-{231.539246,138.316254,126.680130},
-{199.364517,138.316254,105.169930},
-{160.249924,138.316254,104.260590},
-{129.752350,138.316254,123.802116},
-{117.157990,138.316254,162.749817},
-{116.513222,138.316254,204.728989},
-{115.669952,138.316254,242.995941},
-{115.443497,138.316254,286.458038},
-{126.358902,138.316254,322.879120},
-{158.639114,138.316254,344.878540},
-{196.397568,138.316254,355.059113},
-{234.926605,138.316254,364.011292},
-{275.249420,138.316254,373.076782},
-{313.383057,138.316254,381.647369},
-{355.771118,138.316254,391.174011},
-{392.787384,138.316254,398.883453},
-{429.369232,138.316254,404.763885},
-{448.662933,138.316254,407.820740},
-{462.952148,138.316254,410.084015},
-{471.375824,138.316254,411.418182}, };
-	int move = 0;
-	int state = 1;
-	XMFLOAT3 TargetPosition;
 
-	void FollowPlayer(float fTimeElapsed);
-	bool fly = false;
-	bool attack = false;
-	bool goal = false;
 
 	virtual void PrepareAnimate();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
@@ -340,15 +345,11 @@ class CBulletObject : public CGameObject
 public:
 	CBulletObject();
 	virtual ~CBulletObject();
-	XMFLOAT3 m_xmf3Position;
-	XMFLOAT3 m_xmDirect;
-	XMFLOAT3 m_xmf3Velocity;
 	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity);
 	void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
 protected:
 
 public:
-	bool							ready = true;
 	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
 };
@@ -359,16 +360,12 @@ class CDangerObject : public CGameObject
 public:
 	CDangerObject();
 	virtual ~CDangerObject();
-	XMFLOAT3 m_xmf3Position;
-	XMFLOAT3 m_xmDirect;
-	XMFLOAT3 m_xmf3Velocity;
-	int cnt = 0;
 	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity);
 	void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
 protected:
 
 public:
-	bool							ready = true;
+
 	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
 };

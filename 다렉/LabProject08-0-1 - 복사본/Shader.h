@@ -134,13 +134,9 @@ public:
 
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera, int nPipelineState=0);
 
-	CBulletObject** m_Bullets = 0;
-	CDangerObject** m_Dangers = 0;
-	CEnemyObject** m_Enemy = 0;
+	int								m_nObjects = 1;
+	CGameObject						** m_ppObjects = 0;
 
-	int								m_nBullets = 1;
-	int								m_nDangers = 1;
-	int								m_nEnemys = 1;
 protected:
 
 
@@ -216,8 +212,6 @@ public:
 	void CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual void ReleaseUploadBuffers();
 
-	int								m_nObjects = 1;
-	CGameObject** m_ppObjects = 0;
 
 #ifdef _WITH_BATCH_MATERIAL
 	CMaterial* m_ppGrassMaterials[2] = { NULL, NULL };

@@ -1026,30 +1026,30 @@ void CEnemyObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 
 	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
-void CEnemyObject::FollowPlayer(float fTimeElapsed) {
+void CGameObject::FollowPlayer(float fTimeElapsed) {
 	if (fly == false) {
 
-
+		printf("%f %f %f\nstate = %d\n\n", GetPosition().x, GetPosition().y, GetPosition().z,state);
 		XMFLOAT3 Position = GetPosition();
 		XMFLOAT3 Target = TargetPosition;
 		XMFLOAT3 ToTarget;
 		ToTarget = Vector3::Subtract(TargetPosition, Position);
 
-		if (Vector3::Length(ToTarget) > 2500.0f) {
+		if (Vector3::Length(ToTarget) > 50.0f) {
 			attack = false;
 			Target = target[state];
 			ToTarget = Vector3::Subtract(Target, Position);
-			if (Vector3::Length(ToTarget) < 100) {
+			if (Vector3::Length(ToTarget) < 1) {
 				state++;
 				if (state == 30) {
 					goal = true;
 				}
 			}
-			speed = 0.5f;
+			speed = 0.3f;
 		}
 		else {
 			int num = 0;
-			float len = 10000;
+			float len = 50;
 			for (int i = 0; i < 30; ++i) {
 				Target = target[i];
 				ToTarget = Vector3::Subtract(Target, Position);

@@ -414,6 +414,9 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 		{
 		case 'R': printf("{%f,%f,%f},\n", m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 			break;
+		case 'T':
+			(topview) ? topview = false : topview = true;
+			break;
 		default:
 			break;
 		}
@@ -439,13 +442,13 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pLights[1].m_xmf3Position = m_pPlayer->GetPosition();
 		m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
 	}
-	for (int i = 0; i < m_ppShaders[1]->m_nEnemys; i++) {
-		m_ppShaders[1]->m_Enemy[0]->TargetPosition = m_pPlayer->GetPosition();
-		m_ppShaders[1]->m_Enemy[0]->FollowPlayer(fTimeElapsed);
-		if (m_ppShaders[1]->m_Enemy[0]->attack && m_ppShaders[1]->m_Bullets[0]->ready == true && m_ppShaders[1]->m_Enemy[0]->fly == false) {
-			m_ppShaders[1]->m_Dangers[0]->ready = false;
-			m_ppShaders[1]->m_Dangers[0]->SetPosition(m_ppShaders[1]->m_Enemy[0]->GetPosition());
-			m_ppShaders[1]->m_Dangers[0]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_Dangers[0]->GetPosition()));
+	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
+		m_ppShaders[1]->m_ppObjects[0]->TargetPosition = m_pPlayer->GetPosition();
+		m_ppShaders[1]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
+		if (m_ppShaders[1]->m_ppObjects[0]->attack && m_ppShaders[1]->m_ppObjects[1]->ready == true && m_ppShaders[1]->m_ppObjects[0]->fly == false) {
+			m_ppShaders[1]->m_ppObjects[2]->ready = false;
+			m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_ppShaders[1]->m_ppObjects[0]->GetPosition());
+			m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_ppObjects[2]->GetPosition()));
 
 		}
 	}
@@ -460,7 +463,12 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UpdateShaderVariables(pd3dCommandList);
-
+	if (topview) {
+		pCamera->SetOffset(XMFLOAT3(0.0f, 500.0f, -50.0f));
+	}
+	else {
+		pCamera->SetOffset(XMFLOAT3(0.0f, 30.0f, -40.0f));
+	}
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 	for (int i = 0; i < m_nGameObjects; i++)

@@ -229,7 +229,7 @@ float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
 //
 
 
-VS_Water_OUTPUT VSWater(VS_TEXTURED_INPUT input)
+VS_Water_OUTPUT VSWater(VS_Water_INPUT input)
 {
 	VS_Water_OUTPUT output;
 
