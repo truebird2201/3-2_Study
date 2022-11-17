@@ -1,0 +1,35 @@
+﻿  compilation object save succeeded; see C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\x64\Debug\Shaders.cso
+  stdafx.cpp
+  Camera.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  DDSTextureLoader12.cpp
+  GameFramework.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(325,63): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(328,105): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(431,76): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(433,72): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(553,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(562,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\GameFramework.cpp(571,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+  LabProject08-0-1.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Mesh.cpp
+  Object.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.cpp(1005,55): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Player.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Scene.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Scene.cpp(452,93): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Scene.cpp(456,48): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+  Shader.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Shader.cpp(521,74): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Shader.cpp(527,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\Shader.cpp(535,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Timer.cpp
+  WICTextureLoader12.cpp
+  코드를 생성하고 있습니다...
+  LabProject08-0-1.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-0-1 - 복사본\Camera\x64\Debug\LabProject08-0-1.exe
