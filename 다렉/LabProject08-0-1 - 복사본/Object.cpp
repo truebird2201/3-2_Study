@@ -2,6 +2,7 @@
 // File: CGameObject.cpp
 //-----------------------------------------------------------------------------
 
+#include "float.h"
 #include "stdafx.h"
 #include "Object.h"
 #include "Shader.h"
@@ -1031,31 +1032,27 @@ void CEnemyObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 void CGameObject::FollowPlayer(float fTimeElapsed) {
 	if (fly == false) {
 
-		printf("%f %f %f\nstate = %d\n\n", GetPosition().x, GetPosition().y, GetPosition().z,state);
-
 		XMFLOAT3 Position = GetPosition();
 		XMFLOAT3 Target = TargetPosition;
 		XMFLOAT3 ToTarget;
 		ToTarget = Vector3::Subtract(TargetPosition, Position);
-
-		if (Vector3::Length(ToTarget) > 50.0f) {
-			printf("¹Û\n");
+		printf("%f", GetPosition().x);
+		if (Vector3::Length(ToTarget) > 80.0f) {
 			attack = false;
 			Target = target[state];
 			ToTarget = Vector3::Subtract(Target, Position);
-			if (Vector3::Length(ToTarget) < 1) {
+			if (Vector3::Length(ToTarget) < 20) {
 				state++;
-				if (state == 30) {
+				if (state == 14) {
 					goal = true;
 				}
 			}
-			speed = 0.3f;
+			speed = 0.31f;
 		}
 		else {
-			printf("¾È\n");
 			int num = 0;
 			float len = 50;
-			for (int i = 0; i < 30; ++i) {
+			for (int i = 0; i < 14; ++i) {
 				Target = target[i];
 				ToTarget = Vector3::Subtract(Target, Position);
 				if (len > Vector3::Length(ToTarget)) {
@@ -1066,7 +1063,7 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 			state = num;
 			attack = true;
 			Target = TargetPosition;
-			speed = 0.1f;
+			speed = 0.001f;
 
 		}
 		ToTarget = Vector3::Subtract(Target, Position);

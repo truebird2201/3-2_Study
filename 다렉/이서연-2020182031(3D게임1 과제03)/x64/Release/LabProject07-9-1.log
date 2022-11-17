@@ -1,0 +1,37 @@
+﻿  stdafx.cpp
+  Camera.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Camera.cpp(197,67): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  GameFramework.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(321,66): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(323,115): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(323,166): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(330,80): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(435,81): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(437,74): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(554,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(563,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\GameFramework.cpp(572,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+  LabProject07-9-1.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Mesh.cpp
+  Object.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Player.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Scene.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(54,48): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(126,68): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(118,11): warning C4101: 'y' :참조되지 않은 지역 변수입니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(118,8): warning C4101: 'x' :참조되지 않은 지역 변수입니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Scene.cpp(309,71): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Shader.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\Object.h(333,43): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Timer.cpp
+  코드를 생성하고 있습니다.
+  Previous IPDB not found, fall back to full compilation.
+  All 449 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  코드를 생성했습니다.
+  LabProject07-9-1.vcxproj -> C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\이서연-2020182031(3D게임1 과제03)\x64\Release\LabProject07-9-1.exe

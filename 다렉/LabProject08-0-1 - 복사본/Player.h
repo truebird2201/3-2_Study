@@ -12,7 +12,7 @@
 
 class CPlayer : public CGameObject
 {
-protected:
+public:
 	XMFLOAT3					m_xmf3Position;
 	XMFLOAT3					m_xmf3Right;
 	XMFLOAT3					m_xmf3Up;

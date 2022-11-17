@@ -453,6 +453,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 				m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
 				m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
 				m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
+				m_ppShaders[1]->m_ppObjects[0]->state = 0;
 			}
 		}
 		m_ppShaders[1]->m_ppObjects[0]->TargetPosition = m_pPlayer->GetPosition();

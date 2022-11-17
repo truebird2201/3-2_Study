@@ -322,14 +322,32 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					printf("{%f,%f,%f},\n", m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 					break;
 				case VK_F2:
-				case VK_F3:
-					m_pCamera = m_pPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+					m_pPlayer->SetPosition({ 406.087494,138.316254,77.413948 });
+
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->fly = false;
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,115.111160,77.413948 }));
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->state = 0;
+					break;
+				case VK_F3:							// ½ÃÁ¡ º¯°æ
+					if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA) {
+						m_pCamera = m_pPlayer->ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+					}
+					else {
+						m_pCamera = m_pPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+					}
 					break;
 				case VK_F9:
 					ChangeSwapChainState();
 					break;
 				case VK_F5:
 					break;
+				case VK_CONTROL:					// ÃÑ¾Ë ½î±â
+					m_pScene->m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_pPlayer->GetPosition());
+					m_pScene->m_ppShaders[1]->m_ppObjects[2]->ready = false;
+					m_pScene->m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = m_pPlayer->GetLookVector();
+					m_pScene->m_ppShaders[1]->m_ppObjects[2]->m_xmDirect.y += 0.5;
 				default:
 					break;
 			}
