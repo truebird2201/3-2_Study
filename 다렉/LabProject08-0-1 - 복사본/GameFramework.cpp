@@ -322,7 +322,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					printf("{%f,%f,%f},\n", m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 					break;
 				case VK_F2:
-					m_pPlayer->SetPosition({ 409.692932,115.111160,107.538094 });
+					m_pPlayer->SetPosition({409.692932,115.111160,107.538094});
 
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->fly = false;
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));

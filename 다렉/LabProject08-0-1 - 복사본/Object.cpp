@@ -1039,11 +1039,10 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 		ToTarget = Vector3::Subtract(Target, Position);
 		if (Vector3::Length(ToTarget) < 30) {
 			state++;
-			if (state == 30) {
+			if (state == 14) {
 				goal = true;
 			}
 		}
-		speed = 0.1;
 		ToTarget = Vector3::Subtract(Target, Position);
 		XMFLOAT3 Look = GetLook();
 		ToTarget = Vector3::Normalize(ToTarget);

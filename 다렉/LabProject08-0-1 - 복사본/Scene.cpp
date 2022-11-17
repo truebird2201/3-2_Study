@@ -444,26 +444,25 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pLights[1].m_xmf3Position = m_pPlayer->GetPosition();
 		m_pLights[1].m_xmf3Direction = m_pPlayer->GetLookVector();
 	}
-	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
-		if (m_ppShaders[1]->m_ppObjects[0]->fly == true) {
-			m_ppShaders[1]->m_ppObjects[0]->MoveUp(-0.7f);
-			m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, -1.0f, -0.5f);
-			if (m_ppShaders[1]->m_ppObjects[0]->GetPosition().y < 0) {
-				m_ppShaders[1]->m_ppObjects[0]->fly = false;
-				m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
-				m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
-				m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
-				m_ppShaders[1]->m_ppObjects[0]->state = 0;
-			}
+	if (m_ppShaders[1]->m_ppObjects[0]->fly == true) {
+		m_ppShaders[1]->m_ppObjects[0]->MoveUp(-1.0f);
+		m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, -10.0f, 0.0f);
+		if (m_ppShaders[1]->m_ppObjects[0]->GetPosition().y < 0) {
+			m_ppShaders[1]->m_ppObjects[0]->fly = false;
+			m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));
+			m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+			m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
+			m_ppShaders[1]->m_ppObjects[0]->state = 0;
+			m_ppShaders[1]->m_ppObjects[0]->speed += 0.4;
 		}
-		m_ppShaders[1]->m_ppObjects[0]->TargetPosition = m_pPlayer->GetPosition();
-		m_ppShaders[1]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
-		if (m_ppShaders[1]->m_ppObjects[0]->attack && m_ppShaders[1]->m_ppObjects[1]->ready == true && m_ppShaders[1]->m_ppObjects[0]->fly == false) {
-			m_ppShaders[1]->m_ppObjects[2]->ready = false;
-			m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_ppShaders[1]->m_ppObjects[0]->GetPosition());
-			m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_ppObjects[2]->GetPosition()));
+	}
 
-		}
+	m_ppShaders[1]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
+	if (m_ppShaders[1]->m_ppObjects[0]->attack && m_ppShaders[1]->m_ppObjects[1]->ready == true && m_ppShaders[1]->m_ppObjects[0]->fly == false) {
+		m_ppShaders[1]->m_ppObjects[2]->ready = false;
+		m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_ppShaders[1]->m_ppObjects[0]->GetPosition());
+		m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_ppObjects[2]->GetPosition()));
+
 	}
 
 }
@@ -506,8 +505,17 @@ void CScene::BoundingCheck() {
 	}
 	if (m_ppShaders[1]->m_ppObjects[0]->m_AABB.Intersects(m_ppShaders[1]->m_ppObjects[1]->m_AABB) && m_ppShaders[1]->m_ppObjects[1]->ready == false)
 	{
-		m_ppShaders[1]->m_ppObjects[0]->fly = true;
-		m_ppShaders[1]->m_ppObjects[1]->ready = true;
-		m_pPlayer->point++;
+		XMFLOAT3 ene = m_ppShaders[1]->m_ppObjects[0]->GetPosition();
+		XMFLOAT3 ply = m_pPlayer->GetPosition();
+		XMFLOAT3 ToTarget = Vector3::Subtract(ene, ply);
+
+		if (Vector3::Length(ToTarget) < 50) {
+			m_ppShaders[1]->m_ppObjects[0]->fly = true;
+			m_ppShaders[1]->m_ppObjects[1]->ready = true;
+			m_pPlayer->point++;
+		}
+		else {
+			m_ppShaders[1]->m_ppObjects[1]->ready = true;
+		}
 	}
 }

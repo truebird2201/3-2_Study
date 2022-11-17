@@ -524,7 +524,7 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 
 	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	m_ppObjects[0]->SetChild(pGunshipModel);
-	m_ppObjects[0]->SetPosition(XMFLOAT3({255.246063,115.111160,383.375732}));
+	m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));
 	m_ppObjects[0]->SetScale(1.5f, 1.5f, 1.5f);
 	m_ppObjects[0]->PrepareAnimate();
 
