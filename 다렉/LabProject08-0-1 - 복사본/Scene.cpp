@@ -453,7 +453,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 			m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
 			m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
 			m_ppShaders[1]->m_ppObjects[0]->state = 0;
-			m_ppShaders[1]->m_ppObjects[0]->speed += 0.4;
+			m_ppShaders[1]->m_ppObjects[0]->speed += 0.6;
 		}
 	}
 
@@ -509,7 +509,7 @@ void CScene::BoundingCheck() {
 		XMFLOAT3 ply = m_pPlayer->GetPosition();
 		XMFLOAT3 ToTarget = Vector3::Subtract(ene, ply);
 
-		if (Vector3::Length(ToTarget) < 50) {
+		if (Vector3::Length(ToTarget) < 30) {
 			m_ppShaders[1]->m_ppObjects[0]->fly = true;
 			m_ppShaders[1]->m_ppObjects[1]->ready = true;
 			m_pPlayer->point++;
