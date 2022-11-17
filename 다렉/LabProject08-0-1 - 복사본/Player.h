@@ -36,6 +36,13 @@ protected:
 	CShader						*m_pShader = NULL;
 
 public:
+
+	float						m_Effect = 0;
+	int							ecount = 0;
+	int							Bullet = 10;
+	int							nowB = 10;
+	int							point = 0;
+
 	CPlayer();
 	virtual ~CPlayer();
 

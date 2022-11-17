@@ -1001,6 +1001,7 @@ void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 CEnemyObject::CEnemyObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
 {
 	PrepareAnimate();
+	m_AABB.Extents = { 6.2 * 3.5f,6.2 * 3.5f,14.2 * 3.5f };
 }
 CEnemyObject::~CEnemyObject()
 {
@@ -1087,6 +1088,7 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 //
 CBulletObject::CBulletObject()
 {
+	m_AABB.Extents = { 5.0f ,5.0f,5.0f };
 }
 
 CBulletObject::~CBulletObject()
@@ -1127,6 +1129,7 @@ void CBulletObject::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
 //
 CDangerObject::CDangerObject()
 {
+	m_AABB.Extents = { 5.0f ,5.0f,5.0f };
 }
 
 CDangerObject::~CDangerObject()

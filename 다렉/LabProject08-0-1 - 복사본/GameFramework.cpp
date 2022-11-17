@@ -409,7 +409,7 @@ void CGameFramework::BuildObjects()
 	CAirplanePlayer *pAirplanePlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->GetTerrain());
 	pAirplanePlayer->SetPosition(XMFLOAT3({ 439.829132,115.111160,396.016663 }));
 	pAirplanePlayer->Rotate(00.0f, -90.0f, 0.0f);
-	pAirplanePlayer->m_AABB.Extents = { 30.2 * 3.5f,30.2 * 3.5f,70.2 * 3.5f };
+	pAirplanePlayer->m_AABB.Extents = { 6.2 * 3.5f,6.2 * 3.5f,14.2 * 3.5f };
 
 	m_pScene->m_pPlayer = m_pPlayer = pAirplanePlayer;
 	m_pCamera = m_pPlayer->GetCamera();

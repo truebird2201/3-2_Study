@@ -500,24 +500,13 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 }
 
 void CScene::BoundingCheck() {
-	for (int i = 0; i < m_nGameObjects; ++i)
+	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
+		m_ppShaders[1]->m_ppObjects[i]->m_AABB.Center = m_ppShaders[1]->m_ppObjects[0]->GetPosition();
+	}
+	if (m_ppShaders[1]->m_ppObjects[0]->m_AABB.Intersects(m_ppShaders[1]->m_ppObjects[1]->m_AABB) && m_ppShaders[1]->m_ppObjects[1]->ready == false)
 	{
-		m_ppGameObjects[i]->UpdateAABB();
+		m_ppShaders[1]->m_ppObjects[0]->fly = true;
+		m_ppShaders[1]->m_ppObjects[1]->ready = true;
+		m_pPlayer->point++;
 	}
-	for (int j = 0; j < m_nBullets; ++j) {
-		m_ppBullets[j]->UpdateAABB();
-	}
-
-	for (int i = 0; i < m_nGameObjects; ++i)
-	{
-		for (int j = 0; j < m_nBullets; ++j) {
-			if (m_ppGameObjects[i]->m_AABB.Intersects(m_ppBullets[j]->m_AABB) && m_ppBullets[j]->ready == false)
-			{
-				m_ppGameObjects[i]->fly = true;
-				m_ppBullets[j]->ready = true;
-				m_pPlayer->point++;
-			}
-		}
-	}
-	if (m_pPlayer->m_AABB.Intersects(m_ppDangers->m_AABB) && m_ppDangers->ready == false)end = true;
 }
