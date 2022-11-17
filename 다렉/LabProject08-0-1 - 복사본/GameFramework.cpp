@@ -322,10 +322,10 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					printf("{%f,%f,%f},\n", m_pPlayer->GetPosition().x, m_pPlayer->GetPosition().y, m_pPlayer->GetPosition().z);
 					break;
 				case VK_F2:
-					m_pPlayer->SetPosition({ 406.087494,138.316254,77.413948 });
+					m_pPlayer->SetPosition({ 409.692932,115.111160,107.538094 });
 
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->fly = false;
-					m_pScene->m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,115.111160,77.413948 }));
+					m_pScene->m_ppShaders[1]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->PrepareAnimate();
 					m_pScene->m_ppShaders[1]->m_ppObjects[0]->state = 0;
@@ -344,10 +344,13 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F5:
 					break;
 				case VK_CONTROL:					// 총알 쏘기
-					m_pScene->m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_pPlayer->GetPosition());
-					m_pScene->m_ppShaders[1]->m_ppObjects[2]->ready = false;
-					m_pScene->m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = m_pPlayer->GetLookVector();
-					m_pScene->m_ppShaders[1]->m_ppObjects[2]->m_xmDirect.y += 0.5;
+					if ((m_pPlayer->nowB > 0)) {
+						m_pScene->m_ppShaders[1]->m_ppObjects[1]->SetPosition(m_pPlayer->GetPosition());
+						m_pScene->m_ppShaders[1]->m_ppObjects[1]->ready = false;
+						m_pScene->m_ppShaders[1]->m_ppObjects[1]->m_xmDirect = m_pPlayer->GetLookVector();
+						m_pScene->m_ppShaders[1]->m_ppObjects[1]->m_xmDirect.y += 0.5;
+						m_pPlayer->nowB--;
+					}
 				default:
 					break;
 			}
@@ -542,13 +545,40 @@ void CGameFramework::MoveToNextFrame()
 
 //#define _WITH_PLAYER_TOP
 
-void CGameFramework::FrameAdvance()
-{    
+void CGameFramework::FrameAdvance(HWND hWnd)
+{
 	m_GameTimer.Tick(0.0f);
-	
+
+	if (m_pScene->end) {
+		HFONT font;
+
+		if (MessageBox(hWnd, _T("적에게 당했습니다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+		{
+			::PostQuitMessage(0);
+		}
+
+	}
+	if (m_pScene->m_pPlayer->point == 5) {
+		HFONT font;
+
+		if (MessageBox(hWnd, _T("적을 소멸했다!"), _T("GameClear"), MB_ICONASTERISK | MB_OK))
+		{
+			::PostQuitMessage(0);
+		}
+
+	}
+	if (m_pScene->m_ppShaders[1]->m_ppObjects[0]->goal) {
+		HFONT font;
+
+		if (MessageBox(hWnd, _T("적이 기지를 침략했다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+		{
+			::PostQuitMessage(0);
+		}
+	}
+
 	ProcessInput();
 
-    AnimateObjects();
+	AnimateObjects();
 
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
@@ -587,8 +617,8 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
 
 	hResult = m_pd3dCommandList->Close();
-	
-	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
+
+	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 
 	WaitForGpuComplete();
@@ -608,13 +638,12 @@ void CGameFramework::FrameAdvance()
 #endif
 #endif
 
-//	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
 	MoveToNextFrame();
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	size_t nLength = _tcslen(m_pszFrameRate);
 	XMFLOAT3 xmf3Position = m_pPlayer->GetPosition();
-	_stprintf_s(m_pszFrameRate + nLength, 70 - nLength, _T("(%4f, %4f, %4f)"), xmf3Position.x, xmf3Position.y, xmf3Position.z);
+	_stprintf_s(m_pszFrameRate + nLength, 70 - nLength, _T(" 남은 총알 : %d  남은 적 : %d / 5"), m_pPlayer->nowB, m_pPlayer->point);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }
 

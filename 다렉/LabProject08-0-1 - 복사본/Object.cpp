@@ -926,7 +926,7 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 // 
 CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
-	CTexturedRectMesh* pBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 500.0f, 0.0f, 500.0f, 0.0, 0.0, 0.0);
+	CTexturedRectMesh* pBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 480.0f, 0.0f, 480.0f, 0.0, 0.0, 0.0);
 	SetMesh(pBoxMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -946,7 +946,7 @@ CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
 	pSkyBoxMaterial->SetShader(pBlendShader);
 
 	SetMaterial(0, pSkyBoxMaterial);
-	SetPosition(320.0f, 40.f, 300.f);
+	SetPosition(260.0f, 40.f, 260.f);
 }
 
 CBox::~CBox()
@@ -1033,39 +1033,17 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 	if (fly == false) {
 
 		XMFLOAT3 Position = GetPosition();
-		XMFLOAT3 Target = TargetPosition;
+		XMFLOAT3 Target = target[state];
 		XMFLOAT3 ToTarget;
-		ToTarget = Vector3::Subtract(TargetPosition, Position);
-		printf("%f", GetPosition().x);
-		if (Vector3::Length(ToTarget) > 80.0f) {
-			attack = false;
-			Target = target[state];
-			ToTarget = Vector3::Subtract(Target, Position);
-			if (Vector3::Length(ToTarget) < 20) {
-				state++;
-				if (state == 14) {
-					goal = true;
-				}
-			}
-			speed = 0.31f;
-		}
-		else {
-			int num = 0;
-			float len = 50;
-			for (int i = 0; i < 14; ++i) {
-				Target = target[i];
-				ToTarget = Vector3::Subtract(Target, Position);
-				if (len > Vector3::Length(ToTarget)) {
-					num = i;
-					len = Vector3::Length(ToTarget);
-				}
-			}
-			state = num;
-			attack = true;
-			Target = TargetPosition;
-			speed = 0.001f;
 
+		ToTarget = Vector3::Subtract(Target, Position);
+		if (Vector3::Length(ToTarget) < 30) {
+			state++;
+			if (state == 30) {
+				goal = true;
+			}
 		}
+		speed = 0.1;
 		ToTarget = Vector3::Subtract(Target, Position);
 		XMFLOAT3 Look = GetLook();
 		ToTarget = Vector3::Normalize(ToTarget);
@@ -1073,7 +1051,7 @@ void CGameObject::FollowPlayer(float fTimeElapsed) {
 		float Dot = Vector3::DotProduct(Look, ToTarget);
 		float Angle = (Dot > 0.0f) ? XMConvertToDegrees(acos(Dot)) : 90.0f;
 		Angle *= (CrossProduct.y > 0.0f) ? 1.0f : -1.0f;
-		Rotate(0.0f, Angle * fTimeElapsed * 3.0f, 0.0f);
+		Rotate(0.0f, Angle * fTimeElapsed * 8.0f, 0.0f);
 
 		MoveForward(speed);
 	}
@@ -1098,6 +1076,7 @@ void CBulletObject::OnInitialize()
 
 void CBulletObject::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
 {
+	//printf("%f, %f, %f\n", GetPosition().x, GetPosition().y, GetPosition().z);
 	if (ready == false) {
 		Rotate(0.3f, 0.3f, 0.3f);
 		m_xmf4x4Transform._41 += m_xmDirect.x / 5;

@@ -68,6 +68,7 @@ public:
 
 	CPlayer								*m_pPlayer = NULL;
 	bool topview = false;
+	bool end = false;
 
 public:
 	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;

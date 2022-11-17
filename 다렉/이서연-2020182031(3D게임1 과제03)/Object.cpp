@@ -911,6 +911,7 @@ void CBulletObject::OnInitialize()
 
 void CBulletObject::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
 {
+	printf("%f, %f, %f", GetPosition().x, GetPosition().y,)
 	if (ready == false) {
 		Rotate(0.3f, 0.3f, 0.3f);
 		m_xmf4x4Transform._41 += m_xmDirect.x/5;

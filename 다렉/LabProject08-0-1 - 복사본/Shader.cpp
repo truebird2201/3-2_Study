@@ -513,19 +513,20 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/SuperCobra.bin", this);
 	pGunshipModel->AddRef();
 
-	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-	m_ppObjects[0]->SetChild(pGunshipModel);
-	m_ppObjects[0]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
-	m_ppObjects[0]->SetScale(1.5f, 1.5f, 1.5f);
-	m_ppObjects[0]->PrepareAnimate();
 
 	///
 
 	m_ppObjects[1] = new CBulletObject();
 	m_ppObjects[1]->SetChild(pGunshipModel);
-	m_ppObjects[1]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
+	m_ppObjects[1]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->PrepareAnimate();
+
+	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_ppObjects[0]->SetChild(pGunshipModel);
+	m_ppObjects[0]->SetPosition(XMFLOAT3({255.246063,115.111160,383.375732}));
+	m_ppObjects[0]->SetScale(1.5f, 1.5f, 1.5f);
+	m_ppObjects[0]->PrepareAnimate();
 
 	///
 

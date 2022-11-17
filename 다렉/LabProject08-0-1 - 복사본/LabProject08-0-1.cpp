@@ -47,7 +47,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		}
 		else
 		{
-			gGameFramework.FrameAdvance();
+			gGameFramework.FrameAdvance(msg.hwnd);
 		}
 	}
 	gGameFramework.OnDestroy();

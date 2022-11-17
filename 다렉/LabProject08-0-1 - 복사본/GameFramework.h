@@ -32,7 +32,7 @@ public:
 
     void ProcessInput();
     void AnimateObjects();
-    void FrameAdvance();
+    void FrameAdvance(HWND hWnd);
 
 	void WaitForGpuComplete();
 	void MoveToNextFrame();
