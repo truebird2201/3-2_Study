@@ -1,4 +1,4 @@
 ﻿  GUITCPClient.cpp
-C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\GUITCPClient.cpp(136,18): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\GUITCPClient.cpp(139,26): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  GUITCPClient.vcxproj -> C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\x64\Debug\GUITCPClient.exe
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\GUITCPClient.cpp(148,19): warning C4244: '=': 'std::streamoff'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\GUITCPClient.cpp(151,27): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  GUITCPClient.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\넷겜플\Chapter10\GUITCPClient\x64\Debug\GUITCPClient.exe
