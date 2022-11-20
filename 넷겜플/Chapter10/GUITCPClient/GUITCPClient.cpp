@@ -24,8 +24,8 @@ HANDLE hReadEvent, hWriteEvent; // 이벤트
 
 HWND hFolderButton; // 파일 찾기 버튼
 HWND hSendButton; // 보내기 버튼
-HWND hProgress; // 진행 상황
 HWND hEdit;	// 파일 경로
+HWND hProgress;
 char Edit1buf[BUFSIZE + 1];	// 파일 경로 크기
 char filename[BUFSIZE + 1]; // 파일 이름
 
@@ -68,8 +68,8 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		hFolderButton = GetDlgItem(hDlg, IDC_BUTTON1);
 		hSendButton = GetDlgItem(hDlg, IDC_BUTTON2);
-		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
 		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+
 		return TRUE;
 
 	case WM_COMMAND:
@@ -98,7 +98,6 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SetFocus(hEdit); // 키보드 포커스 전환
 			SendMessage(hEdit, EM_SETSEL, 0, -1); // 텍스트 전체 선택
 			return TRUE;
-
 		case IDCANCEL:
 			EndDialog(hDlg, IDCANCEL); // 대화상자 닫기
 			closesocket(sock); // 소켓 닫기
@@ -119,6 +118,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	int nowsize = 0; // 현재 보낸 사이즈
 	int sendsize = 2000; // 한번에 보낼 사이즈
 	int retval;
+	int now = 0;
 
 	// 소켓 생성
 	sock = socket(AF_INET, SOCK_STREAM, 0);
