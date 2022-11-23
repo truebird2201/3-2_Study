@@ -55,7 +55,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSM
 CAPTION "Dialog"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",WS_BORDER,15,24,276,14
+    CONTROL         "",IDC_PROGRESS1,"msctls_progress32",PBS_SMOOTH,15,24,276,14
     LTEXT           "진행 상황",IDC_STATIC,15,12,276,11
     PUSHBUTTON      "파일 선택",IDC_BUTTON1,15,46,53,19
     PUSHBUTTON      "보내기",IDC_BUTTON2,72,46,53,19
@@ -89,7 +89,12 @@ END
 
 IDD_DIALOG1 AFX_DIALOG_LAYOUT
 BEGIN
-    0
+    0,
+    100, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
 END
 
 #endif    // 한국어(대한민국) resources

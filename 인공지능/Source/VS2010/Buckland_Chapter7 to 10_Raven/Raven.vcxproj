@@ -66,7 +66,10 @@
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common\lua-5.1.3;D:\code\AI Source\LATEST vc6-vc10\VS2010\Common\lua-5.1.3\include;D:\code\AI Source\LATEST vc6-vc10\VS2010\Common;$(IncludePath)</IncludePath>
     <LibraryPath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common\lua-5.1.3;D:\code\AI Source\LATEST vc6-vc10\VS2010\Common\lua-5.1.3;$(LibraryPath)</LibraryPath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='boundschecker|Win32'">D:\code\AI Source\LATEST vc6-vc10\VS2010\Common;$(IncludePath)</IncludePath>
-    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\code\AI Source\LATEST vc6-vc10\VS2010\Common;$(IncludePath)</IncludePath>
+    <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">C:\Users\82107\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common\lua-5.1.3;D:\code\AI Source\LATEST vc6-vc10\VS2010\Common;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LibraryPath>C:\Users\82107\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common\lua-5.1.3;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='boundschecker|Win32'">
     <Midl>
@@ -192,6 +195,7 @@
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalIncludeDirectories>C:\Users\82107\OneDrive\바탕 화면\3-2_Study\인공지능\Source\VS2010\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
