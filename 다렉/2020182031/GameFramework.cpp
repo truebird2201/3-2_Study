@@ -549,32 +549,32 @@ void CGameFramework::FrameAdvance(HWND hWnd)
 {
 	m_GameTimer.Tick(0.0f);
 
-	if (m_pScene->end) {
-		HFONT font;
+	//if (m_pScene->end) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적에게 당했습니다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
+	//	if (MessageBox(hWnd, _T("적에게 당했습니다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
 
-	}
-	if (m_pScene->m_pPlayer->point == 5) {
-		HFONT font;
+	//}
+	//if (m_pScene->m_pPlayer->point == 5) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적을 소멸했다!"), _T("GameClear"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
+	//	if (MessageBox(hWnd, _T("적을 소멸했다!"), _T("GameClear"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
 
-	}
-	if (m_pScene->m_ppShaders[1]->m_ppObjects[0]->goal) {
-		HFONT font;
+	//}
+	//if (m_pScene->m_ppShaders[1]->m_ppObjects[0]->goal) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적이 기지를 침략했다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
-	}
+	//	if (MessageBox(hWnd, _T("적이 기지를 침략했다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
+	//}
 
 	ProcessInput();
 

@@ -1,0 +1,37 @@
+﻿  Camera.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  GameFramework.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\GameFramework.cpp(325,63): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\GameFramework.cpp(328,105): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\GameFramework.cpp(431,76): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\GameFramework.cpp(433,72): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  LabProject08-0-1.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Object.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.cpp(1005,55): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Player.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  Scene.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Scene.cpp(452,93): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Scene.cpp(456,48): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+  Shader.cpp
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Shader.cpp(521,74): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Shader.cpp(527,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Shader.cpp(535,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  코드를 생성하고 있습니다.
+  3 of 668 functions ( 0.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    11 functions had inline decision re-evaluated but remain unchanged
+  코드를 생성했습니다.
+  LabProject08-0-1.vcxproj -> C:\Users\lsy01\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\x64\Release\LabProject08-0-1.exe

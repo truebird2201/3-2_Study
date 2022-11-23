@@ -188,7 +188,7 @@ public:
 	CGameObject(int nMaterials);
     virtual ~CGameObject();
 	bool							check = false;
-	float							speed = 1.0;
+	float							speed = 0.2;
 	BoundingBox						m_AABB;
 	XMFLOAT3 m_xmf3Position;
 	XMFLOAT3 m_xmDirect;
