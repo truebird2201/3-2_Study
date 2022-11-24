@@ -2,7 +2,7 @@
 #include "resource.h"
 #include <iostream>
 #include <fstream>
-#include "ShlObj.h"
+#include <CommCtrl.h>
 
 #define SERVERPORT 9000
 #define BUFSIZE    1024
@@ -26,13 +26,19 @@ HWND hFolderButton; // 파일 찾기 버튼
 HWND hSendButton; // 보내기 버튼
 HWND hEdit;	// 파일 경로
 HWND hProgress;
+int p_pos;
 char Edit1buf[BUFSIZE + 1];	// 파일 경로 크기
 char filename[BUFSIZE + 1]; // 파일 이름
 
 OPENFILENAME Ofn;
-TCHAR szPathname[BUFSIZE + 1] = { 0, };
+TCHAR Pathname[BUFSIZE + 1] = { 0, };
 
-bool SEND = false;
+int fsize = 0; // 파일 사이즈
+int nsize = 0; // 파일 이름 길이
+int nowsize = 0; // 현재 보낸 사이즈
+int sendsize = 20; // 한번에 보낼 사이즈
+int retval;
+int now = 0;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -69,7 +75,8 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		hFolderButton = GetDlgItem(hDlg, IDC_BUTTON1);
 		hSendButton = GetDlgItem(hDlg, IDC_BUTTON2);
 		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
-
+		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
+		p_pos = SendMessage(hProgress, PBM_GETPOS, 0, 0);
 		return TRUE;
 
 	case WM_COMMAND:
@@ -79,12 +86,12 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			Ofn.lStructSize = sizeof(OPENFILENAME);
 			Ofn.hwndOwner = hFolderButton;
 			Ofn.lpstrFilter;
-			Ofn.lpstrFile = szPathname;
+			Ofn.lpstrFile = Pathname;
 			Ofn.nMaxFile = MAX_PATH - 4;
 			Ofn.Flags = OFN_EXPLORER | OFN_ALLOWMULTISELECT;
 
 			if (GetOpenFileName(&Ofn)) {
-				SetDlgItemText(hDlg, IDC_EDIT1, szPathname);
+				SetDlgItemText(hDlg, IDC_EDIT1, Pathname);
 			}
 
 			return TRUE;
@@ -113,12 +120,6 @@ INT_PTR CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 DWORD WINAPI ClientMain(LPVOID arg)
 {
 	// 데이터 통신에 사용할 변수
-	int fsize = 0; // 파일 사이즈
-	int nsize = 0; // 파일 이름 길이
-	int nowsize = 0; // 현재 보낸 사이즈
-	int sendsize = 2000; // 한번에 보낼 사이즈
-	int retval;
-	int now = 0;
 
 	// 소켓 생성
 	sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -137,7 +138,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		WaitForSingleObject(hWriteEvent, INFINITE); // 쓰기 완료 대기
 
 		// 데이터 입력(시뮬레이션)
-		std::ifstream in{ szPathname,std::ios::binary };
+		std::ifstream in{ Pathname,std::ios::binary };
 
 		if (!in) {
 			//	printf("파일이 없거나 파일 이름이 잘못 되었습니다.\n");
@@ -147,6 +148,10 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		in.seekg(0, std::ios::end); // 파일의 끝으로간다
 		fsize = in.tellg(); // 파일의 끝을 읽어온다
 		in.seekg(0, std::ios::beg); // 파일의 앞으로 다시 간다.
+
+		char* ptr = NULL;
+		ptr = strrchr(filename, '\\');     //문자열(path)의 뒤에서부터 '\'의 위치를 검색하여 반환
+		strcpy(filename, ptr + 1); // 포인터에 +1을 더하여 파일이름만 추출
 
 		nsize = strlen(filename);
 		char* dt = new char[fsize];
@@ -183,6 +188,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			nowsize += sendsize;
 
 			if (nowsize > fsize) nowsize = fsize;
+			SendMessage(hProgress, PBM_SETPOS, p_pos+(int)(((float)nowsize / (float)fsize) * 100), 0);
 		}
 		nowsize = 0;
 		EnableWindow(hSendButton, TRUE); // 보내기 버튼 비활성화

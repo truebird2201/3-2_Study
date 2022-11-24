@@ -6,7 +6,7 @@
 #include <format>
 
 #define SERVERPORT 9000
-#define BUFSIZE    512
+#define BUFSIZE    1024
 
 CRITICAL_SECTION cs;
 using namespace std;
@@ -26,7 +26,7 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 	int fsize = 0; // 파일 크기
 	int nsize = 0; // 파일 이름 크기
 	int nowsize = 0;  //현재까지 받은 크기
-	int receiveSize = 2000; // 한번에 받아오는 크기
+	int receiveSize = 500; // 한번에 받아오는 크기
 	int Y = caretY;
 
 	// 클라이언트 정보 얻기
@@ -88,16 +88,10 @@ DWORD WINAPI ProcessClient(LPVOID arg)
 			EnterCriticalSection(&cs);
 			COORD pos = { 0, Y+2 };
 			SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
-			cout << "전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "[ " << nowsize << "/" << fsize << " ]\n";
+			cout << "전송률 = " << (int)(((float)nowsize / (float)fsize) * 100) << "% [ " << nowsize << "/" << fsize << " ]\n";
 			LeaveCriticalSection(&cs);
 		}
 		nowsize = 0;
-
-		char* ptr = NULL;
-		ptr = strrchr(filename, '\\');     //문자열(path)의 뒤에서부터 '\'의 위치를 검색하여 반환
-
-		strcpy(filename, ptr + 1); // 포인터에 +1을 더하여 파일이름만 추출
-			
 
 		ofstream out{ filename, ios::binary };
 		out.write(buf, fsize);
