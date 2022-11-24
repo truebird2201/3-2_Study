@@ -25,17 +25,18 @@ void Raven_SensoryMemory::MakeNewRecordIfNotAlreadyPresent(Raven_Bot* pOpponent)
 }
 
 //------------------------ RemoveBotFromMemory --------------------------------
-//
 //  this removes a bot's record from memory
 //-----------------------------------------------------------------------------
 void Raven_SensoryMemory::RemoveBotFromMemory(Raven_Bot* pBot)
 {
+
   MemoryMap::iterator record = m_MemoryMap.find(pBot);
   
   if (record != m_MemoryMap.end())
   {
     m_MemoryMap.erase(record);
   }
+
 }
   
 //----------------------- UpdateWithSoundSource -------------------------------
@@ -59,7 +60,6 @@ void Raven_SensoryMemory::UpdateWithSoundSource(Raven_Bot* pNoiseMaker)
     if (m_pOwner->GetWorld()->isLOSOkay(m_pOwner->Pos(), pNoiseMaker->Pos()))
     {
       info.bShootable = true;
-      
      //record the position of the bot
       info.vLastSensedPosition = pNoiseMaker->Pos();
     }
@@ -67,7 +67,6 @@ void Raven_SensoryMemory::UpdateWithSoundSource(Raven_Bot* pNoiseMaker)
     {
       info.bShootable = false;
     }
-    
     //record the time it was sensed
     info.fTimeLastSensed = (double)Clock->GetCurrentTime();
   }
@@ -156,7 +155,6 @@ Raven_SensoryMemory::GetListOfRecentlySensedOpponents()const
       opponents.push_back(curRecord->first);
     }
   }
-
   return opponents;
 }
 
@@ -164,7 +162,8 @@ Raven_SensoryMemory::GetListOfRecentlySensedOpponents()const
 //
 //  returns true if the bot given as a parameter can be shot (ie. its not
 //  obscured by walls)
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
+
 bool Raven_SensoryMemory::isOpponentShootable(Raven_Bot* pOpponent)const
 {
   MemoryMap::const_iterator it = m_MemoryMap.find(pOpponent);
@@ -180,7 +179,7 @@ bool Raven_SensoryMemory::isOpponentShootable(Raven_Bot* pOpponent)const
 //----------------------------- isOpponentWithinFOV --------------------------------
 //
 //  returns true if the bot given as a parameter is within FOV
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
 bool  Raven_SensoryMemory::isOpponentWithinFOV(Raven_Bot* pOpponent)const
 {
   MemoryMap::const_iterator it = m_MemoryMap.find(pOpponent);
@@ -194,9 +193,8 @@ bool  Raven_SensoryMemory::isOpponentWithinFOV(Raven_Bot* pOpponent)const
 }
 
 //---------------------------- GetLastRecordedPositionOfOpponent -------------------
-//
 //  returns the last recorded position of the bot
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
 Vector2D  Raven_SensoryMemory::GetLastRecordedPositionOfOpponent(Raven_Bot* pOpponent)const
 {
   MemoryMap::const_iterator it = m_MemoryMap.find(pOpponent);
@@ -210,9 +208,8 @@ Vector2D  Raven_SensoryMemory::GetLastRecordedPositionOfOpponent(Raven_Bot* pOpp
 }
 
 //----------------------------- GetTimeOpponentHasBeenVisible ----------------------
-//
 //  returns the amount of time the given bot has been visible
-//-----------------------------------------------------------------------------
+//----------------------------------------------------------------------------------
 double  Raven_SensoryMemory::GetTimeOpponentHasBeenVisible(Raven_Bot* pOpponent)const
 {
   MemoryMap::const_iterator it = m_MemoryMap.find(pOpponent);
@@ -233,16 +230,14 @@ double  Raven_SensoryMemory::GetTimeOpponentHasBeenVisible(Raven_Bot* pOpponent)
 double Raven_SensoryMemory::GetTimeOpponentHasBeenOutOfView(Raven_Bot* pOpponent)const
 {
   MemoryMap::const_iterator it = m_MemoryMap.find(pOpponent);
- 
   if (it != m_MemoryMap.end())
   {
     return Clock->GetCurrentTime() - it->second.fTimeLastVisible;
   }
-
   return MaxDouble;
 }
 
-//------------------------ GetTimeSinceLastSensed ----------------------
+//------------------------ GetTimeSinceLastSensed ----------------------------
 //
 //  returns the amount of time the given bot has been visible
 //-----------------------------------------------------------------------------
@@ -262,6 +257,7 @@ double  Raven_SensoryMemory::GetTimeSinceLastSensed(Raven_Bot* pOpponent)const
 //
 //  renders boxes around the opponents it has sensed recently.
 //-----------------------------------------------------------------------------
+
 void  Raven_SensoryMemory::RenderBoxesAroundRecentlySensed()const
 {
   std::list<Raven_Bot*> opponents = GetListOfRecentlySensedOpponents();
@@ -277,5 +273,4 @@ void  Raven_SensoryMemory::RenderBoxesAroundRecentlySensed()const
     gdi->Line(p.x+b, p.y+b, p.x-b, p.y+b);
     gdi->Line(p.x-b, p.y+b, p.x-b, p.y-b);
   }
-
 }

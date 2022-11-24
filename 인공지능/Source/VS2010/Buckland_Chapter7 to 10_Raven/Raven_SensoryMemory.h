@@ -21,30 +21,29 @@ class MemoryRecord
 {
 public:
   
-  //records the time the opponent was last sensed (seen or heard). This
-  //is used to determine if a bot can 'remember' this record or not. 
-  //(if CurrentTime() - m_dTimeLastSensed is greater than the bot's
-  //memory span, the data in this record is made unavailable to clients)
+  // 상대를 기억하는 최대시간
+  // (CurrentTime() - m_dTimeLastSensed가 봇의 메모리 범위보다 크면 이 레코드의 데이터를 클라이언트에서 사용할 수 없게 됩니다.)
+
   double       fTimeLastSensed;
 
-  //it can be useful to know how long an opponent has been visible. This 
-  //variable is tagged with the current time whenever an opponent first becomes
-  //visible. It's then a simple matter to calculate how long the opponent has
-  //been in view (CurrentTime - fTimeBecameVisible)
+  //상대가 처음 표시된 시간. 상대가 얼마나 오랫동안 시야에 들어왔는지 -> (CurrentTime - fTimeBecameVisible).
+
   double       fTimeBecameVisible;
 
-  //it can also be useful to know the last time an opponent was seen
+  // 상대가 마지막으로 보인 시간
+
   double       fTimeLastVisible;
 
-  //a vector marking the position where the opponent was last sensed. This can
-  // be used to help hunt down an opponent if it goes out of view
+  // 상대가 마지막으로 감지된 위치를 표시하는 벡터로 상대가 시야 밖으로 나갈 경우 상대를 추적하는 데 도움
+
   Vector2D    vLastSensedPosition;
 
-  //set to true if opponent is within the field of view of the owner
+  // 상대가 시야내에 있는지
+
   bool        bWithinFOV;
 
-  //set to true if there is no obstruction between the opponent and the owner, 
-  //permitting a shot.
+  // 상대가 쏠수 있는 위치에 있는지
+
   bool        bShootable;
   
 
@@ -66,33 +65,35 @@ private:
 
 private:
   
-  // 센서메모리의 주인 봇
   Raven_Bot* m_pOwner;
 
   // 최근에 감지된 상대 목록
+
   MemoryMap  m_MemoryMap;
 
   // 봇이 최근에 감지된 상대 목록 ( m_MemoryMap )을 요청할때 봇이 상대를 기억하기 위한 값
+
   double      m_dMemorySpan;
 
-  //this methods checks to see if there is an existing record for pBot. If
-  //not a new MemoryRecord record is made and added to the memory map.(called
-  //by UpdateWithSoundSource & UpdateVision)
+  // 기존 레코드가 있는지 확인하고 없다면 메모리 맵에 추가됩니다
+  // (UpdateWithSoundSource& UpdateVision에서 호출)
+
   void       MakeNewRecordIfNotAlreadyPresent(Raven_Bot* pBot);
 
 public:
 
   Raven_SensoryMemory(Raven_Bot* owner, double MemorySpan);
 
-  //this method is used to update the memory map whenever an opponent makes
-  //a noise
+  // 상대가 소리를 낼 때마다 메모리 맵을 업데이트
+
   void     UpdateWithSoundSource(Raven_Bot* pNoiseMaker);
 
-  //this removes a bot's record from memory
+  // 메모리에서 봇의 기록을 제거
+
   void     RemoveBotFromMemory(Raven_Bot* pBot);
 
-  //this method iterates through all the opponents in the game world and 
-  //updates the records of those that are in the owner's FOV
+  // 모든 객체를 통해 반복되며 나의 시야에 있는 상대의 기록을 업데이트
+
   void     UpdateVision();
 
   bool     isOpponentShootable(Raven_Bot* pOpponent)const;
@@ -102,8 +103,8 @@ public:
   double    GetTimeSinceLastSensed(Raven_Bot* pOpponent)const;
   double    GetTimeOpponentHasBeenOutOfView(Raven_Bot* pOpponent)const;
 
-  //this method returns a list of all the opponents that have had their
-  //records updated within the last m_dMemorySpan seconds.
+  // 마지막 m_dMemorySpan 내에 레코드를 업데이트한 모든 상대의 목록을 반환합니다.
+
   std::list<Raven_Bot*> GetListOfRecentlySensedOpponents()const;
 
   void     RenderBoxesAroundRecentlySensed()const;

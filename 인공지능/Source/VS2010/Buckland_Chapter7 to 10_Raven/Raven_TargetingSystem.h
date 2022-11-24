@@ -26,7 +26,7 @@ private:
   //the owner of this system
   Raven_Bot*  m_pOwner;
 
-  //the current target (this will be null if there is no target assigned)
+  // 현재 타겟
   Raven_Bot*  m_pCurrentTarget;
 
 
@@ -34,37 +34,40 @@ public:
 
   Raven_TargetingSystem(Raven_Bot* owner);
 
-  //each time this method is called the opponents in the owner's sensory 
-  //memory are examined and the closest  is assigned to m_pCurrentTarget.
-  //if there are no opponents that have had their memory records updated
-  //within the memory span of the owner then the current target is set
-  //to null
+  // 가장 가까운 적이 m_pCurrentTarget이 되며 존재하지 않을 경우 null이 된다.
+
   void       Update();
 
-  //returns true if there is a currently assigned target
+  // m_pCurrentTarget이 있는가?
+
   bool       isTargetPresent()const{return m_pCurrentTarget != 0;}
 
-  //returns true if the target is within the field of view of the owner
+  // 대상이 시야내에 있는가?
+
   bool       isTargetWithinFOV()const;
 
-  //returns true if there is unobstructed line of sight between the target
-  //and the owner
+  // 상대가 공격할수 있는 위치에 있는가?
+
   bool       isTargetShootable()const;
 
-  //returns the position the target was last seen. Throws an exception if
-  //there is no target currently assigned
+  // 대상이 마지막으로 발견된 위치를 반환. 현재 할당된 대상이 없는 경우 예외를 발생
+
   Vector2D   GetLastRecordedPosition()const;
 
-  //returns the amount of time the target has been in the field of view
+  // 대상이 시야에 있던 시간
+
   double      GetTimeTargetHasBeenVisible()const;
 
-  //returns the amount of time the target has been out of view
+  // 대상이 시야에 없던 시간
+
   double      GetTimeTargetHasBeenOutOfView()const;
   
-  //returns a pointer to the target. null if no target current.
+  // 대상을 반환
+
   Raven_Bot* GetTarget()const{return m_pCurrentTarget;}
 
-  //sets the target pointer to null
+  // 대상을 null로 바꿈
+
   void       ClearTarget(){m_pCurrentTarget=0;}
 };
 
