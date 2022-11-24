@@ -66,17 +66,13 @@ private:
 
 private:
   
-  //the owner of this instance
+  // 센서메모리의 주인 봇
   Raven_Bot* m_pOwner;
 
-  //this container is used to simulate memory of sensory events. A MemoryRecord
-  //is created for each opponent in the environment. Each record is updated 
-  //whenever the opponent is encountered. (when it is seen or heard)
+  // 최근에 감지된 상대 목록
   MemoryMap  m_MemoryMap;
 
-  //a bot has a memory span equivalent to this value. When a bot requests a 
-  //list of all recently sensed opponents this value is used to determine if 
-  //the bot is able to remember an opponent or not.
+  // 봇이 최근에 감지된 상대 목록 ( m_MemoryMap )을 요청할때 봇이 상대를 기억하기 위한 값
   double      m_dMemorySpan;
 
   //this methods checks to see if there is an existing record for pBot. If

@@ -27,3 +27,4 @@ y_predict = knn.predict(x_new)
 
 print(classes[y_predict[0]])
 print(classes[y_predict[1]])
+

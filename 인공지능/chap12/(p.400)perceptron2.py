@@ -19,7 +19,7 @@ def train_weights(X, y, l_rate, n_epoch):
         for row, target in zip(X, y):		# 데이터셋을 반복
             actual = calculate(row)		# 실제 출력 계산
             error = target - actual		# 실제 출력 계산
-            bias = bias + l_rate * error	
+            bias = round(bias + l_rate * error,2)	
             sum_error += error**2		# 오류의 제곱 계산
             for i in range(2):			# 가중치 변경
                 weights[i] = weights[i] + l_rate * error * row[i]
