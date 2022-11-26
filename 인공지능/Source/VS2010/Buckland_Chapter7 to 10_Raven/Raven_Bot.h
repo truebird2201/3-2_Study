@@ -16,6 +16,7 @@
 #include "game/MovingEntity.h"
 #include "misc/utils.h"
 #include "Raven_TargetingSystem.h"
+#include "time/CrudeTimer.h"
 
 
 class Raven_PathPlanner;
@@ -156,6 +157,8 @@ public:
   bool          isDead()const{return m_Status == dead;}
   bool          isAlive()const{return m_Status == alive;}
   bool          isSpawning()const{return m_Status == spawning;}
+  // Ãß°¡
+  bool			IsHit();
   
   void          SetSpawning(){m_Status = spawning;}
   void          SetDead(){m_Status = dead;}

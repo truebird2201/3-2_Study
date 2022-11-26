@@ -577,3 +577,12 @@ void Raven_Bot::IncreaseHealth(unsigned int val)
   m_iHealth+=val; 
   Clamp(m_iHealth, 0, m_iMaxHealth);
 }
+
+///////////////////////// Ãß°¡ //////////////////////////////////////
+
+bool Raven_Bot::IsHit()
+{
+    if (m_bHit) {
+        CrudeTimer timer;
+    }
+}

@@ -31,7 +31,10 @@ void Raven_TargetingSystem::Update()
     if ((*curBot)->isAlive() && (*curBot != m_pOwner) )
     {
       double dist = Vec2DDistanceSq((*curBot)->Pos(), m_pOwner->Pos());
-
+      // Ãß°¡
+      if ((*curBot)->IsHit()) {
+          dist /= 2;
+      }
       if (dist < ClosestDistSoFar)
       {
         ClosestDistSoFar = dist;
