@@ -37,7 +37,8 @@ class GraveMarkers;
 class Raven_Game
 {
 private:
-
+  // Ãß°¡
+    int AI_Count = 0;
   //the current game map
   Raven_Map*                       m_pMap;
  

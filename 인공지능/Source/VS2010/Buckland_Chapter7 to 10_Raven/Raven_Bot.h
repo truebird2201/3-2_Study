@@ -16,7 +16,7 @@
 #include "game/MovingEntity.h"
 #include "misc/utils.h"
 #include "Raven_TargetingSystem.h"
-#include "time/CrudeTimer.h"
+#include "time/PrecisionTimer.h"
 
 
 class Raven_PathPlanner;
@@ -40,6 +40,10 @@ private:
   enum Status{alive, dead, spawning};
 
 private:
+
+  // 추가
+  PrecisionTimer timer;
+  int	AI_Num = 0;
 
   //alive, dead or spawning?
   Status                             m_Status;
@@ -126,7 +130,7 @@ private:
 
 public:
   
-  Raven_Bot(Raven_Game* world, Vector2D pos);
+  Raven_Bot(Raven_Game* world, Vector2D pos, int cnt);
   virtual ~Raven_Bot();
 
   //the usual suspects
@@ -159,6 +163,7 @@ public:
   bool          isSpawning()const{return m_Status == spawning;}
   // 추가
   bool			IsHit();
+  
   
   void          SetSpawning(){m_Status = spawning;}
   void          SetDead(){m_Status = dead;}
@@ -212,6 +217,7 @@ public:
   Raven_Bot* const                   GetTargetBot()const{return m_pTargSys->GetTarget();}
   Raven_WeaponSystem* const          GetWeaponSys()const{return m_pWeaponSys;}
   Raven_SensoryMemory* const         GetSensoryMem()const{return m_pSensoryMem;}
+  PrecisionTimer GetTimer() { return timer; }
 
 
 };

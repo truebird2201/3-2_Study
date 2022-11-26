@@ -108,7 +108,7 @@ inline bool PrecisionTimer::ReadyForNextFrame()
 
 //--------------------------- TimeElapsed --------------------------------
 //
-//  returns time elapsed since last call to this function.
+//  returns time elapsed since last call to this function. Ãß°¡
 //-------------------------------------------------------------------------
 inline double PrecisionTimer::TimeElapsed()
 {

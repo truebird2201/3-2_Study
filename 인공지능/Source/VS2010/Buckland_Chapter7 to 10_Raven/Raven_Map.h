@@ -25,6 +25,8 @@
 #include "misc/CellSpacePartition.h"
 #include "triggers/TriggerSystem.h"
 
+#define debug_con *(DebugConsole::Instance())
+
 class BaseGameEntity;
 class Raven_Door;
 
