@@ -534,6 +534,15 @@ void Raven_Bot::Render()
   {
     gdi->TextAtPos(Pos().x-40, Pos().y+10, "Scr:"+ ttos(Score()));
   }    
+  //////////////// 추가 /////////////////
+  std::string hit = "";
+  if (IsHit()) {
+      hit = "아야!";
+  }
+  else {
+      hit = "";
+  }
+  gdi->TextAtPos(Pos().x, Pos().y + 10, hit);
 }
 
 //------------------------- SetUpVertexBuffer ---------------------------------
@@ -585,8 +594,7 @@ bool Raven_Bot::IsHit()
     if (m_bHit) {
         timer.Start();
     }
-    if (timer.CurrentTime() < 10) {
-        debug_con << AI_Num << " - " << timer.CurrentTime() << "";
+    if (timer.CurrentTime() < 3) {
         return true;
     }
     return false;
