@@ -61,7 +61,7 @@ Raven_Bot::Raven_Bot(Raven_Game* world,Vector2D pos, int cnt):
 
   //create the steering behavior class
   m_pSteering = new Raven_Steering(world, this);
-  AI_Num = cnt;
+
   //create the regulators
   m_pWeaponSelectionRegulator = new Regulator(script->GetDouble("Bot_WeaponSelectionFrequency"));
   m_pGoalArbitrationRegulator =  new Regulator(script->GetDouble("Bot_GoalAppraisalUpdateFreq"));

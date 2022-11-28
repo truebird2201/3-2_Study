@@ -44,6 +44,9 @@ using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
 
+extern int gnCurrentParticles;
+extern void SwapResourcePointer(ID3D12Resource** ppd3dResourceA, ID3D12Resource** ppd3dResourceB);
+
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 #define FRAME_BUFFER_WIDTH		640

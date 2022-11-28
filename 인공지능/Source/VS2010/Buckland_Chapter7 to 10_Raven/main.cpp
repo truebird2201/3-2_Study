@@ -22,7 +22,7 @@
 //--------------------------------- Globals ------------------------------
 //------------------------------------------------------------------------
 
-char* g_szApplicationName = "Raven";
+char* g_szApplicationName = "2020182031¿Ãº≠ø¨";
 char*	g_szWindowClassName = "MyWindowClass";
 
 

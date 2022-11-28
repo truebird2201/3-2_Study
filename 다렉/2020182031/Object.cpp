@@ -17,9 +17,10 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nRootPar
 	if (m_nTextures > 0)
 	{
 		m_ppd3dTextureUploadBuffers = new ID3D12Resource * [m_nTextures];
-		m_ppd3dTextures = new ID3D12Resource * [m_nTextures];
-		for (int i = 0; i < m_nTextures; i++) m_ppd3dTextureUploadBuffers[i] = m_ppd3dTextures[i] = NULL;
 
+		m_ppd3dTextures = new ID3D12Resource * [m_nTextures];
+		for (int i = 0; i < m_nTextures; i++)
+			m_ppd3dTextureUploadBuffers[i] = m_ppd3dTextures[i] = NULL;
 		m_ppstrTextureNames = new _TCHAR[m_nTextures][64];
 		for (int i = 0; i < m_nTextures; i++) m_ppstrTextureNames[i][0] = '\0';
 
@@ -29,7 +30,16 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nRootPar
 		m_pnResourceTypes = new UINT[m_nTextures];
 		m_pdxgiBufferFormats = new DXGI_FORMAT[m_nTextures];
 		m_pnBufferElements = new int[m_nTextures];
+
+		for (int i = 0; i < m_nTextures; i++) m_pnResourceTypes[i] = 0;
+		m_pdxgiBufferFormats = new DXGI_FORMAT[m_nTextures];
+		for (int i = 0; i < m_nTextures; i++) m_pdxgiBufferFormats[i] = DXGI_FORMAT_UNKNOWN;
+		m_pnBufferElements = new int[m_nTextures];
+		for (int i = 0; i < m_nTextures; i++) m_pnBufferElements[i] = 0;
+		m_pnBufferStrides = new int[m_nTextures];
+		for (int i = 0; i < m_nTextures; i++) m_pnBufferStrides[i] = 0;
 	}
+
 	m_nRootParameters = nRootParameters;
 	if (nRootParameters > 0) m_pnRootParameterIndices = new int[nRootParameters];
 	for (int i = 0; i < m_nRootParameters; i++) m_pnRootParameterIndices[i] = -1;
@@ -51,6 +61,7 @@ CTexture::~CTexture()
 	if (m_pnResourceTypes) delete[] m_pnResourceTypes;
 	if (m_pdxgiBufferFormats) delete[] m_pdxgiBufferFormats;
 	if (m_pnBufferElements) delete[] m_pnBufferElements;
+	if (m_pnBufferStrides) delete[] m_pnBufferStrides;
 
 	if (m_pnRootParameterIndices) delete[] m_pnRootParameterIndices;
 	if (m_pd3dSrvGpuDescriptorHandles) delete[] m_pd3dSrvGpuDescriptorHandles;
@@ -95,6 +106,15 @@ void CTexture::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, 
 
 void CTexture::ReleaseShaderVariables()
 {
+}
+
+void CTexture::CreateBuffer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nElements, UINT nStride, DXGI_FORMAT ndxgiFormat, D3D12_HEAP_TYPE d3dHeapType, D3D12_RESOURCE_STATES d3dResourceStates, UINT nIndex)
+{
+	m_pnResourceTypes[nIndex] = RESOURCE_BUFFER;
+	m_pdxgiBufferFormats[nIndex] = ndxgiFormat;
+	m_pnBufferElements[nIndex] = nElements;
+	m_pnBufferStrides[nIndex] = nStride;
+	m_ppd3dTextures[nIndex] = ::CreateBufferResource(pd3dDevice, pd3dCommandList, pData, nElements * nStride, d3dHeapType, d3dResourceStates, &m_ppd3dTextureUploadBuffers[nIndex]);
 }
 
 void CTexture::ReleaseUploadBuffers()
@@ -240,6 +260,14 @@ D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
 		d3dShaderResourceViewDesc.Buffer.FirstElement = 0;
 		d3dShaderResourceViewDesc.Buffer.NumElements = m_pnBufferElements[nIndex];
 		d3dShaderResourceViewDesc.Buffer.StructureByteStride = 0;
+		d3dShaderResourceViewDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		break;
+	case RESOURCE_STRUCTURED_BUFFER: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		d3dShaderResourceViewDesc.Format = m_pdxgiBufferFormats[nIndex];
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		d3dShaderResourceViewDesc.Buffer.FirstElement = 0;
+		d3dShaderResourceViewDesc.Buffer.NumElements = m_pnBufferElements[nIndex];
+		d3dShaderResourceViewDesc.Buffer.StructureByteStride = m_pnBufferStrides[nIndex];
 		d3dShaderResourceViewDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
 		break;
 	}
@@ -1294,4 +1322,99 @@ void CHeightMapTerrain::SetShader(CShader* pShader)
 		SetMaterial(pMaterial);
 	}
 	if (m_pMaterial) m_pMaterial->SetShader(pShader);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
+CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Position, XMFLOAT3 xmf3Velocity, float fLifetime, XMFLOAT3 xmf3Acceleration, XMFLOAT3 xmf3Color, XMFLOAT2 xmf2Size, UINT nMaxParticles) : CGameObject()
+{
+	CParticleMesh* pMesh = new CParticleMesh(pd3dDevice, pd3dCommandList, xmf3Position, xmf3Velocity, fLifetime, xmf3Acceleration, xmf3Color, xmf2Size, nMaxParticles);
+	SetMesh(pMesh,0);
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	pParticleTexture->LoadTextureFromFile(pd3dDevice, pd3dCommandList, L"Image/RoundSoftParticle.dds", RESOURCE_TEXTURE2D, 0);
+
+	CMaterial* pMaterial = new CMaterial();
+	pMaterial->SetTexture(pParticleTexture);
+
+	/*
+		XMFLOAT4 *pxmf4RandomValues = new XMFLOAT4[1024];
+		random_device rd;   // non-deterministic generator
+		mt19937 gen(rd());  // to seed mersenne twister.
+		uniform_real_distribution<> vdist(-1.0, +1.0);
+		uniform_real_distribution<> cdist(0.0, +1.0);
+		for (int i = 0; i < 1024; i++) pxmf4RandomValues[i] = XMFLOAT4(float(vdist(gen)), float(vdist(gen)), float(vdist(gen)), float(cdist(gen)));
+	*/
+	srand((unsigned)time(NULL));
+
+	XMFLOAT4* pxmf4RandomValues = new XMFLOAT4[1024];
+	for (int i = 0; i < 1024; i++) { pxmf4RandomValues[i].x = float((rand() % 10000) - 5000) / 5000.0f; pxmf4RandomValues[i].y = float((rand() % 10000) - 5000) / 5000.0f; pxmf4RandomValues[i].z = float((rand() % 10000) - 5000) / 5000.0f; pxmf4RandomValues[i].w = float((rand() % 10000) - 5000) / 5000.0f; }
+
+	//	m_pRandowmValueTexture = new CTexture(1, RESOURCE_TEXTURE1D, 0, 1);
+	m_pRandowmValueTexture = new CTexture(1, RESOURCE_BUFFER, 0, 1);
+	m_pRandowmValueTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 1024, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	m_pRandowmValueOnSphereTexture = new CTexture(1, RESOURCE_TEXTURE1D, 0, 1);
+	m_pRandowmValueOnSphereTexture->CreateBuffer(pd3dDevice, pd3dCommandList, pxmf4RandomValues, 256, sizeof(XMFLOAT4), DXGI_FORMAT_R32G32B32A32_FLOAT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_GENERIC_READ, 0);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CParticleShader* pShader = new CParticleShader();
+	pShader->CreateGraphicsPipelineState(pd3dDevice, pd3dGraphicsRootSignature, 0);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 3);
+	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255));
+
+	pShader->CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 5);
+	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, 0, 6);
+	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueOnSphereTexture, 0, 7);
+
+	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
+
+	pMaterial->SetShader(pShader);
+	SetMaterial(pMaterial);
+}
+
+CParticleObject::~CParticleObject()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->Release();
+	if (m_pRandowmValueOnSphereTexture) m_pRandowmValueOnSphereTexture->Release();
+}
+
+void CParticleObject::ReleaseUploadBuffers()
+{
+	if (m_pRandowmValueTexture) m_pRandowmValueTexture->ReleaseUploadBuffers();
+	if (m_pRandowmValueOnSphereTexture) m_pRandowmValueOnSphereTexture->ReleaseUploadBuffers();
+
+	CGameObject::ReleaseUploadBuffers();
+}
+
+void CParticleObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	OnPrepareRender();
+
+	if (m_pMaterial)
+	{
+		if (m_pMaterial->m_pShader) m_pMaterial->m_pShader->OnPrepareRender(pd3dCommandList, 0);
+		if (m_pMaterial->m_pTexture) m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+
+		if (m_pRandowmValueTexture) m_pRandowmValueTexture->UpdateShaderVariables(pd3dCommandList);
+		if (m_pRandowmValueOnSphereTexture) m_pRandowmValueOnSphereTexture->UpdateShaderVariables(pd3dCommandList);
+	}
+
+	UpdateShaderVariables(pd3dCommandList);
+
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->PreRender(pd3dCommandList, 0); //Stream Output
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList, 0); //Stream Output
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->PostRender(pd3dCommandList, 0); //Stream Output
+
+	if (m_pMaterial && m_pMaterial->m_pShader) m_pMaterial->m_pShader->OnPrepareRender(pd3dCommandList, 1);
+
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->PreRender(pd3dCommandList, 1); //Draw
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList, 1); //Draw
+}
+
+void CParticleObject::OnPostRender()
+{
+	for (int i = 0; i < m_nMeshes; i++) if (m_ppMeshes[i]) m_ppMeshes[i]->OnPostRender(0); //Read Stream Output Buffer Filled Size
 }

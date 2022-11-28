@@ -43,7 +43,6 @@ private:
 
   // Ãß°¡
   PrecisionTimer timer;
-  int	AI_Num = 0;
 
   //alive, dead or spawning?
   Status                             m_Status;

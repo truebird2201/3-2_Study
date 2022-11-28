@@ -7,9 +7,19 @@
 #include "DDSTextureLoader12.h"
 #include "WICTextureLoader12.h"
 
+int gnCurrentParticles = 0;
+
 UINT gnRtvDescriptorIncrementSize = 0;
 UINT gnDsvDescriptorIncrementSize = 0;
 UINT gnCbvSrvDescriptorIncrementSize = 0;
+
+void SwapResourcePointer(ID3D12Resource** ppd3dResourceA, ID3D12Resource** ppd3dResourceB)
+{
+	ID3D12Resource* pd3dTempResource = *ppd3dResourceA;
+	*ppd3dResourceA = *ppd3dResourceB;
+	*ppd3dResourceB = pd3dTempResource;
+}
+
 
 void WaitForGpuComplete(ID3D12CommandQueue* pd3dCommandQueue, ID3D12Fence* pd3dFence, UINT64 nFenceValue, HANDLE hFenceEvent)
 {

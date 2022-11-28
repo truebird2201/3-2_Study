@@ -467,6 +467,14 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 }
 
+void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
+
+	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	pCamera->UpdateShaderVariables(pd3dCommandList);
+}
+
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
@@ -497,6 +505,11 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+}
+
+void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 }
 
 void CScene::BoundingCheck() {
