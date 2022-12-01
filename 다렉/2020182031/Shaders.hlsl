@@ -73,9 +73,9 @@ Texture2D gtxtTerrainBaseTexture : register(t14);
 Texture2D gtxtTerrainDetailTexture : register(t15);
 Texture2D gtxtWaterTexture : register(t16);
 
-Texture2D<float4> gtxtParticleTexture : register(t18);
-Buffer<float4> gRandomBuffer : register(t19);
-Buffer<float4> gRandomSphereBuffer : register(t20);
+Texture2D<float4> gtxtParticleTexture : register(t17);
+Buffer<float4> gRandomBuffer : register(t18);
+Buffer<float4> gRandomSphereBuffer : register(t19);
 #else
 Texture2D gtxtStandardTextures[7] : register(t6);
 #endif

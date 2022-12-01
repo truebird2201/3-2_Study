@@ -1,15 +1,1 @@
-﻿  compilation object save succeeded; see C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-7-6-0(StreamOutput)\x64\Debug\Shaders.cso
-  Camera.cpp
-  DDSTextureLoader12.cpp
-  GameFramework.cpp
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-7-6-0(StreamOutput)\GameFramework.cpp(511,59): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  LabProject08-7-6-0(StreamOutput).cpp
-  Mesh.cpp
-  Object.cpp
-  Player.cpp
-  Scene.cpp
-  Shader.cpp
-  stdafx.cpp
-  Timer.cpp
-  코드를 생성하고 있습니다...
-  LabProject08-7-6-0(StreamOutput).vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-7-6-0(StreamOutput)\x64\Debug\LabProject08-7-6-0(StreamOutput).exe
+﻿  LabProject08-7-6-0(StreamOutput).vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\LabProject08-7-6-0(StreamOutput)\x64\Debug\LabProject08-7-6-0(StreamOutput).exe

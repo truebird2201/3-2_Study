@@ -944,6 +944,7 @@ void CParticleMesh::PostRender(ID3D12GraphicsCommandList* pd3dCommandList, int n
 void CParticleMesh::OnPostRender(int nPipelineState)
 {
 	if (nPipelineState == 0)
+
 	{
 #ifdef _WITH_QUERY_DATA_SO_STATISTICS
 		D3D12_RANGE d3dReadRange = { 0, 0 };
@@ -954,7 +955,7 @@ void CParticleMesh::OnPostRender(int nPipelineState)
 #else
 		UINT64* pnReadBackBufferFilledSize = NULL;
 		m_pd3dReadBackBufferFilledSize->Map(0, NULL, (void**)&pnReadBackBufferFilledSize);
-		m_nVertices = UINT(*pnReadBackBufferFilledSize) / m_nStride;
+ 		m_nVertices = UINT(*pnReadBackBufferFilledSize) / m_nStride;
 		m_pd3dReadBackBufferFilledSize->Unmap(0, NULL);
 #endif
 

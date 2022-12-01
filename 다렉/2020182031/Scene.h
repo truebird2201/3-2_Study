@@ -64,6 +64,7 @@ public:
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 	void RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void OnPostRenderParticle();
 
 	void BoundingCheck();
 
@@ -72,6 +73,10 @@ public:
 	CHeightMapTerrain* GetTerrain() { return(m_pTerrain); }
 
 	CPlayer								*m_pPlayer = NULL;
+
+	CParticleObject** m_ppParticleObjects = NULL;
+	int							m_nParticleObjects = 0;
+
 	bool topview = false;
 	bool end = false;
 
