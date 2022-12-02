@@ -1001,7 +1001,7 @@ void CBox::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 //
 CEnemyObject::CEnemyObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
 {
-	PrepareAnimate();
+	//PrepareAnimate();
 	m_AABB.Extents = { 6.2 * 3.5f,6.2 * 3.5f,14.2 * 3.5f };
 }
 CEnemyObject::~CEnemyObject()
