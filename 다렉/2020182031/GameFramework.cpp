@@ -456,6 +456,8 @@ void CGameFramework::BuildObjects()
 	m_pScene->m_pPlayer = m_pPlayer;
 	m_pCamera = m_pPlayer->GetCamera();
 
+	CreateShaderVariables();
+
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
@@ -652,8 +654,8 @@ void CGameFramework::FrameAdvance(HWND hWnd)
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
 
 	if (m_pScene) {
-		//m_pScene->OnPrepareRender(m_pd3dCommandList, m_pCamera);
-		UpdateShaderVariables();
+		m_pScene->OnPrepareRender(m_pd3dCommandList, m_pCamera);
+		UpdateShaderVariables();			// <-- ¹®Á¦
 		m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	}
 
