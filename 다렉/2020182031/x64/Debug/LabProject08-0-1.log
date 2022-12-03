@@ -1,0 +1,5 @@
+﻿  Shader.cpp
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(191,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(212,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Shader.cpp(519,75): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  LabProject08-0-1.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\x64\Debug\LabProject08-0-1.exe
