@@ -79,7 +79,7 @@ public:
 
 	bool topview = false;
 	bool end = false;
-	bool fps = false;
+	bool fps=false;
 
 public:
 	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;

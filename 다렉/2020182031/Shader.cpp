@@ -5,6 +5,31 @@
 #include "stdafx.h"
 #include "Shader.h"
 
+float Random(float fMin, float fMax)
+{
+	float fRandomValue = (float)rand();
+	if (fRandomValue < fMin) fRandomValue = fMin;
+	if (fRandomValue > fMax) fRandomValue = fMax;
+	return(fRandomValue);
+}
+
+float Random()
+{
+	return(rand() / float(RAND_MAX));
+}
+
+XMFLOAT3 RandomPositionInSphere(XMFLOAT3 xmf3Center, float fRadius, int nColumn, int nColumnSpace)
+{
+	float fAngle = Random() * 360.0f * (2.0f * 3.14159f / 360.0f);
+
+	XMFLOAT3 xmf3Position;
+	xmf3Position.x = xmf3Center.x + fRadius * sin(fAngle);
+	xmf3Position.y = xmf3Center.y - (nColumn * float(nColumnSpace) / 2.0f) + (nColumn * nColumnSpace) + Random();
+	xmf3Position.z = xmf3Center.z + fRadius * cos(fAngle);
+
+	return(xmf3Position);
+}
+
 CShader::CShader()
 {
 	m_d3dSrvCPUDescriptorStartHandle.ptr = NULL;
@@ -554,6 +579,124 @@ void CStandardShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsComma
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+CObjectsShadowShader::CObjectsShadowShader()
+{
+}
+
+CObjectsShadowShader::~CObjectsShadowShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CObjectsShadowShader::CreateInputLayout()
+{
+	UINT nInputElementDescs = 5;
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[2] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 2, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 3, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[4] = { "BITANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 4, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CObjectsShadowShader::CreateVertexShader()
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSStandard", "vs_5_1", &m_pd3dVertexShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CObjectsShadowShader::CreatePixelShader()
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSStandard", "ps_5_1", &m_pd3dPixelShaderBlob));
+}
+
+void CObjectsShadowShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext)
+{
+	m_nObjects = 1;
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
+	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/SuperCobra.bin", this);
+	pGunshipModel->AddRef();
+
+	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_ppObjects[0]->SetChild(pGunshipModel);
+	m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));
+	m_ppObjects[0]->SetScale(5.5f, 5.5f, 5.5f);
+	m_ppObjects[0]->PrepareAnimate();
+
+}
+
+void CObjectsShadowShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256?? ©ö?¨ù?
+	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);
+}
+void CObjectsShadowShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+		if (m_ppObjects[j]->m_pMaterial && m_ppObjects[j]->m_pMaterial->m_pTexture)
+		{
+			XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4Texture, XMMatrixTranspose(XMLoadFloat4x4(&(m_ppObjects[j]->m_pMaterial->m_pTexture->m_xmf4x4Texture))));
+		}
+	}
+}
+void CObjectsShadowShader::ReleaseShaderVariables()
+{
+	if (m_pd3dcbGameObjects)
+	{
+		m_pd3dcbGameObjects->Unmap(0, NULL);
+		m_pd3dcbGameObjects->Release();
+	}
+	CStandardShader::ReleaseShaderVariables();
+}
+void CObjectsShadowShader::ReleaseObjects()
+{
+	if (m_ppObjects)
+	{
+		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->Release();
+		delete[] m_ppObjects;
+	}
+}
+void CObjectsShadowShader::AnimateObjects(float fTimeElapsed)
+{
+	if (m_ppObjects)
+	{
+		for (int j = 0; j < m_nObjects; j++) {
+			if (m_ppObjects[j]) {
+				m_ppObjects[j]->PrepareAnimate();
+				m_ppObjects[j]->Animate(fTimeElapsed);
+			}
+		}
+	}
+}
+void CObjectsShadowShader::ReleaseUploadBuffers()
+{
+	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
+}
+void CObjectsShadowShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
+{
+	CShader::Render(pd3dCommandList, pCamera, nPipelineState);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		if (m_ppObjects[j])
+		{
+			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+		}
+	}
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 CObjectsShader::CObjectsShader()
 {
 }
@@ -562,48 +705,14 @@ CObjectsShader::~CObjectsShader()
 {
 }
 
-float Random(float fMin, float fMax)
-{
-	float fRandomValue = (float)rand();
-	if (fRandomValue < fMin) fRandomValue = fMin;
-	if (fRandomValue > fMax) fRandomValue = fMax;
-	return(fRandomValue);
-}
-
-float Random()
-{
-	return(rand() / float(RAND_MAX));
-}
-
-XMFLOAT3 RandomPositionInSphere(XMFLOAT3 xmf3Center, float fRadius, int nColumn, int nColumnSpace)
-{
-    float fAngle = Random() * 360.0f * (2.0f * 3.14159f / 360.0f);
-
-	XMFLOAT3 xmf3Position;
-    xmf3Position.x = xmf3Center.x + fRadius * sin(fAngle);
-    xmf3Position.y = xmf3Center.y - (nColumn * float(nColumnSpace) / 2.0f) + (nColumn * nColumnSpace) + Random();
-    xmf3Position.z = xmf3Center.z + fRadius * cos(fAngle);
-
-	return(xmf3Position);
-}
-
 void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext)
 {
-	m_nObjects = 3;
+	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17 + 50); //SuperCobra(17), Gunship(2)
 	CGameObject* pGunshipModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/SuperCobra.bin", this);
 	pGunshipModel->AddRef();
-
-
-	///
-
-	m_ppObjects[1] = new CBulletObject();
-	m_ppObjects[1]->SetChild(pGunshipModel);
-	m_ppObjects[1]->SetPosition(XMFLOAT3({ 406.087494,138.316254,77.413948 }));
-	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
-	m_ppObjects[1]->PrepareAnimate();
 
 	m_ppObjects[0] = new CEnemyObject(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	m_ppObjects[0]->SetChild(pGunshipModel);
@@ -611,13 +720,6 @@ void CObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsComman
 	m_ppObjects[0]->SetScale(1.5f, 1.5f, 1.5f);
 	m_ppObjects[0]->PrepareAnimate();
 
-	///
-
-	m_ppObjects[2] = new CDangerObject();
-	m_ppObjects[2]->SetChild(pGunshipModel);
-	m_ppObjects[2]->SetPosition(XMFLOAT3({ 424.872620,115.111160,424.050995 }));
-	m_ppObjects[2]->Rotate(0.0f, 90.0f, 0.0f);
-	m_ppObjects[2]->PrepareAnimate();
 
 }
 

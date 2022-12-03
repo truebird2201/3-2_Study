@@ -326,6 +326,25 @@ public:
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent = NULL);
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CEnemyShadowObject : public CGameObject
+{
+public:
+	CEnemyShadowObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CEnemyShadowObject();
+
+private:
+	CGameObject* m_pMainRotorFrame = NULL;
+	CGameObject* m_pTailRotorFrame = NULL;
+
+public:
+
+
+	virtual void PrepareAnimate();
+	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
+};
+
 ///////////////////////////////////////////////
 
 class CBulletObject : public CGameObject

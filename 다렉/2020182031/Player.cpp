@@ -282,7 +282,7 @@ void CAirplanePlayer::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 		XMMATRIX xmmtxRotate = XMMatrixRotationX(XMConvertToRadians(360.0f * 4.0f) * fTimeElapsed);
 		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
-
+m_pCamera->SetOffset(XMFLOAT3(10.0f, 0.0f, 0.0f));;
 	CPlayer::Animate(fTimeElapsed, pxmf4x4Parent);
 }
 
@@ -304,7 +304,7 @@ CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 			SetMaxVelocityY(40.0f);
 			m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 			m_pCamera->SetTimeLag(0.0f);
-			m_pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
+			m_pCamera->SetOffset(XMFLOAT3(10.0f, 0.0f, 0.0f));;
 			m_pCamera->GenerateProjectionMatrix(0.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 			m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 			m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -375,10 +375,6 @@ void CAirplanePlayer::OnCameraUpdateCallback(float fTimeElapsed)
 			{
 				CThirdPersonCamera* p3rdPersonCamera = (CThirdPersonCamera*)m_pCamera;
 				p3rdPersonCamera->SetLookAt(GetPosition());
-			}
-			if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA) {
-				m_pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
-				m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 			}
 		}
 }

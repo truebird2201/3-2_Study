@@ -912,6 +912,35 @@ void CGameObject::SetLookAt(XMFLOAT3& xmf3Target, XMFLOAT3& xmf3Up)
 		m_xmf4x4World._31 = xmf3Look.x; m_xmf4x4World._32 = xmf3Look.y; m_xmf4x4World._33 = xmf3Look.z;
 		*/
 }
+void CGameObject::FollowPlayer(float fTimeElapsed) {
+	if (fly == false) {
+
+		XMFLOAT3 Position = GetPosition();
+		XMFLOAT3 Target = target[state];
+		XMFLOAT3 ToTarget;
+
+		ToTarget = Vector3::Subtract(Target, Position);
+		if (Vector3::Length(ToTarget) < 50) {
+			state++;
+			if (state == 14) {
+				goal = true;
+			}
+		}
+		ToTarget = Vector3::Subtract(Target, Position);
+		XMFLOAT3 Look = GetLook();
+		ToTarget = Vector3::Normalize(ToTarget);
+		XMFLOAT3 CrossProduct = Vector3::CrossProduct(Look, ToTarget);
+		float Dot = Vector3::DotProduct(Look, ToTarget);
+		float Angle = (Dot > 0.0f) ? XMConvertToDegrees(acos(Dot)) : 90.0f;
+		Angle *= (CrossProduct.y > 0.0f) ? 1.0f : -1.0f;
+		Rotate(0.0f, Angle * fTimeElapsed * 8.0f, 0.0f);
+
+		MoveForward(speed);
+	}
+
+
+
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
 CSkyBox::CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature) : CGameObject(1)
@@ -951,7 +980,7 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
+
 CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
 	CTexturedRectMesh* pBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 480.0f, 0.0f, 480.0f, 0.0, 0.0, 0.0);
@@ -1057,35 +1086,40 @@ void CEnemyObject::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
 
 	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
-void CGameObject::FollowPlayer(float fTimeElapsed) {
-	if (fly == false) {
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CEnemyShadowObject::CEnemyShadowObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	PrepareAnimate();
+	m_AABB.Extents = { 6.2 * 3.5f,6.2 * 3.5f,14.2 * 3.5f };
+}
+CEnemyShadowObject::~CEnemyShadowObject()
+{
+}
 
-		XMFLOAT3 Position = GetPosition();
-		XMFLOAT3 Target = target[state];
-		XMFLOAT3 ToTarget;
+void CEnemyShadowObject::PrepareAnimate()
+{
+	m_pMainRotorFrame = FindFrame("MainRotor");
+	m_pTailRotorFrame = FindFrame("TailRotor");
+}
 
-		ToTarget = Vector3::Subtract(Target, Position);
-		if (Vector3::Length(ToTarget) < 50) {
-			state++;
-			if (state == 14) {
-				goal = true;
-			}
-		}
-		ToTarget = Vector3::Subtract(Target, Position);
-		XMFLOAT3 Look = GetLook();
-		ToTarget = Vector3::Normalize(ToTarget);
-		XMFLOAT3 CrossProduct = Vector3::CrossProduct(Look, ToTarget);
-		float Dot = Vector3::DotProduct(Look, ToTarget);
-		float Angle = (Dot > 0.0f) ? XMConvertToDegrees(acos(Dot)) : 90.0f;
-		Angle *= (CrossProduct.y > 0.0f) ? 1.0f : -1.0f;
-		Rotate(0.0f, Angle * fTimeElapsed * 8.0f, 0.0f);
-
-		MoveForward(speed);
+void CEnemyShadowObject::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
+{
+	if (m_pMainRotorFrame)
+	{
+		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(360.0f * 4.0f) * fTimeElapsed);
+		m_pMainRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pMainRotorFrame->m_xmf4x4Transform);
+	}
+	if (m_pTailRotorFrame)
+	{
+		XMMATRIX xmmtxRotate = XMMatrixRotationX(XMConvertToRadians(360.0f * 4.0f) * fTimeElapsed);
+		m_pTailRotorFrame->m_xmf4x4Transform = Matrix4x4::Multiply(xmmtxRotate, m_pTailRotorFrame->m_xmf4x4Transform);
 	}
 
-
-
+	CGameObject::Animate(fTimeElapsed, pxmf4x4Parent);
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CBulletObject::CBulletObject()

@@ -84,9 +84,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
 	m_ppParticleObjects[0] = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 65.0f, 0.0f), 0.0f, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(8.0f, 8.0f), MAX_PARTICLES);
 
-	m_nShaders = 2;
+	m_nShaders = 3;
 	m_ppShaders = new CObjectsShader*[m_nShaders];
-
 
 	CBillboardObjectsShader* pBillboardObjectShader = new CBillboardObjectsShader();
 	pBillboardObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
@@ -97,6 +96,14 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	pObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
 	m_ppShaders[1] = pObjectShader;
+
+	CObjectsShadowShader* pObjectShadowShader = new CObjectsShadowShader();
+	pObjectShadowShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pObjectShadowShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_pTerrain);
+	
+	if(pObjectShadowShader->m_ppObjects[0]) printf("넣기전 - %d\n", pObjectShadowShader->m_ppObjects[0]->fly);
+	m_ppShaders[2] = pObjectShadowShader;
+	if (m_ppShaders[2]->m_ppObjects[0]) printf("넣은 후 - %d\n", m_ppShaders[2]->m_ppObjects[0]->fly);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -534,14 +541,21 @@ void CScene::AnimateObjects(float fTimeElapsed)
 			m_ppShaders[1]->m_ppObjects[0]->speed += 0.6;
 		}
 	}
+	if (m_ppShaders[2]->m_ppObjects[0]->fly == true) {
+		m_ppShaders[2]->m_ppObjects[0]->MoveUp(-1.0f);
+		m_ppShaders[2]->m_ppObjects[0]->Rotate(0.0f, -10.0f, 0.0f);
+		if (m_ppShaders[2]->m_ppObjects[0]->GetPosition().y < 0) {
+			m_ppShaders[2]->m_ppObjects[0]->fly = false;
+			m_ppShaders[2]->m_ppObjects[0]->SetPosition(XMFLOAT3({ 409.692932,115.111160,107.538094 }));
+			m_ppShaders[2]->m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+			m_ppShaders[2]->m_ppObjects[0]->PrepareAnimate();
+			m_ppShaders[2]->m_ppObjects[0]->state = 0;
+			m_ppShaders[2]->m_ppObjects[0]->speed += 0.6;
+		}
+	}
 
 	m_ppShaders[1]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
-	if (m_ppShaders[1]->m_ppObjects[0]->attack && m_ppShaders[1]->m_ppObjects[1]->ready == true && m_ppShaders[1]->m_ppObjects[0]->fly == false) {
-		m_ppShaders[1]->m_ppObjects[2]->ready = false;
-		m_ppShaders[1]->m_ppObjects[2]->SetPosition(m_ppShaders[1]->m_ppObjects[0]->GetPosition());
-		m_ppShaders[1]->m_ppObjects[2]->m_xmDirect = Vector3::Normalize(Vector3::Subtract(m_pPlayer->GetPosition(), m_ppShaders[1]->m_ppObjects[2]->GetPosition()));
-
-	}
+	m_ppShaders[2]->m_ppObjects[0]->FollowPlayer(fTimeElapsed);
 
 }
 
@@ -570,7 +584,7 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 		}
 	}
 	else {
-		pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
+		pCamera->SetOffset(XMFLOAT3(-2.0f, 2.5f, 0.0f));
 		pCamera->SetPosition(Vector3::Add(m_pPlayer->GetPosition(), pCamera->GetOffset()));
 	}
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
@@ -600,22 +614,4 @@ void CScene::OnPostRenderParticle()
 	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->OnPostRender();
 }
 void CScene::BoundingCheck() {
-	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
-		m_ppShaders[1]->m_ppObjects[i]->m_AABB.Center = m_ppShaders[1]->m_ppObjects[0]->GetPosition();
-	}
-	if (m_ppShaders[1]->m_ppObjects[0]->m_AABB.Intersects(m_ppShaders[1]->m_ppObjects[1]->m_AABB) && m_ppShaders[1]->m_ppObjects[1]->ready == false)
-	{
-		XMFLOAT3 ene = m_ppShaders[1]->m_ppObjects[0]->GetPosition();
-		XMFLOAT3 ply = m_pPlayer->GetPosition();
-		XMFLOAT3 ToTarget = Vector3::Subtract(ene, ply);
-
-		if (Vector3::Length(ToTarget) < 30) {
-			m_ppShaders[1]->m_ppObjects[0]->fly = true;
-			m_ppShaders[1]->m_ppObjects[1]->ready = true;
-			m_pPlayer->point++;
-		}
-		else {
-			m_ppShaders[1]->m_ppObjects[1]->ready = true;
-		}
-	}
 }
