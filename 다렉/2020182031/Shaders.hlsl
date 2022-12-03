@@ -16,6 +16,12 @@ struct MATERIAL
 	float4					m_cEmissive;
 };
 
+cbuffer cbCubeMappingRender : register(b0)
+{
+	matrix gmtxCubeMappingViews[6];
+	matrix gmtxCubeMappingProjection;
+};
+
 cbuffer cbCameraInfo : register(b1)
 {
 	matrix		gmtxView : packoffset(c0);
@@ -76,6 +82,7 @@ Texture2D gtxtWaterTexture : register(t16);
 Texture2D<float4> gtxtParticleTexture : register(t17);
 Buffer<float4> gRandomBuffer : register(t18);
 Buffer<float4> gRandomSphereBuffer : register(t19);
+TextureCube gtxtCubeMap : register(t20);
 #else
 Texture2D gtxtStandardTextures[7] : register(t6);
 #endif
@@ -84,6 +91,7 @@ SamplerState gssWrap : register(s0);
 SamplerState gssClamp : register(s1);
 SamplerState gMirrorSamplerState : register(s2);
 SamplerState gPointSamplerState : register(s3);
+//SamplerState gssCubeMap : register(s4);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -156,6 +164,13 @@ struct VS_SKYBOX_CUBEMAP_OUTPUT
 	float3	positionL : POSITION;
 	float4	position : SV_POSITION;
 };
+
+struct GS_SKYBOX_CUBEMAP_OUTPUT
+{
+	float3	positionL : POSITION;
+	float4	position : SV_POSITION;
+	uint renderTarget : SV_RenderTargetArrayIndex;
+};
 struct VS_PARTICLE_INPUT
 {
 	float3 position : POSITION;
@@ -178,6 +193,90 @@ struct GS_PARTICLE_DRAW_OUTPUT
 	float2 uv : TEXTURE;
 	uint type : PARTICLETYPE;
 };
+struct VS_LIGHTING_INPUT
+{
+	float3 position : POSITION;
+	float3 normal : NORMAL;
+};
+
+struct VS_LIGHTING_OUTPUT
+{
+	float4 position : SV_POSITION;
+	float3 positionW : POSITION;
+	float3 normalW : NORMAL;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+
+VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
+{
+	VS_SKYBOX_CUBEMAP_OUTPUT output;
+
+	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
+	output.positionL = input.position;
+
+	return(output);
+}
+
+float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
+{
+	float4 cColor = gtxtSkyCubeTexture.Sample(gssClamp, input.positionL);
+
+	return(cColor);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+VS_LIGHTING_OUTPUT VSLightingColor(VS_LIGHTING_INPUT input)
+{
+	VS_LIGHTING_OUTPUT output = (VS_LIGHTING_OUTPUT)0;
+	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
+	output.positionW = mul(input.position, (float3x3)gmtxGameObject);
+	output.position = mul(float4(input.position,1.0f), mul(gmtxView, gmtxProjection));	
+	return(output);
+}
+
+float4 PSCubeMapping(VS_LIGHTING_OUTPUT input) : SV_Target
+{
+	float4 clIlumination = Lighting(input.positionW, input.normalW);
+	float3 vFromCamera = normalize(input.positionW - gvCameraPosition.xyz);
+	float3 vReflected = normalize(reflect(vFromCamera, input.normalW));
+	float4 cCubeTextureColor = gtxtCubeMap.Sample(gssClamp, vReflected);
+	return(clIlumination * cCubeTextureColor);
+}
+
+
+VS_SKYBOX_CUBEMAP_OUTPUT VSToCubeMap(VS_SKYBOX_CUBEMAP_INPUT input)
+{
+	VS_SKYBOX_CUBEMAP_OUTPUT output = (VS_SKYBOX_CUBEMAP_OUTPUT)0;
+	output.position = mul(float4(input.position, 1.0f), gmtxGameObject);
+	output.positionL = input.position;
+	return(output);
+}
+
+[maxvertexcount(3)]
+[Instance(6)]
+void GSSkyBox(triangle VS_SKYBOX_CUBEMAP_OUTPUT input[3], uint nInstance: SV_GSInstanceID, inout TriangleStream<GS_SKYBOX_CUBEMAP_OUTPUT> stream)
+{
+	GS_SKYBOX_CUBEMAP_OUTPUT output;
+	output.renderTarget = nInstance;
+	matrix mtxView = mul(gmtxCubeMappingViews[nInstance], gmtxCubeMappingProjection); 
+	for (int j = 0; j < 3; j++)
+	{
+		output.position = mul(input[j].position, mtxView);
+		output.positionL = input[j].positionL;
+		stream.Append(output);
+	}
+	stream.RestartStrip();
+}
+
+float4 PSToCubeMap(GS_SKYBOX_CUBEMAP_OUTPUT input) : SV_Target
+{
+	float4 cColor = gtxtSkyCubeTexture.Sample(gssClamp, input.positionL);
+	return(cColor);
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -189,7 +288,7 @@ VS_STANDARD_OUTPUT VSStandard(VS_STANDARD_INPUT input)
 	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
 	output.tangentW = (float3)mul(float4(input.tangent, 1.0f), gmtxGameObject);
 	output.bitangentW = (float3)mul(float4(input.bitangent, 1.0f), gmtxGameObject);
-	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
+	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection); 
 	output.uv = input.uv;
 
 	return(output);
@@ -232,28 +331,8 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	return(cColor);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
 
 
-VS_SKYBOX_CUBEMAP_OUTPUT VSSkyBox(VS_SKYBOX_CUBEMAP_INPUT input)
-{
-	VS_SKYBOX_CUBEMAP_OUTPUT output;
-
-	output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-	output.positionL = input.position;
-
-	return(output);
-}
-
-
-
-float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
-{
-	float4 cColor = gtxtSkyCubeTexture.Sample(gssClamp, input.positionL);
-
-	return(cColor);
-}
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

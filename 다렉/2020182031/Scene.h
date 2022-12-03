@@ -95,6 +95,7 @@ public:
 
 	CSkyBox								*m_pSkyBox = NULL;
 	CBox								* m_pWater = NULL;
+	CCubeMap							* m_pCubeMap = NULL;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
 

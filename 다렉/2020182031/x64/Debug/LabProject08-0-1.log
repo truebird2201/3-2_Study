@@ -1,5 +1,6 @@
 ﻿  Object.cpp
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(195,20): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
 C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.h(216,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
-C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.cpp(1033,55): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.cpp(977,48): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\Object.cpp(1069,55): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
   LabProject08-0-1.vcxproj -> C:\Users\82107\OneDrive\바탕 화면\3-2_Study\다렉\2020182031\x64\Debug\LabProject08-0-1.exe

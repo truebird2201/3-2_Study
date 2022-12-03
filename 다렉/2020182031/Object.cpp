@@ -952,6 +952,42 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
+CCubeMap::CCubeMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
+{
+	CBoxMesh* pBoxMesh = new  CBoxMesh(pd3dDevice, pd3dCommandList, 2.0, 2.0, 2.0);
+	SetMesh(pBoxMesh);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pSkyBoxTexture = new CTexture(1, RESOURCE_TEXTURE_CUBE, 0, 1);
+	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"SkyBox/SkyBox_0.dds", RESOURCE_TEXTURE_CUBE, 0);
+
+	CCubeMappingShader* pCubeMappingShader = new CCubeMappingShader();
+	pCubeMappingShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pCubeMappingShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	pCubeMappingShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 1);
+	pCubeMappingShader->CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 18);
+
+	CMaterial* pCubeMappingMaterial = new CMaterial();
+	pCubeMappingMaterial->SetTexture(0);
+	pCubeMappingMaterial->SetShader(pCubeMappingShader);
+
+	SetMaterial(0, pCubeMappingMaterial);
+	SetPosition(439.829132, 115.111160, 396.016663);
+}
+
+CCubeMap::~CCubeMap()
+{
+}
+
+void CCubeMap::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// 
 CBox::CBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
 	CTexturedRectMesh* pBoxMesh = new CTexturedRectMesh(pd3dDevice, pd3dCommandList, 480.0f, 0.0f, 480.0f, 0.0, 0.0, 0.0);
@@ -1365,9 +1401,9 @@ CParticleObject::CParticleObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommand
 	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 3);
 	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbGameObject, ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255));
 
-	pShader->CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 5);
-	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, 0, 6);
-	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueOnSphereTexture, 0, 7);
+	pShader->CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 14);
+	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueTexture, 0, 15);
+	pShader->CreateShaderResourceViews(pd3dDevice, m_pRandowmValueOnSphereTexture, 0, 16);
 
 	SetCbvGPUDescriptorHandle(pShader->GetGPUCbvDescriptorStartHandle());
 
