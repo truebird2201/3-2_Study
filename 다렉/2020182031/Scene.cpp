@@ -68,7 +68,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	XMFLOAT3 xmf3Scale(2.0f, 2.0f, 2.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.2f, 0.0f, 0.0f);
+	XMFLOAT4 xmf4Color(0.0f, 1.0f, 0.0f, 0.0f);
 #ifdef _WITH_TERRAIN_PARTITION
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Image/HeightMap.raw"), 257, 257, 17, 17, xmf3Scale, xmf4Color);
 #else
@@ -561,11 +561,17 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UpdateShaderVariables(pd3dCommandList);
-	if (topview) {
-		pCamera->SetOffset(XMFLOAT3(0.0f, 500.0f, -50.0f));
+	if (pCamera->GetMode() == THIRD_PERSON_CAMERA) {
+		if (topview) {
+			pCamera->SetOffset(XMFLOAT3(0.0f, 500.0f, -50.0f));
+		}
+		else {
+			pCamera->SetOffset(XMFLOAT3(0.0f, 30.0f, -40.0f));
+		}
 	}
 	else {
-		pCamera->SetOffset(XMFLOAT3(0.0f, 30.0f, -40.0f));
+		pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
+		pCamera->SetPosition(Vector3::Add(m_pPlayer->GetPosition(), pCamera->GetOffset()));
 	}
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights

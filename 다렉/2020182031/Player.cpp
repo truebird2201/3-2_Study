@@ -87,7 +87,7 @@ void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
 void CPlayer::Rotate(float x, float y, float z)
 {
 	DWORD nCurrentCameraMode = m_pCamera->GetMode();
-	if ((nCurrentCameraMode == FIRST_PERSON_CAMERA) || (nCurrentCameraMode == THIRD_PERSON_CAMERA))
+	if ((nCurrentCameraMode == FIRST_PERSON_CAMERA)||(nCurrentCameraMode == THIRD_PERSON_CAMERA))
 	{
 		if (x != 0.0f)
 		{
@@ -243,15 +243,16 @@ void CPlayer::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 
 CAirplanePlayer::CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void* pContext)
 {
-	m_pCamera = ChangeCamera(/*SPACESHIP_CAMERA*/THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
 
 	m_pShader = new CPlayerShader();
 	m_pShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-	m_pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 1); //Mi24(1)
+	m_pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 17+50);
 
-	CGameObject *pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mi24.bin", m_pShader);
+	CGameObject *pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/SuperCobra.bin", m_pShader);
 	SetChild(pGameObject);
+	OnPrepareRender();
 
 	PrepareAnimate();
 	SetPlayerUpdatedContext(pTerrain);
@@ -265,8 +266,8 @@ CAirplanePlayer::~CAirplanePlayer()
 
 void CAirplanePlayer::PrepareAnimate()
 {
-	m_pMainRotorFrame = FindFrame("Top_Rotor");
-	m_pTailRotorFrame = FindFrame("Tail_Rotor");
+	m_pMainRotorFrame = FindFrame("MainRotor");
+	m_pTailRotorFrame = FindFrame("TailRotor");
 }
 
 void CAirplanePlayer::Animate(float fTimeElapsed, XMFLOAT4X4 *pxmf4x4Parent)
@@ -303,7 +304,7 @@ CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 			SetMaxVelocityY(40.0f);
 			m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 			m_pCamera->SetTimeLag(0.0f);
-			m_pCamera->SetOffset(XMFLOAT3(0.0f, -0.05f, 0.01f));
+			m_pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
 			m_pCamera->GenerateProjectionMatrix(0.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 			m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 			m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -328,7 +329,6 @@ CCamera *CAirplanePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 			m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 			m_pCamera->SetTimeLag(0.25f);
 			m_pCamera->SetOffset(XMFLOAT3(0.0f, 15.0f, -30.0f));
-			m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 			m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 			m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 			m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -363,18 +363,22 @@ void CAirplanePlayer::OnPlayerUpdateCallback(float fTimeElapsed)
 
 void CAirplanePlayer::OnCameraUpdateCallback(float fTimeElapsed)
 {
-	XMFLOAT3 xmf3CameraPosition = m_pCamera->GetPosition();
-	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pCameraUpdatedContext;
-	float fHeight = pTerrain->GetHeight(xmf3CameraPosition.x, xmf3CameraPosition.z) +
-		5.0f;
-	if (xmf3CameraPosition.y <= fHeight)
-	{
-		xmf3CameraPosition.y = fHeight;
-		m_pCamera->SetPosition(xmf3CameraPosition);
-		if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA)
+		XMFLOAT3 xmf3CameraPosition = m_pCamera->GetPosition();
+		CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pCameraUpdatedContext;
+		float fHeight = pTerrain->GetHeight(xmf3CameraPosition.x, xmf3CameraPosition.z) +
+			5.0f;
+		if (xmf3CameraPosition.y <= fHeight)
 		{
-			CThirdPersonCamera* p3rdPersonCamera = (CThirdPersonCamera*)m_pCamera;
-			p3rdPersonCamera->SetLookAt(GetPosition());
+			xmf3CameraPosition.y = fHeight;
+			m_pCamera->SetPosition(xmf3CameraPosition);
+			if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA)
+			{
+				CThirdPersonCamera* p3rdPersonCamera = (CThirdPersonCamera*)m_pCamera;
+				p3rdPersonCamera->SetLookAt(GetPosition());
+			}
+			if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA) {
+				m_pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
+				m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
+			}
 		}
-	}
 }

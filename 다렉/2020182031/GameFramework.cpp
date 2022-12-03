@@ -509,20 +509,47 @@ void CGameFramework::ProcessInput()
 
 			if (cxDelta || cyDelta)
 			{
-				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-					m_pPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
-				else
-					m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+				if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA) {
+					if (pKeysBuffer[VK_RBUTTON] & 0xF0)
+						m_pPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
+					else
+						m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+				}
+				else {
+					if (pKeysBuffer[VK_RBUTTON] & 0xF0) {
+						m_pPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
+						m_pCamera->Rotate(cyDelta, 0.0f, -cxDelta);
+					}
+					else {
+						m_pPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+						m_pCamera->Rotate(cyDelta, cxDelta, 0.0f);
+					}
+				}
 			}
 			if (dwDirection) {
-				if (pKeysBuffer[0x41] & 0xF0) {
-					m_pPlayer->Rotate(0.0f, -0.1f, 0.0f);
-					pKeysBuffer[0x41] = false;
+				if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA) {
+					if (pKeysBuffer[0x41] & 0xF0) {
+						m_pPlayer->Rotate(0.0f, -0.01f, 0.0f);
+						pKeysBuffer[0x41] = false;
+					}
+					else if (pKeysBuffer[0x44] & 0xF0) {
+						m_pPlayer->Rotate(0.0f, +0.01f, 0.0f);
+						pKeysBuffer[0x44] = false;
+					}
 				}
-				else if (pKeysBuffer[0x44] & 0xF0) {
-					m_pPlayer->Rotate(0.0f, +0.1f, 0.0f);
-					pKeysBuffer[0x44] = false;
+				else {
+					if (pKeysBuffer[0x41] & 0xF0) {
+						m_pPlayer->Rotate(0.0f, -0.1f, 0.0f);
+						m_pCamera->Rotate(0.0f, -0.01f, 0.0f);
+						pKeysBuffer[0x41] = false;
+					}
+					else if (pKeysBuffer[0x44] & 0xF0) {
+						m_pPlayer->Rotate(0.0f, +0.1f, 0.0f);
+						m_pCamera->Rotate(0.0f, +0.01f, 0.0f);
+						pKeysBuffer[0x44] = false;
+					}
 				}
+				
 				m_pPlayer->Move(dwDirection, 0.5f, true);
 			}
 		}
@@ -600,32 +627,32 @@ void CGameFramework::FrameAdvance(HWND hWnd)
 {
 	m_GameTimer.Tick(0.0f);
 
-	if (m_pScene->end) {
-		HFONT font;
+	//if (m_pScene->end) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적에게 당했습니다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
+	//	if (MessageBox(hWnd, _T("적에게 당했습니다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
 
-	}
-	if (m_pScene->m_pPlayer->point == 5) {
-		HFONT font;
+	//}
+	//if (m_pScene->m_pPlayer->point == 5) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적을 소멸했다!"), _T("GameClear"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
+	//	if (MessageBox(hWnd, _T("적을 소멸했다!"), _T("GameClear"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
 
-	}
-	if (m_pScene->m_ppShaders[1]->m_ppObjects[0]->goal) {
-		HFONT font;
+	//}
+	//if (m_pScene->m_ppShaders[1]->m_ppObjects[0]->goal) {
+	//	HFONT font;
 
-		if (MessageBox(hWnd, _T("적이 기지를 침략했다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
-		{
-			::PostQuitMessage(0);
-		}
-	}
+	//	if (MessageBox(hWnd, _T("적이 기지를 침략했다!"), _T("GameOver"), MB_ICONASTERISK | MB_OK))
+	//	{
+	//		::PostQuitMessage(0);
+	//	}
+	//}
 
 	ProcessInput();
 
