@@ -2,6 +2,7 @@
 // File: CGameObject.cpp
 //-----------------------------------------------------------------------------
 
+#include <iostream>
 #include "float.h"
 #include "stdafx.h"
 #include "Object.h"
@@ -466,26 +467,14 @@ CGameObject *CGameObject::FindFrame(char *pstrFrameName)
 
 void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
+	if (!strcmp(m_pstrFrameName, "PilotDoor"))
+		return;
+
 	OnPrepareRender();
 
 	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
 
-	if (m_pMaterial)
-	{
-		if (m_pMaterial->m_pShader)
-		{
-			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
-			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
-
-			UpdateShaderVariables(pd3dCommandList);
-		}
-		if (m_pMaterial->m_pTexture)
-		{
-			m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
-		}
-	}
-
-	if (m_nMaterials > 0)
+	if (m_nMaterials > 1)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
 		{
@@ -495,9 +484,25 @@ void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pC
 				m_ppMaterials[i]->UpdateShaderVariables(pd3dCommandList);
 			}
 
-			for (int j = 0; j < m_nMeshes; ++j)
+			if (m_nMeshes == 1)
 			{
-				if (m_ppMeshes[j]) m_ppMeshes[j]->Render(pd3dCommandList, j);
+				if (m_ppMeshes[0]) m_ppMeshes[0]->Render(pd3dCommandList, i);
+			}
+		}
+	}
+	else
+	{
+		if ((m_nMaterials == 1) && (m_ppMaterials[0]))
+		{
+			if (m_ppMaterials[0]->m_pShader) m_ppMaterials[0]->m_pShader->Render(pd3dCommandList, pCamera);
+			m_ppMaterials[0]->UpdateShaderVariables(pd3dCommandList);
+		}
+
+		if (m_ppMeshes)
+		{
+			for (int i = 0; i < m_nMeshes; i++)
+			{
+				if (m_ppMeshes[i]) m_ppMeshes[i]->Render(pd3dCommandList, 0);
 			}
 		}
 	}
@@ -800,6 +805,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 	int nFrame = 0, nTextures = 0;
 
 	CGameObject *pGameObject = NULL;
+	
 
 	for ( ; ; )
 	{
@@ -816,7 +822,9 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 
 			nReads = (UINT)::fread(&nStrLength, sizeof(BYTE), 1, pInFile);
 			nReads = (UINT)::fread(pGameObject->m_pstrFrameName, sizeof(char), nStrLength, pInFile);
+			
 			pGameObject->m_pstrFrameName[nStrLength] = '\0';
+
 		}
 		else if (!strcmp(pstrToken, "<Transform>:"))
 		{
@@ -833,7 +841,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 		}
 		else if (!strcmp(pstrToken, "<Mesh>:"))
 		{
-			CStandardMesh *pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
+			CStandardMesh* pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 			pGameObject->SetMesh(pMesh);
 		}
@@ -970,7 +978,7 @@ CCubeMap::CCubeMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	pCubeMappingShader->CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 18);
 
 	CMaterial* pCubeMappingMaterial = new CMaterial();
-	pCubeMappingMaterial->SetTexture(0);
+	pCubeMappingMaterial->SetTexture(pSkyBoxTexture);
 	pCubeMappingMaterial->SetShader(pCubeMappingShader);
 
 	SetMaterial(0, pCubeMappingMaterial);
@@ -983,7 +991,44 @@ CCubeMap::~CCubeMap()
 
 void CCubeMap::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	CGameObject::Render(pd3dCommandList, pCamera);
+	OnPrepareRender();
+
+	UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+
+	if (m_pMaterial)
+	{
+		if (m_pMaterial->m_pShader)
+		{
+			m_pMaterial->m_pShader->Render(pd3dCommandList, pCamera);
+			m_pMaterial->m_pShader->UpdateShaderVariables(pd3dCommandList);
+
+			UpdateShaderVariables(pd3dCommandList);
+		}
+		if (m_pMaterial->m_pTexture)
+		{
+			m_pMaterial->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+		}
+	}
+
+	if (m_nMaterials > 0)
+	{
+		for (int i = 0; i < m_nMaterials; i++)
+		{
+			if (m_ppMaterials[i])
+			{
+				if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+				m_ppMaterials[i]->UpdateShaderVariables(pd3dCommandList);
+			}
+
+			for (int j = 0; j < m_nMeshes; ++j)
+			{
+				if (m_ppMeshes[j]) m_ppMeshes[j]->Render(pd3dCommandList, j);
+			}
+		}
+	}
+
+	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
+	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////

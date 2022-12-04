@@ -81,9 +81,9 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_pCubeMap = new CCubeMap(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pWater = new CBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
-	m_nParticleObjects = 1;
-	m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
-	m_ppParticleObjects[0] = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 65.0f, 0.0f), 0.0f, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(8.0f, 8.0f), MAX_PARTICLES);
+	//m_nParticleObjects = 1;
+	//m_ppParticleObjects = new CParticleObject * [m_nParticleObjects];
+	//m_ppParticleObjects[0] = new CParticleObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 65.0f, 0.0f), 0.0f, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(8.0f, 8.0f), MAX_PARTICLES);
 
 	m_nShaders = 3;
 	m_ppShaders = new CObjectsShader*[m_nShaders];
@@ -131,11 +131,11 @@ void CScene::ReleaseObjects()
 		delete[] m_ppGameObjects;
 	}
 
-	if (m_ppParticleObjects)
-	{
-		for (int i = 0; i < m_nParticleObjects; i++) delete m_ppParticleObjects[i];
-		delete[] m_ppParticleObjects;
-	}
+	//if (m_ppParticleObjects)
+	//{
+	//	for (int i = 0; i < m_nParticleObjects; i++) delete m_ppParticleObjects[i];
+	//	delete[] m_ppParticleObjects;
+	//}
 
 	if (m_pSkyBox) delete m_pSkyBox;
 	if (m_pWater) delete m_pWater;
@@ -491,7 +491,7 @@ void CScene::ReleaseUploadBuffers()
 	if (m_pWater) m_pWater->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->ReleaseUploadBuffers();
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->ReleaseUploadBuffers();
+	//for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 	if (m_pCubeMap)m_pCubeMap->ReleaseUploadBuffers();
 }
@@ -590,7 +590,7 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 		}
 	}
 	else {
-		pCamera->SetOffset(XMFLOAT3(0.0f, 2.0f, 0.0f));
+		pCamera->SetOffset(XMFLOAT3(-2.0f, 2.2f, 0.0f));
 		pCamera->SetPosition(Vector3::Add(m_pPlayer->GetPosition(), pCamera->GetOffset()));
 	}
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
@@ -614,11 +614,11 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 
 void CScene::RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
+	//for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->Render(pd3dCommandList, pCamera);
 }
 void CScene::OnPostRenderParticle()
 {
-	for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->OnPostRender();
+	//for (int i = 0; i < m_nParticleObjects; i++) m_ppParticleObjects[i]->OnPostRender();
 }
 void CScene::BoundingCheck() {
 	for (int i = 0; i < m_ppShaders[1]->m_nObjects; i++) {
