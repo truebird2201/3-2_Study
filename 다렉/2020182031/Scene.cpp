@@ -79,6 +79,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pCubeMap = new CCubeMap(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	
 	m_pWater = new CBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	//m_nParticleObjects = 1;
@@ -513,6 +514,9 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 		case 'T':
 			(topview) ? topview = false : topview = true;
 			break;
+		case 'Y':
+			printf("%f", m_pCubeMap->GetPosition().x);
+			break;
 		default:
 			break;
 		}
@@ -607,7 +611,6 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 	if (m_pWater) m_pWater->Render(pd3dCommandList, pCamera);
 	if (m_pCubeMap) m_pCubeMap->Render(pd3dCommandList, pCamera);
-	
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 }

@@ -467,8 +467,8 @@ CGameObject *CGameObject::FindFrame(char *pstrFrameName)
 
 void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
-	if (!strcmp(m_pstrFrameName, "PilotDoor"))
-		return;
+	/*if (!strcmp(m_pstrFrameName, "PilotDoor"))
+		return;*/
 
 	OnPrepareRender();
 
@@ -962,7 +962,7 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 // 
 CCubeMap::CCubeMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) : CGameObject(1)
 {
-	CBoxMesh* pBoxMesh = new  CBoxMesh(pd3dDevice, pd3dCommandList, 2.0, 2.0, 2.0);
+	CBoxMesh* pBoxMesh = new  CBoxMesh(pd3dDevice, pd3dCommandList, 10.0, 10.0, 10.0);
 	SetMesh(pBoxMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -975,7 +975,7 @@ CCubeMap::CCubeMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComm
 	pCubeMappingShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	pCubeMappingShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 1);
-	pCubeMappingShader->CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 18);
+	pCubeMappingShader->CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, PARAMETER_SKYBOX_CUBE_TEXTURE);
 
 	CMaterial* pCubeMappingMaterial = new CMaterial();
 	pCubeMappingMaterial->SetTexture(pSkyBoxTexture);
