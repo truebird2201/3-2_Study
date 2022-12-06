@@ -1,0 +1,12 @@
+﻿  compilation object save succeeded; see C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\x64\Debug\Shaders.cso
+  GameFramework.cpp
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\Object.h(219,45): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(323,63): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(326,105): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(332,105): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(435,76): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(437,72): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(604,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(613,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\GameFramework.cpp(622,9): warning C4101: 'font' :참조되지 않은 지역 변수입니다.
+  LabProject08-0-1.vcxproj -> C:\Users\82107\Downloads\이서연-2020182031(3D게임2 과제01) (1)\x64\Debug\LabProject08-0-1.exe
