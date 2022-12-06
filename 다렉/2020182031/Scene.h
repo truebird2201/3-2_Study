@@ -61,7 +61,9 @@ public:
 	bool ProcessInput(UCHAR *pKeysBuffer);
     void AnimateObjects(float fTimeElapsed);
 	
+	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void OnPreRender(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Fence* pd3dFence, HANDLE hFenceEvent);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 	void RenderParticle(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void OnPostRenderParticle();
@@ -74,8 +76,7 @@ public:
 
 	CPlayer								*m_pPlayer = NULL;
 
-	CParticleObject** m_ppParticleObjects = NULL;
-	int							m_nParticleObjects = 0;
+
 
 	bool topview = false;
 	bool end = false;
@@ -94,8 +95,12 @@ public:
 	CBillboardObjectsShader				** m_ppbShaders = NULL;
 
 	CSkyBox								*m_pSkyBox = NULL;
-	CBox								* m_pWater = NULL;
-	CCubeMap							* m_pCubeMap = NULL;
+	//CBox								* m_pWater = NULL;
+	//CCubeMappingShader** m_ppEnvironmentMappingShaders = NULL;
+	int							m_nEnvironmentMappingShaders = 0;
+
+	CParticleObject** m_ppParticleObjects = NULL;
+	int							m_nParticleObjects = 0;
 
 	CHeightMapTerrain* m_pTerrain = NULL;
 
@@ -105,5 +110,6 @@ public:
 	XMFLOAT4							m_xmf4GlobalAmbient;
 
 	ID3D12Resource						*m_pd3dcbLights = NULL;
+	ID3D12Resource* m_pd3dcbMaterials = NULL;
 	LIGHTS								*m_pcbMappedLights = NULL;
 };

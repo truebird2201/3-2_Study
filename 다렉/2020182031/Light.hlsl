@@ -34,6 +34,11 @@ cbuffer cbLights : register(b4)
 	int						gnLights;
 };
 
+cbuffer cbMaterial : register(b5)
+{
+	MATERIAL			gMaterials[MAX_MATERIALS];
+};
+
 float4 DirectionalLight(int nIndex, float3 vNormal, float3 vToCamera)
 {
 	float3 vToLight = -gLights[nIndex].m_vDirection;

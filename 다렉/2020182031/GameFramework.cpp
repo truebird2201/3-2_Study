@@ -55,9 +55,6 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRenderTargetViews();
 #endif
 	CreateDepthStencilView();
-
-	CoInitialize(NULL);
-
 	BuildObjects();
 
 	return(true);
@@ -571,7 +568,7 @@ void CGameFramework::UpdateShaderVariables()
 	m_pcbMappedFrameworkInfo->m_nMaxFlareType2Particles = 15 * 1.5f;
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbFrameworkInfo->GetGPUVirtualAddress();
-	m_pd3dCommandList->SetGraphicsRootConstantBufferView(1, d3dGpuVirtualAddress);
+	m_pd3dCommandList->SetGraphicsRootConstantBufferView(17, d3dGpuVirtualAddress);
 }
 
 void CGameFramework::ReleaseShaderVariables()
@@ -654,6 +651,8 @@ void CGameFramework::FrameAdvance(HWND hWnd)
 
 	AnimateObjects();
 
+	m_pScene->OnPreRender(m_pd3dDevice, m_pd3dCommandQueue, m_pd3dFence, m_hFenceEvent);
+
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
@@ -678,7 +677,7 @@ void CGameFramework::FrameAdvance(HWND hWnd)
 
 	if (m_pScene) {
 		m_pScene->OnPrepareRender(m_pd3dCommandList, m_pCamera);
-		UpdateShaderVariables();			// <-- ¹®Á¦
+		UpdateShaderVariables();
 		m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	}
 

@@ -15,12 +15,12 @@ struct MATERIAL
 	float4					m_cSpecular; //a = power
 	float4					m_cEmissive;
 };
-
-cbuffer cbCubeMappingRender : register(b0)
-{
-	matrix gmtxCubeMappingViews[6];
-	matrix gmtxCubeMappingProjection;
-};
+//
+//cbuffer cbCubeMappingRender : register(b0)
+//{
+//	matrix gmtxCubeMappingViews[6];
+//	matrix gmtxCubeMappingProjection;
+//};
 
 cbuffer cbCameraInfo : register(b1)
 {
@@ -232,51 +232,53 @@ float4 PSSkyBox(VS_SKYBOX_CUBEMAP_OUTPUT input) : SV_TARGET
 VS_LIGHTING_OUTPUT VSLightingColor(VS_LIGHTING_INPUT input)
 {
 	VS_LIGHTING_OUTPUT output = (VS_LIGHTING_OUTPUT)0;
-	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
-	output.positionW = mul(input.position, (float3x3)gmtxGameObject);
-	output.position = mul(float4(input.position,1.0f), mul(gmtxView, gmtxProjection));	
+	output.normalW = mul(float4(input.normal, 0.0f), gmtxGameObject).xyz;
+	output.positionW = mul(float4(input.position, 1.0f), gmtxGameObject).xyz;
+	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	return(output);
 }
 
 float4 PSCubeMapping(VS_LIGHTING_OUTPUT input) : SV_Target
 {
+	input.normalW = normalize(input.normalW);
+
 	float4 clIlumination = Lighting(input.positionW, input.normalW);
 	float3 vFromCamera = normalize(input.positionW - gvCameraPosition.xyz);
 	float3 vReflected = normalize(reflect(vFromCamera, input.normalW));
-	float4 cCubeTextureColor = gtxtCubeMap.Sample(gssClamp, vReflected);
-	return(float4(1.0f,1.0f,0.0f,1.0f)); // clIlumination * cCubeTextureColor
+	float4 cCubeTextureColor = gtxtCubeMap.Sample(gssWrap, vReflected);
+	return(cCubeTextureColor); // clIlumination * cCubeTextureColor
 }
-
-
-VS_SKYBOX_CUBEMAP_OUTPUT VSToCubeMap(VS_SKYBOX_CUBEMAP_INPUT input)
-{
-	VS_SKYBOX_CUBEMAP_OUTPUT output = (VS_SKYBOX_CUBEMAP_OUTPUT)0;
-	output.position = mul(float4(input.position, 1.0f), gmtxGameObject);
-	output.positionL = input.position;
-	return(output);
-}
-
-[maxvertexcount(3)]
-[Instance(6)]
-void GSSkyBox(triangle VS_SKYBOX_CUBEMAP_OUTPUT input[3], uint nInstance: SV_GSInstanceID, inout TriangleStream<GS_SKYBOX_CUBEMAP_OUTPUT> stream)
-{
-	GS_SKYBOX_CUBEMAP_OUTPUT output;
-	output.renderTarget = nInstance;
-	matrix mtxView = mul(gmtxCubeMappingViews[nInstance], gmtxCubeMappingProjection); 
-	for (int j = 0; j < 3; j++)
-	{
-		output.position = mul(input[j].position, mtxView);
-		output.positionL = input[j].positionL;
-		stream.Append(output);
-	}
-	stream.RestartStrip();
-}
-
-float4 PSToCubeMap(GS_SKYBOX_CUBEMAP_OUTPUT input) : SV_Target
-{
-	float4 cColor = gtxtSkyCubeTexture.Sample(gssClamp, input.positionL);
-	return(cColor);
-}
+//
+//
+//VS_SKYBOX_CUBEMAP_OUTPUT VSToCubeMap(VS_SKYBOX_CUBEMAP_INPUT input)
+//{
+//	VS_SKYBOX_CUBEMAP_OUTPUT output = (VS_SKYBOX_CUBEMAP_OUTPUT)0;
+//	output.position = mul(float4(input.position, 1.0f), gmtxGameObject);
+//	output.positionL = input.position;
+//	return(output);
+//}
+//
+//[maxvertexcount(3)]
+//[Instance(6)]
+//void GSSkyBox(triangle VS_SKYBOX_CUBEMAP_OUTPUT input[3], uint nInstance: SV_GSInstanceID, inout TriangleStream<GS_SKYBOX_CUBEMAP_OUTPUT> stream)
+//{
+//	GS_SKYBOX_CUBEMAP_OUTPUT output;
+//	output.renderTarget = nInstance;
+//	matrix mtxView = mul(gmtxCubeMappingViews[nInstance], gmtxCubeMappingProjection); 
+//	for (int j = 0; j < 3; j++)
+//	{
+//		output.position = mul(input[j].position, mtxView);
+//		output.positionL = input[j].positionL;
+//		stream.Append(output);
+//	}
+//	stream.RestartStrip();
+//}
+//
+//float4 PSToCubeMap(GS_SKYBOX_CUBEMAP_OUTPUT input) : SV_Target
+//{
+//	float4 cColor = gtxtSkyCubeTexture.Sample(gssClamp, input.positionL);
+//	return(cColor);
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -327,8 +329,9 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 		cIllumination = Lighting(input.positionW, normalW);
 		cColor = lerp(cColor, cIllumination, 0.5f);
 	}
-
+	
 	return(cColor);
+		
 }
 
 
